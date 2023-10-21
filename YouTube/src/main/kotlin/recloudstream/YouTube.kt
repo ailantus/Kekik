@@ -1,6 +1,6 @@
 // ! https://github.com/recloudstream/extensions/blob/master/InvidiousProvider/src/main/kotlin/recloudstream/InvidiousProvider.kt
 
-package com.keyiflerolsun
+package recloudstream
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
@@ -10,10 +10,10 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 import java.net.URLEncoder
 
 class YouTube : MainAPI() {
-    override var mainUrl = "https://y.com.sb"
-    override var name = "YouTube"
-    override val hasMainPage = true
-    override var lang = "tr"
+    override var mainUrl        = "https://y.com.sb"
+    override var name           = "YouTube"
+    override val hasMainPage    = true
+    override var lang           = "tr"
     override val supportedTypes = setOf(TvType.Others)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
