@@ -36,7 +36,7 @@ def fullhdfilmizlesene(url:str) -> str:
     istek  = oturum.get("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/")
     secici = Selector(istek.text)
 
-    script = secici.css("script")[0].get()
+    script = secici.xpath("(//script)[1]").get()
 
     scx_data = json.loads(findall(r'scx = (.*?);', script)[0])
     scx      = scx_decode(scx_data)

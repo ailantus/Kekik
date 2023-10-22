@@ -121,7 +121,7 @@ class FullHDFilmizlesene : MainAPI() {
     private fun getRapidLink(document: Document): String? {
         Log.d("FHD", "document » $document")
 
-        val script   = document.selectFirst("script")?.text()?.trim() ?: return null
+        val script   = document.selectXpath("(//script)[1]")?.text()?.trim() ?: return null
         Log.d("FHD", "script » $script")
     
         val scx_pattern = "scx = (.*?);".toRegex()
