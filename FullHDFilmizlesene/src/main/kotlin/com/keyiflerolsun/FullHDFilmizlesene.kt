@@ -30,6 +30,7 @@ class FullHDFilmizlesene : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
         val home     = document.select("li.film").mapNotNull { it.toSearchResult() }
+
         return newHomePageResponse(request.name, home)
     }
 
@@ -37,11 +38,13 @@ class FullHDFilmizlesene : MainAPI() {
         val title     = this.selectFirst("span.film-title")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
+
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/arama/$query").document
+
         return document.select("li.film").mapNotNull { it.toSearchResult() }
     }
 
@@ -58,13 +61,11 @@ class FullHDFilmizlesene : MainAPI() {
         val recommendations = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li").mapNotNull {
             val recName      = it.selectFirst("span.film-title")?.text() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
-            newTvSeriesSearchResponse(recName, recHref, TvType.TvSeries) {
+            val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("data-src"))
+            newMovieSearchResponse(recName, recHref, TvType.Movie) {
                 this.posterUrl = recPosterUrl
             }
         }
-        val bakalim = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li")
-        Log.d("FHD_", "recommendations $bakalim")
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
         }
@@ -89,9 +90,10 @@ class FullHDFilmizlesene : MainAPI() {
         ): Boolean {
 
             Log.d("FHD_", "data $data")
-            // TODO: Fix this
             val document = app.get(data).document
-            val iframe   = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
+
+            // TODO: Fix this
+            val iframe = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
             Log.d("FHD_", "iframe $iframe")
 
             val rapid          = app.get(iframe, referer = "$mainUrl/").text
