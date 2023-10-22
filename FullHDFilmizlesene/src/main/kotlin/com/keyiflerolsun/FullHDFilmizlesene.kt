@@ -75,7 +75,7 @@ class FullHDFilmizlesene : MainAPI() {
             Actor(it.text())
         }
 
-        val trailer = Regex("""embedUrl\": "(.*)"\'""").find(document.text)?.groups?.get(1)?.value
+        val trailer = Regex("""embedUrl\": \"(.*)\"""").find(document.text)?.groups?.get(1)?.value
         Log.d("FHD", "trailer » $trailer")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
