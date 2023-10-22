@@ -56,7 +56,7 @@ class FullHDFilmizlesene : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("div[class=izle-titles]")?.text()?.trim()) ?: return null
+        val title           = document.selectFirst("div[class=izle-titles]")?.text()?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("div img")?.attr("data-src"))
         val year            = document.selectFirst("div.dd a.category")?.text()?.split(" ")?.get(0)?.trim()?.toIntOrNull()
         val description     = document.selectFirst("div.ozet-ic > p")?.text()?.trim()
