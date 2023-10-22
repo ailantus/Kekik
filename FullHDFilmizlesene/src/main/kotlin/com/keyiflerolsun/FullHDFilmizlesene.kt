@@ -143,7 +143,7 @@ class FullHDFilmizlesene : MainAPI() {
             Log.d("FHD_scx_decode", "$scx_decode")
             // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
 
-            val rapidvid = scx_decode["atom"]?.get("sx")?.get("t")?.get(0) as? String
+            val rapidvid = scx_decode["atom"]?.get("sx")?.get("t")?.get(0) as? String ?: return false
             Log.d("FHD_rapidvid", "$rapidvid")
 
             loadExtractor(rapidvid, "$mainUrl/", subtitleCallback, callback)
