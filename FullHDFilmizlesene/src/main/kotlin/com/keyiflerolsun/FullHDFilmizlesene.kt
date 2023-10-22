@@ -56,7 +56,7 @@ class FullHDFilmizlesene : MainAPI() {
         val rating          = document.selectFirst("div.puanx-puan")?.text()?.trim()?.split(".")?.get(0)?.toRatingInt()
         val duration        = document.selectFirst("span.sure")?.text()?.split(" ")?.get(0)?.trim()?.toRatingInt()
         val recommendations = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li").mapNotNull {
-            val recName      = it.selectFirst("h2.film-tt")?.text() ?: return@mapNotNull null
+            val recName      = it.selectFirst("span.film-title")?.text() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
             newTvSeriesSearchResponse(recName, recHref, TvType.TvSeries) {
