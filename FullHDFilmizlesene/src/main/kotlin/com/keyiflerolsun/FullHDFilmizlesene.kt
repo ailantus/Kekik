@@ -2,13 +2,14 @@
 
 package com.keyiflerolsun
 
+import android.util.Log
+import android.util.Base64
+import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.loadExtractor
-import org.jsoup.nodes.Element
-import android.util.Log
 
 class FullHDFilmizlesene : MainAPI() {
     override var mainUrl            = "https://www.fullhdfilmizlesene.pw"
@@ -82,6 +83,38 @@ class FullHDFilmizlesene : MainAPI() {
         }
     }
 
+    private fun atob(s: String): String {
+        return String(Base64.decode(s, Base64.DEFAULT))
+    }
+
+    private fun rtt(s: String): String {
+        fun rot13Char(c: Char): Char {
+            return when (c) {
+                in 'a'..'z' -> ((c - 'a' + 13) % 26 + 'a'.toInt()).toChar()
+                in 'A'..'Z' -> ((c - 'A' + 13) % 26 + 'A'.toInt()).toChar()
+                else -> c
+            }
+        }
+
+        return s.map { rot13Char(it) }.joinToString("")
+    }
+
+    private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Map<String, Any>> {
+        for ((key, item) in scx) {
+            item["tt"] = atob(item["tt"] as String)
+            val sx = item["sx"] as MutableMap<String, Any>
+            sx["t"]?.let { tList ->
+                sx["t"] = (tList as List<String>).map { atob(rtt(it)) }
+            }
+            sx["p"]?.let { pList ->
+                sx["p"] = (pList as List<String>).map { atob(rtt(it)) }
+            }
+            item["sx"] = sx
+            scx[key] = item
+        }
+        return scx
+    }
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
@@ -91,24 +124,19 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD_data", "$data")
             val document = app.get(data).document
-            Log.d("FHD_document", "$document")
 
-            // TODO: Fix this
-            val iframe = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
-            Log.d("FHD_iframe", "$iframe")
+            val scx_pattern = """"scx"\s*:\s*(\{.*?\})""".toRegex()
+            val scx_result  = pattern.find(document)
+            val scx_data    = result?.groups?.get(1)?.value
+            Log.d("FHD_scx_data", "$scx_data")
+            val scx_decode  = scxDecode(scx_data)
+            Log.d("FHD_scx_decode", "$scx_decode")
+            // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
 
-            val rapid          = app.get(iframe, referer = "$mainUrl/").text
-            val pattern        = """file": "(.*)",""".toRegex()
-            val matchResult    = pattern.find(rapid)
-            val extractedValue = matchResult?.groups?.get(1)?.value ?: return false
+            val rapidvid = scx_decode["atom"]?.get("sx")?.get("t")?.get(0) as String
+            Log.d("FHD_rapidvid", "$rapidvid")
 
-            // val encoded = extractedValue.toByteArray(Charsets.UTF_8)
-            // val decoded = String(encoded, Charsets.UTF_8)
-
-            val bytes   = extractedValue.split("""\\x""").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
-            val decoded = String(bytes, Charsets.UTF_8)
-
-            loadExtractor(decoded, "$mainUrl/", subtitleCallback, callback)
+            loadExtractor(rapidvid, "$mainUrl/", subtitleCallback, callback)
 
             return true
     }
