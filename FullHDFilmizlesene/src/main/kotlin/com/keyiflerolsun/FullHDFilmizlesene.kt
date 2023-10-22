@@ -140,8 +140,12 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun rapidToM3u8(rapid: String): String? {
+        Log.d("FHD", "rapid » $rapid")
+
         val pattern         = """file": "(.*)",""".toRegex()
         val match_result    = pattern.find(rapid)
+        Log.d("FHD", "match_result » $match_result")
+
         val extracted_value = match_result?.groups?.get(1)?.value ?: return null
         Log.d("FHD", "extracted_value » $extracted_value")
 
