@@ -119,34 +119,24 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun getRapidLink(document: Document): String? {
-        Log.d("FHD", "document » $document")
-
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
         val script_content = script_element?.data()?.trim() ?: return null
-        Log.d("FHD", "script » $script_content")
     
         val scx_pattern = "scx = (.*?);".toRegex()
         val scx_result  = scx_pattern.find(script_content)
         val scx_data    = scx_result?.groups?.get(1)?.value ?: return null
-        Log.d("FHD", "scx_data » $scx_data")
-        // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
     
         val objectMapper = jacksonObjectMapper()
         val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
-        Log.d("FHD", "scx_map » $scx_map")
+        val scx_decode   = scxDecode(scx_map)
     
-        val scx_decode  = scxDecode(scx_map)
-        Log.d("FHD", "scx_decode » $scx_decode")
-        // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
-    
-        val atom_map  = scx_decode["atom"] as? Map<String, Any> ?: return null
-        val sx_map    = atom_map["sx"] as? Map<String, Any> ?: return null
-        val t_list    = sx_map["t"] as? List<String> ?: return null
+        val atom_map = scx_decode["atom"] as? Map<String, Any> ?: return null
+        val sx_map   = atom_map["sx"] as? Map<String, Any> ?: return null
+        val t_list   = sx_map["t"] as? List<String> ?: return null
         if (t_list.isEmpty()) return null
-        val rapidvid  = t_list[0]
-        Log.d("FHD", "rapidvid » $rapidvid")
+        Log.d("FHD", "t_list » $t_list")
     
-        return rapidvid
+        return t_list[0]
     }
 
     override suspend fun loadLinks(
@@ -160,7 +150,21 @@ class FullHDFilmizlesene : MainAPI() {
             val document = app.get(data).document
             val rapidvid = getRapidLink(document) ?: return false
 
-            loadExtractor(rapidvid, "$mainUrl/", subtitleCallback, callback)
+            val rapid           = app.get(rapidvid, referer = "$mainUrl/").text
+            val pattern         = """file": "(.*)",""".toRegex()
+            val match_result    = pattern.find(rapid)
+            val extracted_value = match_result?.groups?.get(1)?.value ?: return false
+            Log.d("FHD", "extracted_value » $extracted_value")
+
+            // val encoded = extracted_value.toByteArray(Charsets.UTF_8)
+            // val decoded = String(encoded, Charsets.UTF_8)
+
+            val bytes   = extracted_value.split("""\\x""").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
+            val decoded = String(bytes, Charsets.UTF_8)
+            Log.d("FHD", "decoded » $decoded")
+
+
+            loadExtractor(decoded, "$mainUrl/", subtitleCallback, callback)
 
             return true
     }
