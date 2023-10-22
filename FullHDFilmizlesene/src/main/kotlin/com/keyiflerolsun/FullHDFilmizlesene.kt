@@ -126,9 +126,11 @@ class FullHDFilmizlesene : MainAPI() {
             val document = app.get(data).document
 
             val scx_pattern = """"scx"\s*:\s*(\{.*?\})""".toRegex()
-            val scx_result  = pattern.find(document)
-            val scx_data    = result?.groups?.get(1)?.value
+            val scx_result  = scx_pattern.find(document)
+            val scx_data    = scx_result?.groups?.get(1)?.value
             Log.d("FHD_scx_data", "$scx_data")
+            // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
+
             val scx_decode  = scxDecode(scx_data)
             Log.d("FHD_scx_decode", "$scx_decode")
             // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
