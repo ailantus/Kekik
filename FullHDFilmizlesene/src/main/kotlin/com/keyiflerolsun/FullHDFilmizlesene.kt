@@ -86,6 +86,7 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
+            Log.d("FHD_Data", data)
             // TODO: Fix this
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
