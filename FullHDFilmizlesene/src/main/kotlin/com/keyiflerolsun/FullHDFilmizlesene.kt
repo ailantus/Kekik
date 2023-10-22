@@ -190,7 +190,6 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD", "data » $data")
             val document = app.get(data).document
-            val title    = document.selectFirst("div[class=izle-titles]")?.text()?.trim() ?: return false
             val rapidvid = getRapidLink(document) ?: return false
 
             val rapid    = app.get(rapidvid).text
@@ -199,7 +198,7 @@ class FullHDFilmizlesene : MainAPI() {
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
-                    name    = title,
+                    name    = this.name,
                     url     = m3u_link,
                     referer = "$mainUrl/",
                     quality = Qualities.Unknown.value,
