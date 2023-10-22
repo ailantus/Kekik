@@ -5,6 +5,7 @@ package com.keyiflerolsun
 import android.util.Log
 import android.util.Base64
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.Document
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -135,8 +136,8 @@ class FullHDFilmizlesene : MainAPI() {
         Log.d("FHD_scx_decode", "$scx_decode")
         // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
     
-        val tList = scx_decode["atom"]?.get("sx")?.get("t") as? List<*>
-        val rapidvid = if (tList?.isNotEmpty() == true) tList[0] as? String else null
+        val tList = scx_decode["atom"]?.get("sx")?.get("t") ?: return false
+        val rapidvid = tList[0] ?: return false
         Log.d("FHD_rapidvid", "$rapidvid")
     
         return rapidvid
