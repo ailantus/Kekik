@@ -166,7 +166,7 @@ class FullHDFilmizlesene : MainAPI() {
             val document = app.get(data).document
             val rapidvid = getRapidLink(document) ?: return false
 
-            val rapid    = app.get(data).text
+            val rapid    = app.get(rapidvid).text
             val m3u_link = rapidToM3u8(rapid) ?: return false
 
             loadExtractor(m3u_link, "$mainUrl/", subtitleCallback, callback)
