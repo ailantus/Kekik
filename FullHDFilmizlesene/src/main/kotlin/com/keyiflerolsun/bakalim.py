@@ -26,4 +26,4 @@ def scx_decode(scx:dict) -> dict:
 
     return scx
 
-print(scx_decode({"atom": {"tt": "QXRvbQ==", "sx": {"p": [], "t": ["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]}, "order": "0"}}))
+print(scx_decode({"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTR3ZGRjBGV1"]},"order":1}}))
