@@ -55,7 +55,7 @@ class FullHDFilmizlesene : MainAPI() {
         val tags            = document.select("a[rel='category tag']").map { it.text() }
         val rating          = document.selectFirst("div.puanx-puan")?.text()?.trim()?.split(".")?.get(0)?.toRatingInt()
         val duration        = document.selectFirst("span.sure")?.text()?.split(" ")?.get(0)?.trim()?.toRatingInt()
-        val recommendations = document.select("div.izle-alt-content:nth-of-type(3) ul li").mapNotNull {
+        val recommendations = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li").mapNotNull {
             val recName      = it.selectFirst("h2.film-title")?.text() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
@@ -63,7 +63,7 @@ class FullHDFilmizlesene : MainAPI() {
                 this.posterUrl = recPosterUrl
             }
         }
-        val bakalim = document.select("div.izle-alt-content:nth-of-type(3) ul li")
+        val bakalim = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li")
         Log.d("FHD_", "recommendations $bakalim")
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
@@ -91,16 +91,13 @@ class FullHDFilmizlesene : MainAPI() {
             Log.d("FHD_", "data $data")
             // TODO: Fix this
             val document = app.get(data).document
-            Log.d("FHD_", "document $document")
             val iframe   = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
             Log.d("FHD_", "iframe $iframe")
 
             val rapid          = app.get(iframe, referer = "$mainUrl/").text
-            Log.d("FHD_", "rapid $rapid")
             val pattern        = """file": "(.*)",""".toRegex()
             val matchResult    = pattern.find(rapid)
             val extractedValue = matchResult?.groups?.get(1)?.value ?: return false
-            Log.d("FHD_", "extractedValue $extractedValue")
 
             // val encoded = extractedValue.toByteArray(Charsets.UTF_8)
             // val decoded = String(encoded, Charsets.UTF_8)
