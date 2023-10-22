@@ -101,7 +101,7 @@ class FullHDFilmizlesene : MainAPI() {
         return s.map { rot13Char(it) }.joinToString("")
     }
 
-    private fun scxDecode(scx: MutableMap<String, Any>): Map<String, Any> {
+    private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Any> {
         for ((key, item) in scx) {
             item["tt"] = atob(item["tt"] as String)
             val sx = item["sx"] as MutableMap<String, Any>
@@ -136,7 +136,7 @@ class FullHDFilmizlesene : MainAPI() {
             // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
 
             val objectMapper = jacksonObjectMapper()
-            val scx_map: Map<String, Any> = objectMapper.readValue(scx_data)
+            val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
             Log.d("FHD_scx_map", "$scx_map")
 
             val scx_decode  = scxDecode(scx_map)
