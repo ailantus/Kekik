@@ -63,6 +63,8 @@ class FullHDFilmizlesene : MainAPI() {
                 this.posterUrl = recPosterUrl
             }
         }
+        val bakalim = document.select("div.izle-alt-content:nth-of-type(3) ul li")
+        Log.d("FHD_", "recommendations $bakalim")
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
         }
@@ -89,6 +91,7 @@ class FullHDFilmizlesene : MainAPI() {
             Log.d("FHD_", "data $data")
             // TODO: Fix this
             val document = app.get(data).document
+            Log.d("FHD_", "document $document")
             val iframe   = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
             Log.d("FHD_", "iframe $iframe")
 
