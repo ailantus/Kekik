@@ -93,12 +93,15 @@ class FullHDFilmizlesene : MainAPI() {
                 this.posterUrl = recPosterUrl
             }
         }
+
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
         }
 
         val trailer = Regex("""embedUrl\": \"(.*)\"""").find(document.html())?.groups?.get(1)?.value
-        Log.d("FHD", "trailer » $trailer")
+
+        Log.d("FHD", "rating » $rating")
+        Log.d("FHD", "duration » $duration")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
@@ -187,6 +190,7 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD", "data » $data")
             val document = app.get(data).document
+            val title    = document.selectFirst("div[class=izle-titles]")?.text()?.trim() ?: return false
             val rapidvid = getRapidLink(document) ?: return false
 
             val rapid    = app.get(rapidvid).text
@@ -195,7 +199,7 @@ class FullHDFilmizlesene : MainAPI() {
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
-                    name    = document.selectFirst("div[class=izle-titles]")?.text()?.trim(),
+                    name    = title,
                     url     = m3u_link,
                     referer = "$mainUrl/",
                     quality = Qualities.Unknown.value,
