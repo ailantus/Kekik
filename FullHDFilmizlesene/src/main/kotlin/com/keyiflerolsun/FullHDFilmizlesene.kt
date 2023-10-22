@@ -89,12 +89,13 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("FHD_", "data $data")
+            Log.d("FHD_data", data)
             val document = app.get(data).document
+            Log.d("FHD_document", document)
 
             // TODO: Fix this
             val iframe = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
-            Log.d("FHD_", "iframe $iframe")
+            Log.d("FHD_iframe", iframe)
 
             val rapid          = app.get(iframe, referer = "$mainUrl/").text
             val pattern        = """file": "(.*)",""".toRegex()
