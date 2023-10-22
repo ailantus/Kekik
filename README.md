@@ -6,13 +6,15 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 **https://raw.githubusercontent.com/keyiflerolsun/cloudstream-keyiflerolsun/master/repo.json**
 
----
-
-### » **[Doc](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)**
+[![Repo](https://raw.githubusercontent.com/keyiflerolsun/cloudstream-keyiflerolsun/master/.github/icons/Repo.jpg)](#)
 
 ---
 
-### Special Thanks
+### » **[Döküman](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)**
+
+---
+
+### Teşekkürler
 
 - [recloudstream/cloudstream](https://github.com/recloudstream/cloudstream)
 - [hexated/cloudstream-extensions-hexated](https://github.com/hexated/cloudstream-extensions-hexated)
