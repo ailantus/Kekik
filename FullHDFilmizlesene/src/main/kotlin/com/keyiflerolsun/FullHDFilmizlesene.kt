@@ -121,11 +121,12 @@ class FullHDFilmizlesene : MainAPI() {
     private fun getRapidLink(document: Document): String? {
         Log.d("FHD", "document » $document")
 
-        val script   = document.select("script").firstOrNull { it.data().isNotEmpty() }?.data()?.trim()
-        Log.d("FHD", "script » $script")
+        val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
+        val script_content = script_element?.data()?.trim() ?: return null
+        Log.d("FHD", "script » $script_content")
     
         val scx_pattern = "scx = (.*?);".toRegex()
-        val scx_result  = scx_pattern.find(script)
+        val scx_result  = scx_pattern.find(script_content)
         val scx_data    = scx_result?.groups?.get(1)?.value ?: return null
         Log.d("FHD", "scx_data » $scx_data")
         // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
