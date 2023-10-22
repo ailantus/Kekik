@@ -140,17 +140,9 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun rapidToM3u8(rapid: String): String? {
-        Log.d("FHD", "rapid » $rapid")
-
         val pattern         = """file": "(.*)",""".toRegex()
         val match_result    = pattern.find(rapid)
-        Log.d("FHD", "match_result » $match_result")
-
         val extracted_value = match_result?.groups?.get(1)?.value ?: return null
-        Log.d("FHD", "extracted_value » $extracted_value")
-
-        // val encoded = extracted_value.toByteArray(Charsets.UTF_8)
-        // val decoded = String(encoded, Charsets.UTF_8)
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
@@ -173,7 +165,16 @@ class FullHDFilmizlesene : MainAPI() {
             val rapid    = app.get(rapidvid).text
             val m3u_link = rapidToM3u8(rapid) ?: return false
 
-            loadExtractor(m3u_link, "$mainUrl/", subtitleCallback, callback)
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = rapidvid,
+                    url     = m3u_link,
+                    referer = "$mainUrl/",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
+            )
 
             return true
     }
