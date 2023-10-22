@@ -148,7 +148,7 @@ class FullHDFilmizlesene : MainAPI() {
         // val encoded = extracted_value.toByteArray(Charsets.UTF_8)
         // val decoded = String(encoded, Charsets.UTF_8)
 
-        val bytes = extracted_value.split("\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
+        val bytes = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
         Log.d("FHD", "decoded » $decoded")
 
