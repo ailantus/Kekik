@@ -117,6 +117,31 @@ class FullHDFilmizlesene : MainAPI() {
         return scx
     }
 
+    private fun getRapidLink(document: Document): String? {
+        val script   = document.selectFirst("script")?.text()?.trim() ?: return null
+        Log.d("FHD_script", "$script")
+    
+        val scx_pattern = """"scx"\s*:\s*(\{.*?\})""".toRegex()
+        val scx_result  = scx_pattern.find(script)
+        val scx_data    = scx_result?.groups?.get(1)?.value ?: return null
+        Log.d("FHD_scx_data", "$scx_data")
+        // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
+    
+        val objectMapper = jacksonObjectMapper()
+        val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
+        Log.d("FHD_scx_map", "$scx_map")
+    
+        val scx_decode  = scxDecode(scx_map)
+        Log.d("FHD_scx_decode", "$scx_decode")
+        // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
+    
+        val tList = scx_decode["atom"]?.get("sx")?.get("t") as? List<*>
+        val rapidvid = if (tList?.isNotEmpty() == true) tList[0] as? String else null
+        Log.d("FHD_rapidvid", "$rapidvid")
+    
+        return rapidvid
+    }
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
@@ -126,25 +151,7 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD_data", "$data")
             val document = app.get(data).document
-            val script   = document.selectFirst("script")?.text()?.trim() ?: return false
-            Log.d("FHD_script", "$script")
-
-            val scx_pattern = """"scx"\s*:\s*(\{.*?\})""".toRegex()
-            val scx_result  = scx_pattern.find(script)
-            val scx_data    = scx_result?.groups?.get(1)?.value ?: return false
-            Log.d("FHD_scx_data", "$scx_data")
-            // ? var scx = {"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTZ3ZQVlBJV5"]},"order":"0"}};
-
-            val objectMapper = jacksonObjectMapper()
-            val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
-            Log.d("FHD_scx_map", "$scx_map")
-
-            val scx_decode  = scxDecode(scx_map)
-            Log.d("FHD_scx_decode", "$scx_decode")
-            // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
-
-            val rapidvid = scx_decode["atom"]?.get("sx")?.get("t")?.get(0) as? String ?: return false
-            Log.d("FHD_rapidvid", "$rapidvid")
+            val rapidvid = getRapidLink(document) ?: return false
 
             loadExtractor(rapidvid, "$mainUrl/", subtitleCallback, callback)
 
