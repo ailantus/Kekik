@@ -148,7 +148,7 @@ class FullHDFilmizlesene : MainAPI() {
         // val encoded = extracted_value.toByteArray(Charsets.UTF_8)
         // val decoded = String(encoded, Charsets.UTF_8)
 
-        val bytes = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
+        val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
         Log.d("FHD", "decoded » $decoded")
 
@@ -169,7 +169,7 @@ class FullHDFilmizlesene : MainAPI() {
             val rapid    = app.get(data).text
             val m3u_link = rapidToM3u8(rapid) ?: return false
 
-            loadExtractor(decoded, "$mainUrl/", subtitleCallback, callback)
+            loadExtractor(m3u_link, "$mainUrl/", subtitleCallback, callback)
 
             return true
     }
