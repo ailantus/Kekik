@@ -83,7 +83,7 @@ class FullHDFilmizlesene : MainAPI() {
         val year            = document.selectFirst("div.dd a.category")?.text()?.split(" ")?.get(0)?.trim()?.toIntOrNull()
         val description     = document.selectFirst("div.ozet-ic > p")?.text()?.trim()
         val tags            = document.select("a[rel='category tag']").map { it.text() }
-        val rating          = document.selectXpath("div.puanx-puan")?.text()
+        val rating          = document.selectFirst("div.puanx-puan")?.text()?.split(" ")?.last()?.split(".")?.first()?.toIntOrNull()
         val duration        = document.selectFirst("span.sure")?.text()?.split(" ")?.get(0)?.trim()?.toIntOrNull()
         val recommendations = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li").mapNotNull {
             val recName      = it.selectFirst("span.film-title")?.text() ?: return@mapNotNull null
@@ -100,14 +100,14 @@ class FullHDFilmizlesene : MainAPI() {
 
         val trailer = Regex("""embedUrl\": \"(.*)\"""").find(document.html())?.groups?.get(1)?.value
 
-        Log.d("FHD", "_rating » $rating «")
+        Log.d("FHD", "_rating » $rating")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
             this.year            = year
             this.plot            = description
             this.tags            = tags
-            this.rating          = null
+            this.rating          = rating
             this.duration        = duration
             this.recommendations = recommendations
             addActors(actors)
