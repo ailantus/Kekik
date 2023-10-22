@@ -1,6 +1,9 @@
 # ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-import base64
+from httpx  import Client as Session
+from parsel import Selector
+from re     import findall
+import base64, json
 
 def atob(s:str) -> str:
     return base64.b64decode(s).decode("utf-8")
@@ -26,4 +29,20 @@ def scx_decode(scx:dict) -> dict:
 
     return scx
 
-print(scx_decode({"atom":{"tt":"QXRvbQ==","sx":{"p":[],"t":["nUE0pUZ6Yl9lLKOcMUMcMP5hMKDiqz9xY3LkrTR3ZGRjBGV1"]},"order":1}}))
+def fullhdfilmizlesene(url:str) -> str:
+    oturum = Session()
+    oturum.headers.update({"User-Agent":"Mozilla/5.0"})
+
+    istek  = oturum.get("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/")
+    secici = Selector(istek.text)
+
+    script = secici.css("script")[0].get()
+
+    scx_data = json.loads(findall(r'scx = (.*?);', script)[0])
+    scx      = scx_decode(scx_data)
+
+    rapidvid = scx["atom"]["sx"]["t"][0]
+
+    return rapidvid
+
+print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))

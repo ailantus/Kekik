@@ -122,7 +122,7 @@ class FullHDFilmizlesene : MainAPI() {
         val script   = document.selectFirst("script")?.text()?.trim() ?: return null
         Log.d("FHD_script", "$script")
     
-        val scx_pattern = """"scx"\s*:\s*(\{.*?\})""".toRegex()
+        val scx_pattern = "scx = (.*?);".toRegex()
         val scx_result  = scx_pattern.find(script)
         val scx_data    = scx_result?.groups?.get(1)?.value ?: return null
         Log.d("FHD_scx_data", "$scx_data")
