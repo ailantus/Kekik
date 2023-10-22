@@ -136,8 +136,11 @@ class FullHDFilmizlesene : MainAPI() {
         Log.d("FHD_scx_decode", "$scx_decode")
         // ? {'atom': {'tt': 'Atom', 'sx': {'p': [], 't': ['https://rapidvid.net/vod/v1xc70229b9']}, 'order': '0'}}
     
-        val tList = scx_decode["atom"]?.get("sx")?.get("t") ?: return null
-        val rapidvid = tList[0] ?: return null
+        val atom_map  = scx_decode["atom"] as? Map<String, Any> ?: return null
+        val sx_map    = atom_map["sx"] as? Map<String, Any> ?: return null
+        val t_list    = sx_map["t"] as? List<String> ?: return null
+        if (t_list.isEmpty()) return null
+        val rapidvid  = t_list[0]
         Log.d("FHD_rapidvid", "$rapidvid")
     
         return rapidvid
