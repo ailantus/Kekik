@@ -56,7 +56,7 @@ class FullHDFilmizlesene : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("div[class=izle-titles]")?.text()?.trim() ?: return null
+        val title           = document.selectFirst("div[class=izle-titles]")?.text()?.trim()) ?: return null
         val poster          = fixUrlNull(document.selectFirst("div img")?.attr("data-src"))
         val year            = document.selectFirst("div.dd a.category")?.text()?.split(" ")?.get(0)?.trim()?.toIntOrNull()
         val description     = document.selectFirst("div.ozet-ic > p")?.text()?.trim()
@@ -74,7 +74,8 @@ class FullHDFilmizlesene : MainAPI() {
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
         }
-        val trailer = Regex("""'embedUrl": "(.*)"'""").find(document.html())?.groups?.get(1)?.value ?: null
+        val trailer = Regex("""'embedUrl": "(.*)"'""").find(document.html())?.groups?.get(1)?.value
+        Log.d("FHD", "trailer » $trailer")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
@@ -96,8 +97,8 @@ class FullHDFilmizlesene : MainAPI() {
     private fun rtt(s: String): String {
         fun rot13Char(c: Char): Char {
             return when (c) {
-                in 'a'..'z' -> ((c - 'a' + 13) % 26 + 'a'.toInt()).toChar()
-                in 'A'..'Z' -> ((c - 'A' + 13) % 26 + 'A'.toInt()).toChar()
+                in 'a'..'z' -> ((c - 'a' + 13) % 26 + 'a'.code).toChar()
+                in 'A'..'Z' -> ((c - 'A' + 13) % 26 + 'A'.code).toChar()
                 else -> c
             }
         }
