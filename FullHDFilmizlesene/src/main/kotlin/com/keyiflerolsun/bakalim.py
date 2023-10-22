@@ -29,6 +29,15 @@ def scx_decode(scx:dict) -> dict:
 
     return scx
 
+def rapid2m3u8(url:str) -> str:
+    oturum = Session()
+    oturum.headers.update({"User-Agent":"Mozilla/5.0"})
+
+    istek       = oturum.get(url)
+    escaped_hex = findall(r'file": "(.*)",', istek.text)[0]
+
+    return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
+
 def fullhdfilmizlesene(url:str) -> str:
     oturum = Session()
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
@@ -43,6 +52,6 @@ def fullhdfilmizlesene(url:str) -> str:
 
     rapidvid = scx["atom"]["sx"]["t"][0]
 
-    return rapidvid
+    return rapid2m3u8(rapidvid)
 
 print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
