@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
@@ -73,6 +74,7 @@ class FullHDFilmizlesene : MainAPI() {
         val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
             Actor(it.text())
         }
+        val trailer = Regex("""'embedUrl": "(.*)"'""").find(document.html())?.groups?.get(1)?.value ?: null
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
@@ -83,6 +85,7 @@ class FullHDFilmizlesene : MainAPI() {
             this.duration        = duration
             this.recommendations = recommendations
             addActors(actors)
+            addTrailer(trailer)
         }
     }
 
