@@ -22,7 +22,7 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?o=mr&hd=1&page="           to "recently Featured",
+        "$mainUrl/video?o=mr&hd=1&page="           to "Recently Featured",
         "$mainUrl/video?o=cm&t=t&hd=1&page="       to "Newest",
         "$mainUrl/video?o=mv&t=t&hd=1&page="       to "Most Viewed",
         "$mainUrl/video?o=tr&t=t&hd=1&page="       to "Top Rated",
@@ -79,8 +79,8 @@ class PornHub : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("a")?.attr("title") ?: return null
-        val _href     = this.selectFirst("a")?.attr("href") ?: return null
-        val link      = fixUrlNull("$mainUrl/$_href") ?: return null
+        val link      = this.selectFirst("a")?.attr("href") ?: return null
+        // val link      = fixUrlNull("$mainUrl/$_href") ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img.thumb")?.attr("src"))
 
         return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
