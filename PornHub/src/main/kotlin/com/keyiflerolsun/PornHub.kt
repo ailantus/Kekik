@@ -21,13 +21,13 @@ class PornHub : MainAPI() {
 
     override val mainPage = mainPageOf(
         "$mainUrl/video?o=mr&hd=1&page="           to "Recently Featured",
-        "$mainUrl/video?o=cm&t=t&hd=1&page="       to "Newest",
-        "$mainUrl/video?o=mv&t=t&hd=1&page="       to "Most Viewed",
-        "$mainUrl/video?o=tr&t=t&hd=1&page="       to "Top Rated",
-        "$mainUrl/video?o=ht&t=t&hd=1&page="       to "Hottest",
+        "$mainUrl/video?o=tr&t=w&hd=1&page="       to "Top Rated",
+        "$mainUrl/video?o=mv&t=w&hd=1&page="       to "Most Viewed",
+        "$mainUrl/video?o=ht&t=w&hd=1&page="       to "Hottest",
+        "$mainUrl/video?p=professional&hd=1&page=" to "Professional"
         "$mainUrl/video?o=lg&hd=1&page="           to "Longest",
         "$mainUrl/video?p=homemade&hd=1&page="     to "Homemade",
-        "$mainUrl/video?p=professional&hd=1&page=" to "Professional"
+        "$mainUrl/video?o=cm&t=w&hd=1&page="       to "Newest",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -60,15 +60,25 @@ class PornHub : MainAPI() {
         val tags        = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
         val duration    = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
+        val recommendations = document.selectXpath("//ul[@id='relatedVideosCenter']/li").mapNotNull {
+            val recName      = it.selectFirst("span.title a")?.text() ?: return@mapNotNull null
+            val recHref      = fixUrlNull(it.selectFirst("span.title a")?.attr("href")) ?: return@mapNotNull null
+            val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
+            newMovieSearchResponse(recName, recHref, TvType.NSFW) {
+                this.posterUrl = recPosterUrl
+            }
+        }
+
         val actors      = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
             Actor(it.text().trim(), it.select("img")?.attr("src"))
         }
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
-            this.posterUrl = poster
-            this.plot      = description
-            this.tags      = tags
-            this.duration  = duration
+            this.posterUrl       = poster
+            this.plot            = description
+            this.tags            = tags
+            this.duration        = duration
+            this.recommendations = recommendations
             addActors(actors)
         }
     }
