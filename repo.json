@@ -1,6 +1,6 @@
 {
-    "name": "keyiflerolsun",
-    "description": "Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.",
+    "name": "Kekik-cloudstream",
+    "description": "CloudStream için Türkçe yayın yapan sitelere ait eklentiler",
     "manifestVersion": 1,
     "pluginLists": [
       "https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/builds/plugins.json"
