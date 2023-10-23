@@ -104,6 +104,7 @@ class PornHub : MainAPI() {
             plot = title
         )
     }
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
@@ -131,32 +132,6 @@ class PornHub : MainAPI() {
             )
         )
         return true
-
-        // app.get(
-        //     url = data,
-        //     interceptor = WebViewResolver(
-        //         Regex("(master\\.m3u8\\?.*)")
-        //     )
-        // ).let { response ->
-        //     M3u8Helper().m3u8Generation(
-        //         M3u8Helper.M3u8Stream(
-        //             response.url,
-        //             headers = response.headers.toMap()
-        //         ), true
-        //     ).apmap { stream ->
-        //         callback(
-        //             ExtractorLink(
-        //                 source = name,
-        //                 name = "${this.name} m3u8",
-        //                 url = stream.streamUrl,
-        //                 referer = mainUrl,
-        //                 quality = getQualityFromName(stream.quality?.toString()),
-        //                 isM3u8 = true
-        //             )
-        //         )
-        //     }
-        // }
-        // return true
     }
 
     private fun fetchImgUrl(imgsrc: Element?): String? {
