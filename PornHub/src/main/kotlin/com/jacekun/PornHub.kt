@@ -110,19 +110,21 @@ class PornHub : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        Log.d("PHub", "_url » $data")
+        Log.d("PHub", "url » $data")
 
         val source          = app.get(data).text
         val pattern         = """([^\"]*master.m3u8?.[^\"]*)""".toRegex()
         val match_result    = pattern.find(source)
-        val extracted_value = match_result?.groups?.last()?.value?.trim()?.replace("\\", "") ?: return false
-        Log.d("PHub", "_extracted_value » $extracted_value")
+        val extracted_value = match_result?.groups?.last()?.value ?: return false
+        val m3u_link        = extracted_value?.replace("\\\\", "")
+        Log.d("PHub", "extracted_value » $extracted_value")
+        Log.d("PHub", "m3u_link » $m3u_link")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
-                url     = extracted_value,
+                url     = m3u_link,
                 referer = "$mainUrl/",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
