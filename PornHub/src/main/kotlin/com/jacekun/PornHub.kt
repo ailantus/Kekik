@@ -32,42 +32,58 @@ class PornHub : MainAPI() {
         "$mainUrl/video?p=professional&hd=1&page=" to "Professional"
     )
 
+    // override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+    //     try {
+    //         val categoryData = request.data
+    //         val categoryName = request.name
+    //         val pagedLink = if (page > 0) categoryData + page else categoryData
+    //         val soup = app.get(pagedLink).document
+    //         val home = soup.select("div.sectionWrapper div.wrap").mapNotNull {
+    //             if (it == null) { return@mapNotNull null }
+    //             val title = it.selectFirst("span.title a")?.text() ?: ""
+    //             val link = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+    //             val img = fixUrlNull(it.selectFirst("img.thumb")?.attr("src"))
+    //             MovieSearchResponse(
+    //                 name = title,
+    //                 url = link,
+    //                 apiName = this.name,
+    //                 type = globalTvType,
+    //                 posterUrl = img
+    //             )
+    //         }
+    //         if (home.isNotEmpty()) {
+    //             return newHomePageResponse(
+    //                 list = HomePageList(
+    //                     name = categoryName,
+    //                     list = home,
+    //                     isHorizontalImages = true
+    //                 ),
+    //                 hasNext = true
+    //             )
+    //         } else {
+    //             throw ErrorLoadingException("No homepage data found!")
+    //         }
+    //     } catch (e: Exception) {
+    //         //e.printStackTrace()
+    //         logError(e)
+    //     }
+    //     throw ErrorLoadingException()
+    // }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        try {
-            val categoryData = request.data
-            val categoryName = request.name
-            val pagedLink = if (page > 0) categoryData + page else categoryData
-            val soup = app.get(pagedLink).document
-            val home = soup.select("div.sectionWrapper div.wrap").mapNotNull {
-                if (it == null) { return@mapNotNull null }
-                val title = it.selectFirst("span.title a")?.text() ?: ""
-                val link = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-                val img = fixUrlNull(it.selectFirst("img.thumb")?.attr("src"))
-                MovieSearchResponse(
-                    name = title,
-                    url = link,
-                    apiName = this.name,
-                    type = globalTvType,
-                    posterUrl = img
-                )
-            }
-            if (home.isNotEmpty()) {
-                return newHomePageResponse(
-                    list = HomePageList(
-                        name = categoryName,
-                        list = home,
-                        isHorizontalImages = true
-                    ),
-                    hasNext = true
-                )
-            } else {
-                throw ErrorLoadingException("No homepage data found!")
-            }
-        } catch (e: Exception) {
-            //e.printStackTrace()
-            logError(e)
-        }
-        throw ErrorLoadingException()
+        val document = app.get(request.data + page).document
+        val home     = document.select("li.pcVideoListItem").mapNotNull { it.toSearchResult() }
+
+        return newHomePageResponse(request.name, home)
+    }
+
+    private fun Element.toSearchResult(): SearchResponse? {
+        val title     = this.selectFirst("a")?.attr("title") ?: return null
+        val _href     = this.selectFirst("a")?.attr("href") ?: return null
+        val link      = fixUrlNull("$mainUrl/$_href") ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("img.thumb")?.attr("src"))
+
+        return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -88,24 +104,24 @@ class PornHub : MainAPI() {
         }.distinctBy { it.url }
     }
 
-    override suspend fun load(url: String): LoadResponse {
-        val soup = app.get(url).document
-        val title = soup.selectFirst(".title span")?.text() ?: ""
-        val poster: String? = soup.selectFirst("div.video-wrapper .mainPlayerDiv img")?.attr("src") ?:
-        soup.selectFirst("head meta[property=og:image]")?.attr("content")
-        val tags = soup.select("div.categoriesWrapper a")
-            .map { it?.text()?.trim().toString().replace(", ","") }
-        return MovieLoadResponse(
-            name = title,
-            url = url,
-            apiName = this.name,
-            type = globalTvType,
-            dataUrl = url,
-            posterUrl = poster,
-            tags = tags,
-            plot = title
-        )
-    }
+    // override suspend fun load(url: String): LoadResponse {
+    //     val soup = app.get(url).document
+    //     val title = soup.selectFirst(".title span")?.text() ?: ""
+    //     val poster: String? = soup.selectFirst("div.video-wrapper .mainPlayerDiv img")?.attr("src") ?:
+    //     soup.selectFirst("head meta[property=og:image]")?.attr("content")
+    //     val tags = soup.select("div.categoriesWrapper a")
+    //         .map { it?.text()?.trim().toString().replace(", ","") }
+    //     return MovieLoadResponse(
+    //         name = title,
+    //         url = url,
+    //         apiName = this.name,
+    //         type = globalTvType,
+    //         dataUrl = url,
+    //         posterUrl = poster,
+    //         tags = tags,
+    //         plot = title
+    //     )
+    // }
 
     override suspend fun loadLinks(
         data: String,
@@ -136,13 +152,13 @@ class PornHub : MainAPI() {
         return true
     }
 
-    private fun fetchImgUrl(imgsrc: Element?): String? {
-        return try { imgsrc?.attr("data-src")
-            ?: imgsrc?.attr("data-mediabook")
-            ?: imgsrc?.attr("alt")
-            ?: imgsrc?.attr("data-mediumthumb")
-            ?: imgsrc?.attr("data-thumb_url")
-            ?: imgsrc?.attr("src")
-        } catch (e:Exception) { null }
-    }
+    // private fun fetchImgUrl(imgsrc: Element?): String? {
+    //     return try { imgsrc?.attr("data-src")
+    //         ?: imgsrc?.attr("data-mediabook")
+    //         ?: imgsrc?.attr("alt")
+    //         ?: imgsrc?.attr("data-mediumthumb")
+    //         ?: imgsrc?.attr("data-thumb_url")
+    //         ?: imgsrc?.attr("src")
+    //     } catch (e:Exception) { null }
+    // }
 }
