@@ -1,7 +1,7 @@
-version = 6
+version = 1
 
 cloudstream {
-    authors     = listOf("Stormunblessed", "Jace", "keyiflerolsun")
+    authors     = listOf("keyiflerolsun")
     language    = "en"
     description = "PornHub"
 
