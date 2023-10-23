@@ -65,7 +65,6 @@ class PornHub : MainAPI() {
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
             this.posterUrl       = poster
             this.tags            = tags
-            this.recommendations = recommendations
             addActors(actors)
         }
     }
