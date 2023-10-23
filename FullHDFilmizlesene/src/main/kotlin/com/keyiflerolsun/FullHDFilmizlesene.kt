@@ -134,7 +134,7 @@ class FullHDFilmizlesene : MainAPI() {
     private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Any> {
         for ((key, item) in scx) {
             item["tt"] = atob(item["tt"] as? String)
-            val sx = item["sx"] as? MutableMap<String, Any>
+            val sx = item["sx"] as? MutableMap<String, Any> ?: continue
             sx["t"]?.let { tList ->
                 sx["t"] = (tList as? List<String>).map { atob(rtt(it)) }
             }
