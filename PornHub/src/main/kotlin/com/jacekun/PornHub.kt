@@ -2,6 +2,7 @@
 
 package com.jacekun
 
+import android.util.Log
 import com.lagradost.cloudstream3.MainAPI
 import com.lagradost.cloudstream3.TvType
 import com.lagradost.cloudstream3.*
@@ -112,8 +113,10 @@ class PornHub : MainAPI() {
         app.get(
             url = data,
             interceptor = WebViewResolver(
-                Regex("(master.m3u8?.*)")
+                Regex("(master\\.m3u8\\?.*)")
             )
+            Log.d("PHub", "url » $data")
+            Log.d("PHub", "interceptor » $interceptor")
         ).let { response ->
             M3u8Helper().m3u8Generation(
                 M3u8Helper.M3u8Stream(
