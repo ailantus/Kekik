@@ -1,12 +1,12 @@
-# @keyiflerolsun CloudStream Eklentileri
+# @KekikAkademi için CloudStream Eklentileri
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ## Repo
 
-**https://raw.githubusercontent.com/keyiflerolsun/cloudstream-keyiflerolsun/master/repo.json**
+**https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json**
 
-[![Repo](https://raw.githubusercontent.com/keyiflerolsun/cloudstream-keyiflerolsun/master/.github/icons/Repo.jpg)](#)
+[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](#)
 
 ---
 
