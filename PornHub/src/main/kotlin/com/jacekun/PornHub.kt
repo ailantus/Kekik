@@ -22,7 +22,7 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?o=mr&hd=1&page="           to "Recently Featured",
+        "$mainUrl/video?o=mr&hd=1&page="           to "recently Featured",
         "$mainUrl/video?o=cm&t=t&hd=1&page="       to "Newest",
         "$mainUrl/video?o=mv&t=t&hd=1&page="       to "Most Viewed",
         "$mainUrl/video?o=tr&t=t&hd=1&page="       to "Top Rated",
@@ -104,24 +104,23 @@ class PornHub : MainAPI() {
         }.distinctBy { it.url }
     }
 
-    // override suspend fun load(url: String): LoadResponse {
-    //     val soup = app.get(url).document
-    //     val title = soup.selectFirst(".title span")?.text() ?: ""
-    //     val poster: String? = soup.selectFirst("div.video-wrapper .mainPlayerDiv img")?.attr("src") ?:
-    //     soup.selectFirst("head meta[property=og:image]")?.attr("content")
-    //     val tags = soup.select("div.categoriesWrapper a")
-    //         .map { it?.text()?.trim().toString().replace(", ","") }
-    //     return MovieLoadResponse(
-    //         name = title,
-    //         url = url,
-    //         apiName = this.name,
-    //         type = globalTvType,
-    //         dataUrl = url,
-    //         posterUrl = poster,
-    //         tags = tags,
-    //         plot = title
-    //     )
-    // }
+    override suspend fun load(url: String): LoadResponse {
+        val soup = app.get(url).document
+        val title = soup.selectFirst(".title span")?.text() ?: ""
+        val poster: String? = soup.selectFirst("div.video-wrapper .mainPlayerDiv img")?.attr("src") ?: soup.selectFirst("head meta[property=og:image]")?.attr("content")
+        val tags = soup.select("div.categoriesWrapper a").map { it?.text()?.trim().toString().replace(", ","") }
+
+        return MovieLoadResponse(
+            name      = title,
+            url       = url,
+            apiName   = this.name,
+            type      = globalTvType,
+            dataUrl   = url,
+            posterUrl = poster,
+            tags      = tags,
+            plot      = title
+        )
+    }
 
     override suspend fun loadLinks(
         data: String,
