@@ -21,7 +21,12 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?page=" to "Main Page",
+        "$mainUrl/video?page="            to "Main Page",
+        "$mainUrl/video?o=cm&page="       to "Newest",
+        "$mainUrl/video?o=ht&page="       to "Hottest",
+        "$mainUrl/video?o=mv&page="       to "Most Viewed",
+        "$mainUrl/video?o=tr&page="       to "Top Rated",
+        "$mainUrl/video?p=homemade&page=" to "Popular Homemade"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -107,7 +112,7 @@ class PornHub : MainAPI() {
         app.get(
             url = data,
             interceptor = WebViewResolver(
-                Regex("(master\\.m3u8\\?.*)")
+                Regex("(master.m3u8?.*)")
             )
         ).let { response ->
             M3u8Helper().m3u8Generation(
