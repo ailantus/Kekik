@@ -59,12 +59,12 @@ class PornHub : MainAPI() {
         val tags   = document.select("div.categoriesWrapper a").map { it?.text()?.trim().toString().replace(", ","") }
 
         val actors = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.map {
-            Actor(it.text()?.trim(), it.select("img")?.attr("src"))
+            Actor(it?.text()?.trim(), it?.select("img")?.attr("src"))
         }
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
-            this.posterUrl       = poster
-            this.tags            = tags
+            this.posterUrl = poster
+            this.tags      = tags
             addActors(actors)
         }
     }
