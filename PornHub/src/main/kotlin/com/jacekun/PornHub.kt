@@ -110,34 +110,52 @@ class PornHub : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        Log.d("PHub", "url » $data")
+        Log.d("PHub", "_url » $data")
 
-        app.get(
-            url = data,
-            interceptor = WebViewResolver(
-                Regex("([^\"]*master.m3u8?.[^\"]*)")
-            )            
-        ).let { response ->
-            Log.d("PHub", "response » $response")
-            M3u8Helper().m3u8Generation(
-                M3u8Helper.M3u8Stream(
-                    response.url,
-                    headers = response.headers.toMap()
-                ), true
-            ).apmap { stream ->
-                callback(
-                    ExtractorLink(
-                        source = name,
-                        name = "${this.name} m3u8",
-                        url = stream.streamUrl,
-                        referer = mainUrl,
-                        quality = getQualityFromName(stream.quality?.toString()),
-                        isM3u8 = true
-                    )
-                )
-            }
-        }
+        val source = app.get(data).text
+        val pattern         = """([^\"]*master.m3u8?.[^\"]*)""".toRegex()
+        val match_result    = pattern.find(source)
+        val extracted_value = match_result?.groups?.last()?.value ?: return false
+        Log.d("PHub", "_extracted_value » $extracted_value")
+
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = extracted_value,
+                referer = "$mainUrl/",
+                quality = Qualities.Unknown.value,
+                isM3u8  = true
+            )
+        )
         return true
+
+        // app.get(
+        //     url = data,
+        //     interceptor = WebViewResolver(
+        //         Regex("([^\"]*master.m3u8?.[^\"]*)")
+        //     )            
+        // ).let { response ->
+        //     Log.d("PHub", "response » $response")
+        //     M3u8Helper().m3u8Generation(
+        //         M3u8Helper.M3u8Stream(
+        //             response.url,
+        //             headers = response.headers.toMap()
+        //         ), true
+        //     ).apmap { stream ->
+        //         callback(
+        //             ExtractorLink(
+        //                 source = name,
+        //                 name = "${this.name} m3u8",
+        //                 url = stream.streamUrl,
+        //                 referer = mainUrl,
+        //                 quality = getQualityFromName(stream.quality?.toString()),
+        //                 isM3u8 = true
+        //             )
+        //         )
+        //     }
+        // }
+        // return true
     }
 
     private fun fetchImgUrl(imgsrc: Element?): String? {
