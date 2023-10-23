@@ -115,7 +115,7 @@ class PornHub : MainAPI() {
         app.get(
             url = data,
             interceptor = WebViewResolver(
-                Regex("(master\\.m3u8\\?.*)")
+                Regex("([^\"]*master.m3u8?.[^\"]*)")
             )            
         ).let { response ->
             Log.d("PHub", "response » $response")
