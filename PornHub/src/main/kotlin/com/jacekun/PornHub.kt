@@ -22,7 +22,7 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?hd=1&page=1"           to "Main Page",
+        "$mainUrl/video?hd=1&page="            to "Main Page",
         "$mainUrl/video?o=cm&t=t&hd=1&page="   to "Newest",
         "$mainUrl/video?o=ht&t=t&hd=1&page="   to "Hottest",
         "$mainUrl/video?o=mv&t=t&hd=1&page="   to "Most Viewed",
