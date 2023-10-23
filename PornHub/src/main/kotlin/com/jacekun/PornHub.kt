@@ -21,6 +21,7 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
+        "$mainUrl/video?page="                       to "Main Page",
         "$mainUrl/video?c=105&page="                 to "60FPS",
         "$mainUrl/video?c=3&page="                   to "Amateur",
         "$mainUrl/video?c=35&page="                  to "Anal",
@@ -124,10 +125,41 @@ class PornHub : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page).document
-        val home     = document.select("li.pcVideoListItem").mapNotNull { it.toSearchResult() }
-
-        return newHomePageResponse(request.name, home)
+        try {
+            val categoryData = request.data
+            val categoryName = request.name
+            val pagedLink = if (page > 0) categoryData + page else categoryData
+            val soup = app.get(pagedLink).document
+            val home = soup.select("div.sectionWrapper div.wrap").mapNotNull {
+                if (it == null) { return@mapNotNull null }
+                val title = it.selectFirst("span.title a")?.text() ?: ""
+                val link = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+                val img = fetchImgUrl(it.selectFirst("img.thumb")?.attr("src"))
+                MovieSearchResponse(
+                    name = title,
+                    url = link,
+                    apiName = this.name,
+                    type = globalTvType,
+                    posterUrl = img
+                )
+            }
+            if (home.isNotEmpty()) {
+                return newHomePageResponse(
+                    list = HomePageList(
+                        name = categoryName,
+                        list = home,
+                        isHorizontalImages = true
+                    ),
+                    hasNext = true
+                )
+            } else {
+                throw ErrorLoadingException("No homepage data found!")
+            }
+        } catch (e: Exception) {
+            //e.printStackTrace()
+            logError(e)
+        }
+        throw ErrorLoadingException()
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
