@@ -95,6 +95,7 @@ class PornHub : MainAPI() {
                 isM3u8  = true
             )
         )
+
         return true
     }
 }
