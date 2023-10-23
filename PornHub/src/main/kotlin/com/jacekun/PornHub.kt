@@ -21,95 +21,7 @@ class PornHub : MainAPI() {
     private val globalTvType          = TvType.NSFW
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?page="                       to "Main Page",
-        "$mainUrl/video?c=105&page="                 to "60FPS",
-        "$mainUrl/video?c=3&page="                   to "Amateur",
-        "$mainUrl/video?c=35&page="                  to "Anal",
-        "$mainUrl/video?c=98&page="                  to "Arab",
-        "$mainUrl/video?c=1&page="                   to "Asian",
-        "$mainUrl/video?c=89&page="                  to "Babysitter (18+)",
-        "$mainUrl/video?c=6&page="                   to "BBW",
-        "$mainUrl/video?c=141&page="                 to "Behind The Scenes",
-        "$mainUrl/video?c=4&page="                   to "Big Ass",
-        "$mainUrl/video?c=7&page="                   to "Big Dick",
-        "$mainUrl/video?c=8&page="                   to "Big Tits",
-        "$mainUrl/video?c=76&page="                  to "Bisexual Male",
-        "$mainUrl/video?c=9&page="                   to "Blonde",
-        "$mainUrl/video?c=13&page="                  to "Blowjob",
-        "$mainUrl/video?c=10&page="                  to "Bondage",
-        "$mainUrl/video?c=102&page="                 to "Brazilian",
-        "$mainUrl/video?c=96&page="                  to "British",
-        "$mainUrl/video?c=11&page="                  to "Brunette",
-        "$mainUrl/video?c=14&page="                  to "Bukkake",
-        "$mainUrl/video?c=86&page="                  to "Cartoon",
-        "$mainUrl/video?c=90&page="                  to "Casting",
-        "$mainUrl/video?c=12&page="                  to "Celebrity",
-        "$mainUrl/video?c=732&page="                 to "Closed Captions",
-        "$mainUrl/video?c=57&page="                  to "Compilation",
-        "$mainUrl/video?c=241&page="                 to "Cosplay",
-        "$mainUrl/video?c=15&page="                  to "Creampie",
-        "$mainUrl/video?c=242&page="                 to "Cuckold",
-        "$mainUrl/video?c=16&page="                  to "Cumshot",
-        "$mainUrl/video?c=100&page="                 to "Czech",
-        "$mainUrl/video?c=72&page="                  to "Double Penetration",
-        "$mainUrl/video?c=17&page="                  to "Ebony",
-        "$mainUrl/video?c=55&page="                  to "Euro",
-        "$mainUrl/video?c=115&page="                 to "Exclusive",
-        "$mainUrl/video?c=93&page="                  to "Feet",
-        "$mainUrl/video?c=502&page="                 to "Female Orgasm",
-        "$mainUrl/video?c=18&page="                  to "Fetish",
-        "$mainUrl/video?c=592&page="                 to "Fingering",
-        "$mainUrl/video?c=19&page="                  to "Fisting",
-        "$mainUrl/video?c=94&page="                  to "French",
-        "$mainUrl/video?c=32&page="                  to "Funny",
-        "$mainUrl/video?c=80&page="                  to "Gangbang",
-        "$mainUrl/video?c=95&page="                  to "German",
-        "$mainUrl/video?c=20&page="                  to "Handjob",
-        "$mainUrl/video?c=21&page="                  to "Hardcore",
-        "$mainUrl/video?c=101&page="                 to "Indian",
-        "$mainUrl/video?c=25&page="                  to "Interracial",
-        "$mainUrl/video?c=97&page="                  to "Italian",
-        "$mainUrl/video?c=111&page="                 to "Japanese",
-        "$mainUrl/video?c=103&page="                 to "Korean",
-        "$mainUrl/video?c=26&page="                  to "Latina",
-        "$mainUrl/video?c=27&page="                  to "Lesbian",
-        "$mainUrl/video?c=78&page="                  to "Massage",
-        "$mainUrl/video?c=22&page="                  to "Masturbation",
-        "$mainUrl/video?c=28&page="                  to "Mature",
-        "$mainUrl/video?c=29&page="                  to "MILF",
-        "$mainUrl/video?c=512&page="                 to "Muscular Men",
-        "$mainUrl/video?c=121&page="                 to "Music",
-        "$mainUrl/video?c=181&page="                 to "Old/Young (18+)",
-        "$mainUrl/video?c=2&page="                   to "Orgy",
-        "$mainUrl/video?c=201&page="                 to "Parody",
-        "$mainUrl/video?c=53&page="                  to "Party",
-        "$mainUrl/video?c=211&page="                 to "Pissing",
-        "$mainUrl/video?c=41&page="                  to "POV",
-        "$mainUrl/video?c=24&page="                  to "Public",
-        "$mainUrl/video?c=131&page="                 to "Pussy Licking",
-        "$mainUrl/video?c=31&page="                  to "Reality",
-        "$mainUrl/video?c=42&page="                  to "Red Head",
-        "$mainUrl/video?c=81&page="                  to "Role Play",
-        "$mainUrl/video?c=522&page="                 to "Romantic",
-        "$mainUrl/video?c=67&page="                  to "Rough Sex",
-        "$mainUrl/video?c=99&page="                  to "Russian",
-        "$mainUrl/video?c=88&page="                  to "School (18+)",
-        "$mainUrl/video?c=59&page="                  to "Small Tits",
-        "$mainUrl/video?c=91&page="                  to "Smoking",
-        "$mainUrl/video?c=492&page="                 to "Solo Female",
-        "$mainUrl/video?c=92&page="                  to "Solo Male",
-        "$mainUrl/video?c=69&page="                  to "Squirt",
-        "$mainUrl/video?c=444&page="                 to "Step Fantasy",
-        "$mainUrl/video?c=542&page="                 to "Strap On",
-        "$mainUrl/video?c=33&page="                  to "Striptease",
-        "$mainUrl/video?c=562&page="                 to "Tattooed Women",
-        "$mainUrl/video?c=65&page="                  to "Threesome",
-        "$mainUrl/video?c=23&page="	                 to "Toys",
-        "$mainUrl/video?c=138&page="	             to "Verified Amateurs",
-        "$mainUrl/video?c=482&page="	             to "Verified Couples",
-        "$mainUrl/video?c=139&page="	             to "Verified Models",
-        "$mainUrl/video?c=43&page="	                 to "Vintage",
-        "$mainUrl/video?c=61&page="	                 to "Webcam",
+        "$mainUrl/video?page=" to "Main Page",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -150,15 +62,6 @@ class PornHub : MainAPI() {
         throw ErrorLoadingException()
     }
 
-    // private fun Element.toSearchResult(): SearchResponse? {
-    //     val title     = this.selectFirst("a")?.attr("title") ?: return null
-    //     val _href     = this.selectFirst("a")?.attr("href") ?: return null
-    //     val link      = fixUrlNull("$mainUrl/$_href") ?: return null
-    //     val posterUrl = fixUrlNull(this.selectFirst("img.thumb")?.attr("src"))
-
-    //     return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
-    // }
-
     override suspend fun search(query: String): List<SearchResponse> {
         val url = "$mainUrl/video/search?search=${query}"
         val document = app.get(url).document
@@ -166,7 +69,7 @@ class PornHub : MainAPI() {
             if (it == null) { return@mapNotNull null }
             val title = it.selectFirst("span.title a")?.text() ?: return@mapNotNull null
             val link = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val image = fetchImgUrl(it.selectFirst("img"))
+            val image = fixUrlNull(it.selectFirst("img.thumb")?.attr("src"))
             MovieSearchResponse(
                 name = title,
                 url = link,
