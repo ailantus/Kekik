@@ -112,10 +112,10 @@ class PornHub : MainAPI() {
     ): Boolean {
         Log.d("PHub", "_url » $data")
 
-        val source = app.get(data).text
+        val source          = app.get(data).text
         val pattern         = """([^\"]*master.m3u8?.[^\"]*)""".toRegex()
         val match_result    = pattern.find(source)
-        val extracted_value = match_result?.groups?.last()?.value ?: return false
+        val extracted_value = match_result?.groups?.last()?.value?.trim()?.replace("\\", "") ?: return false
         Log.d("PHub", "_extracted_value » $extracted_value")
 
         callback.invoke(
@@ -133,10 +133,9 @@ class PornHub : MainAPI() {
         // app.get(
         //     url = data,
         //     interceptor = WebViewResolver(
-        //         Regex("([^\"]*master.m3u8?.[^\"]*)")
-        //     )            
+        //         Regex("(master\\.m3u8\\?.*)")
+        //     )
         // ).let { response ->
-        //     Log.d("PHub", "response » $response")
         //     M3u8Helper().m3u8Generation(
         //         M3u8Helper.M3u8Stream(
         //             response.url,
