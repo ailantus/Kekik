@@ -54,11 +54,12 @@ class PornHub : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title  = document.selectFirst("h1.title span")?.text()?.trim() ?: return null
-        val poster = fixUrlNull(document.selectFirst("div.mainPlayerDiv img")?.attr("src"))
-        val tags   = document.select("div.categoriesWrapper a").map { it?.text()?.trim().toString().replace(", ","") }
+        val title       = document.selectFirst("h1.title span")?.text()?.trim() ?: return null
+        val description = title
+        val poster      = fixUrlNull(document.selectFirst("div.mainPlayerDiv img")?.attr("src"))
+        val tags        = document.select("div.categoriesWrapper a").map { it?.text()?.trim().toString().replace(", ","") }
 
-        val actors = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
+        val actors      = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
             Actor(it.text().trim(), it.select("img")?.attr("src"))
         }
 
