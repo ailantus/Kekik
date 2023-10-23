@@ -1,6 +1,6 @@
 {
-    "name": "Kekik-cloudstream",
-    "description": "Türkçe yayın yapan sitelere ait eklentiler",
+    "name": "Turkish providers repository",
+    "description": "Türkiye Eklenti Havuzu",
     "manifestVersion": 1,
     "pluginLists": [
       "https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/builds/plugins.json"
