@@ -134,7 +134,7 @@ class PornHub : MainAPI() {
                 if (it == null) { return@mapNotNull null }
                 val title = it.selectFirst("span.title a")?.text() ?: ""
                 val link = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-                val img = fetchImgUrl(it.selectFirst("img.thumb")?.attr("src"))
+                val img = fixUrlNull(it.selectFirst("img.thumb")?.attr("src"))
                 MovieSearchResponse(
                     name = title,
                     url = link,
