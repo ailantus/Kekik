@@ -110,14 +110,15 @@ class PornHub : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        Log.d("PHub", "url » $data")
+
         app.get(
             url = data,
             interceptor = WebViewResolver(
                 Regex("(master\\.m3u8\\?.*)")
-            )
-            Log.d("PHub", "url » $data")
-            Log.d("PHub", "interceptor » $interceptor")
+            )            
         ).let { response ->
+            Log.d("PHub", "response » $response")
             M3u8Helper().m3u8Generation(
                 M3u8Helper.M3u8Stream(
                     response.url,
