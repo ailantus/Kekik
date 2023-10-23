@@ -28,7 +28,7 @@ class XVideos : MainAPI() {
 
     override val mainPage = mainPageOf(
         Pair(mainUrl, "Main Page"),
-        Pair("$mainUrl/new/", "New")
+        Pair("$mainUrl/new/", "New"),
         Pair("$mainUrl/c/pornstar-57/", "Pornstar")
     )
 
