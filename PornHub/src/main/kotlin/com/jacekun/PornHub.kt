@@ -133,7 +133,7 @@ class PornHub : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("a")?.attr("title") ?: return null
         val _href     = this.selectFirst("a")?.attr("href") ?: return null
-        val link      = fixUrlNull("$mainUrl/$_href")
+        val link      = fixUrlNull("$mainUrl/$_href") ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img.thumb")?.attr("src"))
 
         return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
