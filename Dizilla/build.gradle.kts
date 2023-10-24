@@ -3,7 +3,8 @@ version = 1
 cloudstream {
     authors     = listOf("keyiflerolsun")
     language    = "tr"
-    description = "Dizilla tüm yabancı dizileri ücretsiz olarak Türkçe Dublaj ve altyazılı seçenekleri ile 1080P kalite izleyebileceğiniz yeni nesil yabancı dizi izleme siteniz."
+    description = "YAPIM AŞAMASINDA !!!"
+    // description = "Dizilla tüm yabancı dizileri ücretsiz olarak Türkçe Dublaj ve altyazılı seçenekleri ile 1080P kalite izleyebileceğiniz yeni nesil yabancı dizi izleme siteniz."
 
     /**
      * Status int as the following:
