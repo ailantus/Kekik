@@ -156,23 +156,23 @@ class Dizilla : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZL", "data » $data")
+            Log.d("DZL", "_data » $data")
             val document   = app.get(data).document
             val raw_iframe = document.selectFirst("div#playerLsDizilla iframe")?.attr("src") ?: return false
             val _iframe    = raw_iframe.substringAfter("//")
-            Log.d("DZL", "iframe » $_iframe")
+            Log.d("DZL", "_iframe » $_iframe")
 
             if (_iframe.startsWith("contentx.me")) {
                 val i_source  = app.get("https://$_iframe", referer="$mainUrl/").text
                 val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)?.groups?.get(1)?.value ?: return false
-                Log.d("DZL", "i_extract » $i_extract")
+                Log.d("DZL", "_i_extract » $i_extract")
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract", referer="$mainUrl/").text
-                Log.d("DZL", "vid_source » $vid_source")
+                Log.d("DZL", "_vid_source » $vid_source")
 
-                val vid_extract = Regex("""file: "([^"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
+                val vid_extract = Regex("""file:\"([^\"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
                 val m3u_link    = vid_extract?.replace("\\", "") ?: return false
-                Log.d("DZL", "m3u_link » $m3u_link")
+                Log.d("DZL", "_m3u_link » $m3u_link")
 
                 callback.invoke(
                     ExtractorLink(
