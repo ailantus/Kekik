@@ -54,11 +54,11 @@ class PornHub : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("h1.title span[class='inlineFree']")?.text()?.trim() ?: return null
-        val description = title
-        val poster      = fixUrlNull(document.selectFirst("div.mainPlayerDiv img")?.attr("src"))
-        val tags        = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
-        val duration    = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
+        val title           = document.selectFirst("h1.title span[class='inlineFree']")?.text()?.trim() ?: return null
+        val description     = title
+        val poster          = fixUrlNull(document.selectFirst("div.mainPlayerDiv img")?.attr("src"))
+        val tags            = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
+        val duration        = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
             val recName      = it?.text() ?: return@mapNotNull null
@@ -69,7 +69,7 @@ class PornHub : MainAPI() {
             }
         }
 
-        val actors      = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
+        val actors          = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
             Actor(it.text().trim(), it.select("img")?.attr("src"))
         }
 
