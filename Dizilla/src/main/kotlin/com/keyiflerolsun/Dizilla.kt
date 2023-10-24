@@ -167,8 +167,9 @@ class Dizilla : MainAPI() {
                 val i_extract = Regex("""window\.openPlayer\('([^']+)', """).find(i_source)?.groups?.first()?.value ?: return false
                 Log.d("DZL", "i_extract » $i_extract")
 
-                val vid_source = app.get("https://contentx.me/source2.php?v=$i_extract").text
-                val m3u_link   = Regex("""file: "([^"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
+                val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract").text
+                val vid_extract = Regex("""file: "([^"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
+                val m3u_link    = vid_extract?.replace("\\", "") ?: return false
                 Log.d("DZL", "m3u_link » $m3u_link")
 
                 callback.invoke(
