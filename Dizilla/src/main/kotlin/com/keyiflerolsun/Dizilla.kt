@@ -53,7 +53,7 @@ class Dizilla : MainAPI() {
             val description = it.selectFirst("span.t-content")?.text()?.trim()
             val episode     = it.selectFirst("a.opacity-60")?.text().toIntOrNull()
 
-            val parent_div   = cursorPointer.parent()
+            val parent_div   = it.parent()
             val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
             val season       = season_class?.substringAfter("szn")?.toIntOrNull()
 
@@ -61,8 +61,6 @@ class Dizilla : MainAPI() {
                 this.description = description
             }
         }
-
-        return null
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl       = poster
