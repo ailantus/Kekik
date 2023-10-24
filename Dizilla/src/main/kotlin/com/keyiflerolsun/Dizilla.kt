@@ -4,6 +4,7 @@ package com.keyiflerolsun
 
 import android.util.Log
 import org.jsoup.nodes.Element
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -40,6 +41,57 @@ class Dizilla : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
 
+    data class SearchResult(
+        @JsonProperty("data") val data: SearchData?
+    )
+    
+    data class SearchData(
+        @JsonProperty("state")   val state: Boolean? = null,
+        @JsonProperty("result")  val result: List<SearchItem>? = arrayListOf(),
+        @JsonProperty("message") val message: String? = null,
+        @JsonProperty("html")    val html: String? = null
+    )
+    
+    data class SearchItem(
+        @JsonProperty("used_slug")         val slug: String? = null,
+        @JsonProperty("object_name")       val title: String? = null,
+        @JsonProperty("object_poster_url") val poster: String? = null,
+    )
+
+    private fun SearchItem.toSearchResponse(): SearchResponse? {
+        return newTvSeriesSearchResponse(
+            title ?: return null,
+            "$mainUrl/$slug",
+            TvType.TvSeries,
+        ) {
+            this.posterUrl = poster
+        }
+    }
+
+    override suspend fun search(query: String): List<SearchResponse> {
+        val main_page = app.get(mainUrl).document
+        val c_key     = main_page.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
+        val c_value   = main_page.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
+
+        return app.post(
+            "$mainUrl/bg/searchcontent",
+            data = mapOf(
+                "cKey"       to c_key,
+                "cValue"     to c_value,
+                "searchterm" to query
+            ),
+            headers = mapOf(
+                "Accept" to "application/json, text/javascript, */*; q=0.01",
+                "X-Requested-With" to "XMLHttpRequest"
+            ),
+            referer = "$mainUrl/"
+        ).parsedSafe<SearchResult>()
+        ?.data?.result
+        ?.mapNotNull { search_item -> search_item.toSearchResponse() }
+        ?: throw ErrorLoadingException("Invalid Json response")        
+
+    }
+
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
@@ -49,7 +101,7 @@ class Dizilla : MainAPI() {
         val description = document.selectFirst("div.left-content-paragraf")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
-        val duration    = Regex("(\d+)").find(document.selectFirst("span.bg-[#2e2e2e]")?.text() ?: "")?.value?.toIntOrNull()
+        val duration    = Regex("(\\d+)").find(document.selectFirst("span.bg-[#2e2e2e]")?.text() ?: "")?.value?.toIntOrNull()
 
         val actors = document.select("[href*='oyuncu']").map {
             Actor(it.text())
