@@ -140,9 +140,7 @@ class Dizilla : MainAPI() {
             this.tags            = tags
             this.rating          = rating
             this.duration        = duration
-        //     this.recommendations = recommendations
             addActors(actors)
-        //     addTrailer(trailer)
         }
     }
 
