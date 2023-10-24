@@ -5,8 +5,9 @@ package com.keyiflerolsun
 import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
-import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.Qualities
 
 class PornHub : MainAPI() {
     override var mainUrl              = "https://www.pornhub.com"
@@ -61,7 +62,7 @@ class PornHub : MainAPI() {
         val duration        = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
-            val recName      = it?.text() ?: return@mapNotNull null
+            val recName      = it?.attr("href")?.trim() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
             newMovieSearchResponse(recName, recHref, TvType.NSFW) {
