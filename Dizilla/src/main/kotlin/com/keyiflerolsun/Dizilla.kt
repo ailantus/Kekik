@@ -22,20 +22,58 @@ class Dizilla : MainAPI() {
 
     override val mainPage           =
         mainPageOf(
-            "$mainUrl/trend"        to "Bu Ay Öne Çıkanlar",
-            "$mainUrl/imdb-top-100" to "Top Diziler",
+            // "$mainUrl/trend"        to "Bu Ay Öne Çıkanlar",
+            // "$mainUrl/imdb-top-100" to "Top Diziler",
+            "$mainUrl/arsiv?s=&ulke=&tur=220&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Adult",
+            // "$mainUrl/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Aile",
+            // "$mainUrl/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Aksiyon",
+            // "$mainUrl/arsiv?s=&ulke=&tur=17&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Animasyon",
+            // "$mainUrl/arsiv?s=&ulke=&tur=206&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Anime",
+            // "$mainUrl/arsiv?s=&ulke=&tur=13&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Belgesel",
+            // "$mainUrl/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Bilim Kurgu",
+            // "$mainUrl/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Biyografi",
+            // "$mainUrl/arsiv?s=&ulke=&tur=219&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Comedy",
+            // "$mainUrl/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Dram",
+            // "$mainUrl/arsiv?s=&ulke=&tur=16&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Drama",
+            // "$mainUrl/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Fantastik",
+            // "$mainUrl/arsiv?s=&ulke=&tur=28&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Game-Show",
+            // "$mainUrl/arsiv?s=&ulke=&tur=43&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Gerçeklik",
+            // "$mainUrl/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Gerilim",
+            // "$mainUrl/arsiv?s=&ulke=&tur=3&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Gizem",
+            // "$mainUrl/arsiv?s=&ulke=&tur=36&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Kafalar Karışık",
+            // "$mainUrl/arsiv?s=&ulke=&tur=37&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Kısa",
+            // "$mainUrl/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Komedi",
+            // "$mainUrl/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Korku",
+            // "$mainUrl/arsiv?s=&ulke=&tur=24&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Macera",
+            // "$mainUrl/arsiv?s=&ulke=&tur=27&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Mini Dizi",
+            // "$mainUrl/arsiv?s=&ulke=&tur=14&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Müzik",
+            // "$mainUrl/arsiv?s=&ulke=&tur=20&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Müzikal",
+            // "$mainUrl/arsiv?s=&ulke=&tur=21&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Reality-TV",
+            // "$mainUrl/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Romantik",
+            // "$mainUrl/arsiv?s=&ulke=&tur=26&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Savaş",
+            // "$mainUrl/arsiv?s=&ulke=&tur=23&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Spor",
+            // "$mainUrl/arsiv?s=&ulke=&tur=29&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Stand-Up",
+            // "$mainUrl/arsiv?s=&ulke=&tur=1&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Suç",
+            // "$mainUrl/arsiv?s=&ulke=&tur=19&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Talk-Show",
+            // "$mainUrl/arsiv?s=&ulke=&tur=10&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Tarih",
+            // "$mainUrl/arsiv?s=&ulke=&tur=11&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page=" to "Western",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data).document
-        val home     = document.select("a[href*='/dizi/'].gap-4").take(50).mapNotNull { it.toSearchResult() }
+        val document = app.get(request.data + page).document
+        // val home     = document.select("a[href*='/dizi/'].gap-4").mapNotNull { it.toSearchResult() }
+        val home     = document.select("span.watchlistitem-").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("h2")?.text() ?: return null
-        val href      = fixUrlNull(this.attr("href")) ?: return null
+        // val title     = this.selectFirst("h2")?.text() ?: return null
+        // val href      = fixUrlNull(this.attr("href")) ?: return null
+        // val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
+
+        val title     = this.selectFirst("span.text-white")?.text() ?: return null
+        val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']").?attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
