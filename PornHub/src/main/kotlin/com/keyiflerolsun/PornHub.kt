@@ -62,7 +62,7 @@ class PornHub : MainAPI() {
         val duration        = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
-            val recName      = it?.attr("href")?.trim() ?: return@mapNotNull null
+            val recName      = it?.attr("title")?.trim() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
             newMovieSearchResponse(recName, recHref, TvType.NSFW) {
@@ -93,9 +93,7 @@ class PornHub : MainAPI() {
         Log.d("PHub", "url » $data")
 
         val source          = app.get(data).text
-        val pattern         = """([^\"]*master.m3u8?.[^\"]*)""".toRegex()
-        val match_result    = pattern.find(source)
-        val extracted_value = match_result?.groups?.last()?.value ?: return false
+        val extracted_value = Regex("""([^\"]*master.m3u8?.[^\"]*)""").find(source)?.groups?.last()?.value ?: return false
         val m3u_link        = extracted_value?.replace("\\", "") ?: return false
         Log.d("PHub", "extracted_value » $extracted_value")
         Log.d("PHub", "m3u_link » $m3u_link")

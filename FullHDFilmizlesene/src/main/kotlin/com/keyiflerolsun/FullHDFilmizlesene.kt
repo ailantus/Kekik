@@ -151,10 +151,8 @@ class FullHDFilmizlesene : MainAPI() {
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
         val script_content = script_element?.data()?.trim() ?: return null
     
-        val scx_pattern = "scx = (.*?);".toRegex()
-        val scx_result  = scx_pattern.find(script_content)
-        val scx_data    = scx_result?.groups?.get(1)?.value ?: return null
-    
+        val scx_data = Regex("scx = (.*?);").find(script_content)?.groups?.get(1)?.value ?: return null
+
         val objectMapper = jacksonObjectMapper()
         val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
         val scx_decode   = scxDecode(scx_map)
@@ -169,9 +167,7 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun rapidToM3u8(rapid: String): String? {
-        val pattern         = """file": "(.*)",""".toRegex()
-        val match_result    = pattern.find(rapid)
-        val extracted_value = match_result?.groups?.get(1)?.value ?: return null
+        val extracted_value = Regex("""file": "(.*)",""").find(rapid)?.groups?.get(1)?.value ?: return null
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
