@@ -166,11 +166,11 @@ class Dizilla : MainAPI() {
                 val i_source  = app.get("https://$_iframe").text
                 Log.d("DZL", "i_source » $i_source")
 
-                val i_extract = Regex("""window\.openPlayer\('([^']+)', """).find(i_source).get(1)?.text() ?: return false
+                val i_extract = Regex("""window\.openPlayer\('([^']+)', """).find(i_source)?.value ?: return false
                 Log.d("DZL", "i_extract » $i_extract")
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract").text
-                val vid_extract = Regex("""file: "([^"]+)""").find(vid_source).get(1)?.text() ?: return false
+                val vid_extract = Regex("""file: "([^"]+)""").find(vid_source)?.value ?: return false
                 val m3u_link    = vid_extract?.replace("\\", "") ?: return false
                 Log.d("DZL", "m3u_link » $m3u_link")
 
