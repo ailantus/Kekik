@@ -60,9 +60,9 @@ class PornHub : MainAPI() {
         val tags        = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
         val duration    = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
-        val recommendations = document.selectXpath("//ul[@id='relatedVideosCenter']/li").mapNotNull {
-            val recName      = it.selectFirst("span.title a")?.text() ?: return@mapNotNull null
-            val recHref      = fixUrlNull(it.selectFirst("span.title a")?.attr("href")) ?: return@mapNotNull null
+        val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
+            val recName      = it?.text() ?: return@mapNotNull null
+            val recHref      = fixUrlNull(it?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
             newMovieSearchResponse(recName, recHref, TvType.NSFW) {
                 this.posterUrl = recPosterUrl
