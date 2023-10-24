@@ -8,11 +8,12 @@ concurrency:
 on:
   push:
     branches:
-      # choose your default branch
       - master
-      - main
     paths-ignore:
       - '*.md'
+      - '*.yml'
+      - '*.json'
+      - '*.jpg'
 
 jobs:
   build:
@@ -38,7 +39,6 @@ jobs:
           distribution: temurin
           cache: gradle
           java-version: 11
-
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
