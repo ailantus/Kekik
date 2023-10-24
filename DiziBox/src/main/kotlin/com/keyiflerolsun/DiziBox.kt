@@ -26,7 +26,13 @@ class DiziBox : MainAPI() {
         val url      = "$mainUrl/dizi-arsivi/page/" + page + request.data
         Log.d("DZB", "url » $url")
 
-        val document = app.get(url, referer="$mainUrl/").document
+        val document = app.get(
+            url,
+            referer = "$mainUrl/",
+            headers = mapOf(
+                "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+            )
+        ).document
         Log.d("DZB", "document » $document")
 
         val home     = document.select("article.detailed-article").mapNotNull { it.toSearchResult() }
