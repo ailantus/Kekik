@@ -19,7 +19,7 @@ class DiziBox : MainAPI() {
     override val mainPage =
         mainPageOf(
             "/?tur[0]=aile&yil&imdb&orderby=imdb"     to "Aile",
-            "/?tur[0]=aksiyon&yil&imdb&orderby=imdb"  to "Aksiyon",
+            // "/?tur[0]=aksiyon&yil&imdb&orderby=imdb"  to "Aksiyon",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -28,9 +28,12 @@ class DiziBox : MainAPI() {
 
         val document = app.get(
             url,
-            referer = "$mainUrl/",
             headers = mapOf(
-                "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+                "User-Agent"      to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0",
+                "Accept"          to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language" to "en-US,en;q=0.5",
+                "Accept-Encoding" to "gzip, deflate, br",
+                "Referer"         to "$mainUrl/",
             )
         ).document
         Log.d("DZB", "document » $document")
