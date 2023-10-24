@@ -27,11 +27,11 @@ class Dizilla : MainAPI() {
 
     // ? Milisaniye cinsinden, eğer sequentialMainPage açıksa ilk yüklemede ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
     // * override var sequentialMainPageDelay: Long = 0L
-    override var sequentialMainPageDelay: Long = 500L // ! 0.50 saniye
+    override var sequentialMainPageDelay: Long = 250L // ! 0.25 saniye
 
     // ? Milisaniye cinsinden, kaydırma sırasında ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
     // * override var sequentialMainPageScrollDelay: Long = 0L
-    override var sequentialMainPageScrollDelay: Long = 500L // ! 0.50 saniye
+    override var sequentialMainPageScrollDelay: Long = 250L // ! 0.25 saniye
 
 
     override val mainPage           =
