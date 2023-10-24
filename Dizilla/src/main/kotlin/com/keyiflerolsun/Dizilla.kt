@@ -157,21 +157,34 @@ class Dizilla : MainAPI() {
         ): Boolean {
 
             Log.d("DZL", "data » $data")
-            val document = app.get(data).document
-            val iframe   = document.selectFirst("div#playerLsDizilla iframe")?.attr("src") ?: return false
-            Log.d("DZL", "iframe » $iframe")
+            val document   = app.get(data).document
+            val raw_iframe = document.selectFirst("div#playerLsDizilla iframe")?.attr("src") ?: return false
+            val _iframe    = raw_iframe.substringAfter("//")
+            Log.d("DZL", "iframe » $_iframe")
 
-            // callback.invoke(
-            //     ExtractorLink(
-            //         source  = this.name,
-            //         name    = this.name,
-            //         url     = m3u_link,
-            //         referer = "$mainUrl/",
-            //         quality = Qualities.Unknown.value,
-            //         isM3u8  = true
-            //     )
-            // )
+            if (_iframe.startsWith("contentx.me")) {
+                val i_source  = app.get("https://$_iframe").text
+                val i_extract = Regex("""window\.openPlayer\('([^']+)', """).find(i_source)?.groups?.first()?.value ?: return false
+                Log.d("DZL", "i_extract » $i_extract")
 
-            return true
+                val vid_source = app.get("https://contentx.me/source2.php?v=$i_extract").text
+                val m3u_link   = Regex("""file: "([^"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
+                Log.d("DZL", "m3u_link » $m3u_link")
+
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = m3u_link,
+                        referer = "$mainUrl/",
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = true
+                    )
+                )
+
+                return true
+            } else {
+                return false
+            }
     }
 }
