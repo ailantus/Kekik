@@ -21,7 +21,8 @@ class Dizilla : MainAPI() {
 
     override val mainPage           =
         mainPageOf(
-            "$mainUrl/trend" to "Bu Ay Öne Çıkanlar",
+            "$mainUrl/trend"        to "Bu Ay Öne Çıkanlar",
+            "$mainUrl/imdb-top-100" to "Top Diziler",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -46,6 +47,13 @@ class Dizilla : MainAPI() {
         val poster      = fixUrlNull(document.selectFirst("div.w-full img")?.attr("src")) ?: return null
         val year        = document.select("div.w-full span.text-cf")?.get(0)?.text()?.trim()?.toIntOrNull()
         val description = document.selectFirst("div.left-content-paragraf")?.text()?.trim()
+        val tags        = document.select("[href*='dizi-turu']").map { it.text() }
+        val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
+        val duration    = Regex("(\\d+)").find(document.selectFirst("span.bg-\\[#2e2e2e\\]")?.text() ?: "")?.value?.toIntOrNull()
+
+        val actors = document.select("[href*='oyuncu']").map {
+            Actor(it.text())
+        }
 
         val episodes    = document.select("div.season-lists div.cursor-pointer").mapNotNull {
             val ep_name        = it.select("a")?.last()?.text()?.trim() ?: return@mapNotNull null
@@ -73,11 +81,11 @@ class Dizilla : MainAPI() {
             this.posterUrl       = poster
             this.year            = year
             this.plot            = description
-        //     this.tags            = tags
-        //     this.rating          = rating
-        //     this.duration        = duration
+            this.tags            = tags
+            this.rating          = rating
+            this.duration        = duration
         //     this.recommendations = recommendations
-        //     addActors(actors)
+            addActors(actors)
         //     addTrailer(trailer)
         }
     }
