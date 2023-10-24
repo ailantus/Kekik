@@ -20,21 +20,12 @@ class Dizilla : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 
-    // ? Eğer bu açık ise ana sayfaya birbiri ardına istekte bulunacaktır.
-    // ? Eğer aynı anda birçok isteği engellerlerse bu gecikme için kullanılır.
-    // * override var sequentialMainPage: Boolean = false
-    override var sequentialMainPage: Boolean = true
-
-    // ? Milisaniye cinsinden, eğer sequentialMainPage açıksa ilk yüklemede ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
-    // * override var sequentialMainPageDelay: Long = 0L
-    override var sequentialMainPageDelay: Long = 250L // ! 0.25 saniye
-
-    // ? Milisaniye cinsinden, kaydırma sırasında ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
-    // * override var sequentialMainPageScrollDelay: Long = 0L
+    // ! CloudFlare bypass
+    override var sequentialMainPage: Boolean         = true
+    override var sequentialMainPageDelay: Long       = 250L // ! 0.25 saniye
     override var sequentialMainPageScrollDelay: Long = 250L // ! 0.25 saniye
 
-
-    override val mainPage           =
+    override val mainPage =
         mainPageOf(
             "$mainUrl/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="  to "Aile",
             "$mainUrl/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Aksiyon",
