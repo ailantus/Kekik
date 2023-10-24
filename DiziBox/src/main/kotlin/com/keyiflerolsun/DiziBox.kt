@@ -29,12 +29,10 @@ class DiziBox : MainAPI() {
         val document = app.get(
             url,
             headers = mapOf(
-                "User-Agent"      to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0",
-                "Accept"          to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language" to "en-US,en;q=0.5",
-                "Accept-Encoding" to "gzip, deflate, br",
-                "Referer"         to "$mainUrl/",
-            )
+                "User-Agent" to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0",
+                "Accept"     to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            ),
+            referer = "$mainUrl/"
         ).document
         Log.d("DZB", "document » $document")
 
