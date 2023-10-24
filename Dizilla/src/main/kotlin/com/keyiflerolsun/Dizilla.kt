@@ -34,6 +34,20 @@ class Dizilla : MainAPI() {
             "$mainUrl/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Romantik"
         )
 
+    // ? Eğer bu açık ise ana sayfaya birbiri ardına istekte bulunacaktır.
+    // ? Eğer aynı anda birçok isteği engellerlerse bu gecikme için kullanılır.
+    // * open var sequentialMainPage: Boolean = false
+    open var sequentialMainPage: Boolean = true
+
+    // ? Milisaniye cinsinden, eğer sequentialMainPage açıksa ilk yüklemede ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
+    // * open var sequentialMainPageDelay: Long = 0L
+    open var sequentialMainPageDelay: Long = 250L // ! 0.25 saniye
+
+    // ? Milisaniye cinsinden, kaydırma sırasında ana sayfa istekleri arasına daha fazla gecikme eklemek için kullanılabilir.
+    // * open var sequentialMainPageScrollDelay: Long = 0L
+    open var sequentialMainPageScrollDelay: Long = 250L // ! 0.25 saniye
+
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
         val home     = document.select("span.watchlistitem-").mapNotNull { it.toSearchResult() }
