@@ -23,7 +23,12 @@ class DiziBox : MainAPI() {
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("$mainUrl/dizi-arsivi/page/" + page + request.data, referer="$mainUrl/").document
+        val url      = "$mainUrl/dizi-arsivi/page/" + page + request.data
+        Log.d("DZB", "url » $url")
+
+        val document = app.get(url, referer="$mainUrl/").document
+        Log.d("DZB", "document » $document")
+
         val home     = document.select("article.detailed-article").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
