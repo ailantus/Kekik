@@ -4,9 +4,9 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ## Repo
 
-**[https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json](https://self-similarity.github.io/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
+**[https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
 
-[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](https://self-similarity.github.io/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
+[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ---
 
