@@ -21,11 +21,11 @@ class Dizilla : MainAPI() {
 
     override val mainPage           =
         mainPageOf(
-            "$mainUrl/trend/" to "Bu Ay Öne Çıkanlar",
+            "$mainUrl/trend" to "Bu Ay Öne Çıkanlar",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page).document
+        val document = app.get(request.data).document
         val home     = document.select("a.gap-4").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
