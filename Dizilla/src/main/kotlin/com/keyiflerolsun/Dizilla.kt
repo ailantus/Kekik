@@ -28,7 +28,7 @@ class Dizilla : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data).document
-        val home     = document.select("a[href*='/dizi/'].gap-4").mapNotNull { it.toSearchResult() }
+        val home     = document.select("a[href*='/dizi/'].gap-4").take(50).mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
@@ -91,7 +91,6 @@ class Dizilla : MainAPI() {
         ?.data?.result
         ?.mapNotNull { search_item -> search_item.toSearchResponse() }
         ?: throw ErrorLoadingException("Invalid Json response")        
-
     }
 
     override suspend fun load(url: String): LoadResponse? {
