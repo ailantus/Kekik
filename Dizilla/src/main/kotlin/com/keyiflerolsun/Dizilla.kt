@@ -164,6 +164,8 @@ class Dizilla : MainAPI() {
 
             if (_iframe.startsWith("contentx.me")) {
                 val i_source  = app.get("https://$_iframe").text
+                Log.d("DZL", "i_source » $i_source")
+
                 val i_extract = Regex("""window\.openPlayer\('([^']+)', """).find(i_source)?.groups?.first()?.value ?: return false
                 Log.d("DZL", "i_extract » $i_extract")
 
