@@ -21,9 +21,9 @@ class Dizilla : MainAPI() {
     override val supportedTypes     = setOf(TvType.TvSeries)
 
     // ! CloudFlare bypass
-    override var sequentialMainPage: Boolean         = true
-    override var sequentialMainPageDelay: Long       = 250L // ! 0.25 saniye
-    override var sequentialMainPageScrollDelay: Long = 250L // ! 0.25 saniye
+    override var sequentialMainPageDelay       = true
+    override var sequentialMainPageDelay       = 250L // ! 0.25 saniye
+    override var sequentialMainPageScrollDelay = 250L // ! 0.25 saniye
 
     override val mainPage =
         mainPageOf(
