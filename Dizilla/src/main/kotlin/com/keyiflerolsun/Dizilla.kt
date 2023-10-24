@@ -44,22 +44,29 @@ class Dizilla : MainAPI() {
 
         val title       = document.selectFirst("div.w-full h1")?.text() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.w-full img")?.attr("src")) ?: return null
-        val year        = document.select("div.w-full span.text-cf")?.get(0)?.trim()?.toIntOrNull()
+        val year        = document.select("div.w-full span.text-cf")?.get(0)?.text()?.trim()?.toIntOrNull()
         val description = document.selectFirst("div.left-content-paragraf")?.text()?.trim()
 
         val episodes    = document.select("div.season-lists div.cursor-pointer").mapNotNull {
-            val href        = fixUrlNull(it.selectFirst("a.opacity-60")?.attr("href"))
-            val name        = it.select("a")?.last()?.text()?.trim()
-            val description = it.selectFirst("span.t-content")?.text()?.trim()
-            val episode     = it.selectFirst("a.opacity-60")?.text().toIntOrNull()
+            val ep_name        = it.select("a")?.last()?.text()?.trim() ?: return@mapNotNull null
+            val ep_href        = fixUrlNull(it.selectFirst("a.opacity-60")?.attr("href")) ?: return@mapNotNull null
+            val ep_description = it.selectFirst("span.t-content")?.text()?.trim()
+            val ep_episode     = it.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
 
             val parent_div   = it.parent()
             val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
-            val season       = season_class?.substringAfter("szn")?.toIntOrNull()
+            val ep_season    = season_class?.substringAfter("szn")?.toIntOrNull()
 
-            Episode(href, name, season, episode) {
-                this.description = description
-            }
+            Episode(
+                data        = ep_href,
+                name        = ep_name,
+                season      = ep_season,
+                episode     = ep_episode,
+                posterUrl   = null,
+                rating      = null,
+                description = ep_description,
+                date        = null
+            )
         }
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
