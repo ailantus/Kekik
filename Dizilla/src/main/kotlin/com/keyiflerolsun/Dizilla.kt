@@ -85,7 +85,7 @@ class Dizilla : MainAPI() {
 
         return app.post(
             "$mainUrl/bg/searchcontent",
-            data = mapOf(
+            data    = mapOf(
                 "cKey"       to c_key,
                 "cValue"     to c_value,
                 "searchterm" to query
@@ -112,7 +112,7 @@ class Dizilla : MainAPI() {
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
         val duration    = Regex("(\\d+)").find(document.select("div.gap-3 span.text-sm").get(1)?.text() ?: "")?.value?.toIntOrNull()
 
-        val actors = document.select("[href*='oyuncu']").map {
+        val actors      = document.select("[href*='oyuncu']").map {
             Actor(it.text())
         }
 
@@ -138,15 +138,13 @@ class Dizilla : MainAPI() {
             )
         }
 
-        Log.d("DZL", "duration » $duration")
-
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
-            this.posterUrl       = poster
-            this.year            = year
-            this.plot            = description
-            this.tags            = tags
-            this.rating          = rating
-            this.duration        = duration
+            this.posterUrl = poster
+            this.year      = year
+            this.plot      = description
+            this.tags      = tags
+            this.rating    = rating
+            this.duration  = duration
             addActors(actors)
         }
     }
@@ -160,6 +158,8 @@ class Dizilla : MainAPI() {
 
             Log.d("DZL", "data » $data")
             val document = app.get(data).document
+            val iframe   = document.selectFirst("div#playerLsDizilla iframe")?.attr("src") ?: return false
+            Log.d("DZL", "iframe » $iframe")
 
             // callback.invoke(
             //     ExtractorLink(
