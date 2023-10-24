@@ -27,7 +27,7 @@ class Dizilla : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data).document
-        val home     = document.select("a.gap-4").mapNotNull { it.toSearchResult() }
+        val home     = document.select("a[href*='/dizi/'].gap-4").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
@@ -49,7 +49,7 @@ class Dizilla : MainAPI() {
         val description = document.selectFirst("div.left-content-paragraf")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
-        val duration    = Regex("(\\d+)").find(document.selectFirst("span.bg-\\[#2e2e2e\\]")?.text() ?: "")?.value?.toIntOrNull()
+        val duration    = Regex("(\d+)").find(document.selectFirst("span.bg-[#2e2e2e]")?.text() ?: "")?.value?.toIntOrNull()
 
         val actors = document.select("[href*='oyuncu']").map {
             Actor(it.text())
@@ -76,6 +76,8 @@ class Dizilla : MainAPI() {
                 date        = null
             )
         }
+
+        Log.d("DZL", "duration » $duration")
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl       = poster
