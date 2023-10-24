@@ -98,11 +98,11 @@ class Dizilla : MainAPI() {
 
         val title       = document.selectFirst("div.w-full h1")?.text() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.w-full img")?.attr("src")) ?: return null
-        val year        = document.select("div.w-full span.text-cf")?.get(0)?.text()?.trim()?.toIntOrNull()
+        val year        = document.select("div.gap-3 span.text-sm")?.get(0)?.text()?.trim()?.toIntOrNull()
         val description = document.selectFirst("div.mv-det-p")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
-        val duration    = Regex("(\\d+)").find(document.select("div.w-full span.text-cf").get(1)?.text() ?: "")?.value?.toIntOrNull()
+        val duration    = Regex("(\\d+)").find(document.select("div.gap-3 span.text-sm").get(1)?.text() ?: "")?.value?.toIntOrNull()
 
         val actors = document.select("[href*='oyuncu']").map {
             Actor(it.text())
