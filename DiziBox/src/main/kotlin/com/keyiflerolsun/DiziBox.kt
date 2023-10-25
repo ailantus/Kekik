@@ -16,7 +16,7 @@ class DiziBox : MainAPI() {
     override var lang               = "tr"
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
-    private val interceptor         = CloudflareKiller()
+    private val cloudflareKiller by lazy { CloudflareKiller() }
 
     override val mainPage =
         mainPageOf(
@@ -26,14 +26,13 @@ class DiziBox : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val url      = "$mainUrl/dizi-arsivi/page/" + page + request.data
-        Log.d("DZB", "url » $url")
+        Log.d("DZB", "_url » $url")
 
         val document = app.get(
             url,
-            referer     = "$mainUrl/",
-            interceptor = interceptor
+            referer     = "$mainUrl/"
         ).document
-        Log.d("DZB", "document » $document")
+        Log.d("DZB", "_document » $document")
 
         val home     = document.select("article.detailed-article").mapNotNull { it.toSearchResult() }
 
@@ -50,8 +49,8 @@ class DiziBox : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
-        Log.d("DZB", "url » $url")
-        Log.d("DZB", "document » $document")
+        Log.d("DZB", "_url » $url")
+        Log.d("DZB", "_document » $document")
 
         return null
     }
@@ -63,7 +62,7 @@ class DiziBox : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZB", "data » $data")
+            Log.d("DZB", "_data » $data")
 
             return true
     }
