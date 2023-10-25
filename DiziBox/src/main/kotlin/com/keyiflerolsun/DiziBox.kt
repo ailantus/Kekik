@@ -3,7 +3,10 @@
 package com.keyiflerolsun
 
 import android.util.Log
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import okhttp3.Interceptor
+import okhttp3.Response
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -17,6 +20,7 @@ class DiziBox : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
     private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor by lazy { CloudflareInterceptor(cloudflareKiller) }
 
     override val mainPage =
         mainPageOf(
@@ -24,13 +28,26 @@ class DiziBox : MainAPI() {
             // "/?tur[0]=aksiyon&yil&imdb&orderby=imdb"  to "Aksiyon",
         )
 
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val request = chain.request()
+            val response = chain.proceed(request)
+            val doc = Jsoup.parse(response.peekBody(1024 * 1024).string())
+            if (doc.select("title").text() == "Just a moment...") {
+                return cloudflareKiller.intercept(chain)
+            }
+            return response
+        }
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val url      = "$mainUrl/dizi-arsivi/page/" + page + request.data
         Log.d("DZB", "_url » $url")
 
         val document = app.get(
             url,
-            referer     = "$mainUrl/"
+            referer     = "$mainUrl/",
+            interceptor = interceptor
         ).document
         Log.d("DZB", "_document » $document")
 
