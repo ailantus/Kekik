@@ -5,6 +5,7 @@ package com.keyiflerolsun
 import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
 
 
@@ -15,6 +16,7 @@ class DiziBox : MainAPI() {
     override var lang               = "tr"
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
+    private val interceptor         = CloudflareKiller()
 
     override val mainPage =
         mainPageOf(
@@ -28,11 +30,8 @@ class DiziBox : MainAPI() {
 
         val document = app.get(
             url,
-            headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0",
-                "Accept"     to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            ),
-            referer = "$mainUrl/"
+            referer     = "$mainUrl/",
+            interceptor = interceptor
         ).document
         Log.d("DZB", "document » $document")
 
