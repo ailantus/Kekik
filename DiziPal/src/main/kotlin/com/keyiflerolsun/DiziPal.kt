@@ -154,8 +154,8 @@ class DiziPal : MainAPI() {
             // )
 
             M3u8Helper.generateM3u8(
-                source  = this.name,
-                name    = this.name,
+                source    = this.name,
+                name      = this.name,
                 streamUrl = m3u_link,
                 referer   = "$mainUrl/"
             ).forEach(callback)
