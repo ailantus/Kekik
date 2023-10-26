@@ -6,7 +6,6 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.Qualities
 
 
@@ -121,30 +120,31 @@ class DiziPal : MainAPI() {
             val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: return false
             Log.d("DZP", "iframe » $iframe")
 
-            loadExtractor(
-                url              = iframe,
-                referer          = "$mainUrl/",
-                subtitleCallback = subtitleCallback,
-                callback         = callback
+            val i_source = app.get("$iframe", referer="$mainUrl/").text
+            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            val subtitle = Regex("""subtitle":\"\[Turkce\]([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            if (m3u_link == null) {
+                Log.d("DZP", "i_source » $i_source")
+                return false
+            }
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = "$mainUrl/",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
+            )
+            subtitleCallback.invoke(
+                SubtitleFile(
+                    lang = "Türkçe",
+                    url  = fixUrl(subtitle)
+                )
             )
 
-            // val i_source = app.get("$iframe", referer="$mainUrl/").text
-            // val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
-            // if (m3u_link == null) {
-            //     Log.d("DZP", "i_source » $i_source")
-            //     return false
-            // }
-
-            // callback.invoke(
-            //     ExtractorLink(
-            //         source  = this.name,
-            //         name    = this.name,
-            //         url     = m3u_link,
-            //         referer = "$mainUrl/",
-            //         quality = Qualities.Unknown.value,
-            //         isM3u8  = true
-            //     )
-            // )
             return true
     }
 }
