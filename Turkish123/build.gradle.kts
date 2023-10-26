@@ -1,7 +1,7 @@
-version = 1
+version = 2
 
 cloudstream {
-    authors     = listOf("Hexated")
+    authors     = listOf("Hexated", "keyiflerolsun")
     language    = "tr"
     description = "Watch Turkish Series with English Subtitles"
 

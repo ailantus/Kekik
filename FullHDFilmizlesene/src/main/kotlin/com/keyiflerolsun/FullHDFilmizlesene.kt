@@ -99,8 +99,6 @@ class FullHDFilmizlesene : MainAPI() {
 
         val trailer = Regex("""embedUrl\": \"(.*)\"""").find(document.html())?.groups?.get(1)?.value
 
-        Log.d("FHD", "_rating » $rating")
-
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
             this.year            = year
