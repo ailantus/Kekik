@@ -60,6 +60,12 @@ class DiziPal : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
 
+    override suspend fun search(query: String): List<SearchResponse> {
+        val document = app.get("$mainUrl/diziler?kelime=$query&durum=&tur=&type=&siralama=").document
+
+        return document.select("article.type2 ul li").mapNotNull { it.toSearchResult() }
+    }
+
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
@@ -76,7 +82,6 @@ class DiziPal : MainAPI() {
         val episodes    = document.select("div.episode-item").mapNotNull {
             val ep_name    = it.selectFirst("div.name")?.text()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            // val ep_description = it.selectFirst("span.t-content")?.text()?.trim()
             val ep_episode = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(2)?.replace(".", "")?.toIntOrNull()
             val ep_season  = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(0)?.replace(".", "")?.toIntOrNull()
 
@@ -87,7 +92,6 @@ class DiziPal : MainAPI() {
                 episode     = ep_episode,
                 posterUrl   = null,
                 rating      = null,
-                // description = ep_description,
                 date        = null
             )
         }
@@ -102,15 +106,6 @@ class DiziPal : MainAPI() {
         }
     }
 
-    override suspend fun search(query: String): List<SearchResponse> {
-        Log.d("DZP", "query » $query")
-
-        return emptyList()
-        // val document = app.get("$mainUrl/arama/$query").document
-
-        // return document.select("li.film").mapNotNull { it.toSearchResult() }
-    }
-
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
@@ -119,7 +114,25 @@ class DiziPal : MainAPI() {
         ): Boolean {
 
             Log.d("DZP", "data » $data")
+            val document = app.get(data).document
+            val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: return false
+            Log.d("DZP", "iframe » $iframe")
 
+            val i_source = app.get("$iframe", referer="$mainUrl/").text
+            Log.d("DZP", "i_source » $i_source")
+
+            val m3u_link = Regex("""file\":\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value ?: return false
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = "$mainUrl/",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
+            )
             return true
     }
 }
