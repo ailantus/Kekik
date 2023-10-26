@@ -160,8 +160,6 @@ class DiziPal : MainAPI() {
             //     referer   = "$mainUrl/"
             // ).forEach(callback)
 
-
-
             return true
     }
 }
