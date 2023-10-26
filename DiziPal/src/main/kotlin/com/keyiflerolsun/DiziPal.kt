@@ -6,6 +6,7 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 
 
@@ -122,28 +123,39 @@ class DiziPal : MainAPI() {
 
             val i_source = app.get("$iframe", referer="$mainUrl/").text
             val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
-            val subtitle = Regex("""subtitle":\"\[Turkce\]([^\"]+)""").find(i_source)?.groups?.get(1)?.value
             if (m3u_link == null) {
                 Log.d("DZP", "i_source » $i_source")
                 return false
             }
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = "$mainUrl/",
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
+            val subtitle = Regex("""subtitle":\"\[Turkce\]([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            if (subtitle != null) {
+                subtitleCallback.invoke(
+                    SubtitleFile(
+                        lang = "Türkçe",
+                        url  = fixUrl(subtitle)
+                    )
                 )
-            )
-            subtitleCallback.invoke(
-                SubtitleFile(
-                    lang = "Türkçe",
-                    url  = fixUrl(subtitle)
-                )
-            )
+            }
+
+            // callback.invoke(
+            //     ExtractorLink(
+            //         source  = this.name,
+            //         name    = this.name,
+            //         url     = m3u_link,
+            //         referer = "$mainUrl/",
+            //         quality = Qualities.Unknown.value,
+            //         isM3u8  = true
+            //     )
+            // )
+
+            M3u8Helper.generateM3u8(
+                source    = this.name,
+                streamUrl = m3u_link,
+                referer   = "$mainUrl/"
+            ).forEach(callback)
+
+
 
             return true
     }
