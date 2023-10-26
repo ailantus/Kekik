@@ -169,6 +169,7 @@ class Dizilla : MainAPI() {
             if (iframe.startsWith("contentx.me") || iframe.startsWith("hotlinger.com")) {
                 val i_source  = app.get("https://$iframe", referer="$mainUrl/").text
                 val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
+                val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract", referer="$mainUrl/").text
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)!!.groups[1]?.value ?: return false
@@ -184,6 +185,24 @@ class Dizilla : MainAPI() {
                         isM3u8  = true
                     )
                 )
+
+                val i_dublaj = Regex(""",\"([^']+)\",\"Türkçe""").find(i_source)!!.groups[1]?.value
+                if (i_dublaj != null) {
+                    val dublaj_source  = app.get("https://contentx.me/source2.php?v=$i_dublaj", referer="$mainUrl/").text
+                    val dublaj_extract = Regex("""file\":\"([^\"]+)""").find(dublaj_source)!!.groups[1]?.value ?: return false
+                    val dublaj_link    = dublaj_extract.replace("\\", "")
+
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "$this.name Türkçe Dublaj",
+                            name    = this.name,
+                            url     = dublaj_link,
+                            referer = "https://$iframe",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = true
+                        )
+                    )
+                }
 
                 return true
             } else {
