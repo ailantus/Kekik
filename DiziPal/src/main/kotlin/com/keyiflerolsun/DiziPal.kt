@@ -18,7 +18,7 @@ class DiziPal : MainAPI() {
 
     override val mainPage =
         mainPageOf(
-            "/diziler?kelime=&durum=&tur=1&type=&siralama=" to "Aile",
+            "$mainUrl/diziler?kelime=&durum=&tur=1&type=&siralama=" to "Aile",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
