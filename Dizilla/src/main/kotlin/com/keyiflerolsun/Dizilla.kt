@@ -114,7 +114,7 @@ class Dizilla : MainAPI() {
         val year        = document.select("div.gap-3 span.text-sm").get(0)?.text()?.trim()?.toIntOrNull()
         val description = document.selectFirst("div.mv-det-p")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
-        val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toIntOrNull()
+        val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.split(".")?.first()?.trim()?.toRatingInt()
         val duration    = Regex("(\\d+)").find(document.select("div.gap-3 span.text-sm").get(1).text() ?: "")?.value?.toIntOrNull()
 
         val actors      = document.select("[href*='oyuncu']").map {
