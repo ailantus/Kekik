@@ -16,6 +16,7 @@ class Turkish123 : MainAPI() {
     override var name               = "Turkish123"
     override val hasMainPage        = true
     override var lang               = "tr"
+    override val hasQuickSearch     = true
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 
@@ -46,7 +47,7 @@ class Turkish123 : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val href      = getProperLink(this.selectFirst("a")!!.attr("href"))
         val title     = this.selectFirst("h2")?.text()?.trim() ?: return null
-        if (title == "Terms of Service") {
+        if (title == "Terms of Service" || title == "Privacy Policy") {
             return null
         }
 
@@ -60,6 +61,8 @@ class Turkish123 : MainAPI() {
             addSub(episode)
         }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/?s=$query").document
