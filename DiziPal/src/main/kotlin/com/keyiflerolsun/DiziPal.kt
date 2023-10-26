@@ -142,23 +142,23 @@ class DiziPal : MainAPI() {
                 }
             }
 
-            // callback.invoke(
-            //     ExtractorLink(
-            //         source  = this.name,
-            //         name    = this.name,
-            //         url     = m3u_link,
-            //         referer = "$mainUrl/",
-            //         quality = Qualities.Unknown.value,
-            //         isM3u8  = true
-            //     )
-            // )
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = "$mainUrl/",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
+            )
 
-            M3u8Helper.generateM3u8(
-                source    = this.name,
-                name      = this.name,
-                streamUrl = m3u_link,
-                referer   = "$mainUrl/"
-            ).forEach(callback)
+            // M3u8Helper.generateM3u8(
+            //     source    = this.name,
+            //     name      = this.name,
+            //     streamUrl = m3u_link,
+            //     referer   = "$mainUrl/"
+            // ).forEach(callback)
 
 
 
