@@ -14,6 +14,7 @@ class PornHub : MainAPI() {
     override var name                 = "PornHub"
     override val hasMainPage          = true
     override var lang                 = "en"
+    override val hasQuickSearch       = true
     override val hasDownloadSupport   = true
     override val hasChromecastSupport = true
     override val supportedTypes       = setOf(TvType.NSFW)
@@ -44,6 +45,8 @@ class PornHub : MainAPI() {
 
         return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/video/search?search=${query}").document

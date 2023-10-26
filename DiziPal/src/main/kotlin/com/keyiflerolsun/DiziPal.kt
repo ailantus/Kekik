@@ -14,6 +14,7 @@ class DiziPal : MainAPI() {
     override var name               = "DiziPal"
     override val hasMainPage        = true
     override var lang               = "tr"
+    override val hasQuickSearch     = true
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 
@@ -58,6 +59,8 @@ class DiziPal : MainAPI() {
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/diziler?kelime=$query&durum=&tur=&type=&siralama=").document

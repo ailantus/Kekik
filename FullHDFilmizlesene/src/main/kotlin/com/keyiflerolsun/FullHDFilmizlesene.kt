@@ -20,6 +20,7 @@ class FullHDFilmizlesene : MainAPI() {
     override var name               = "FullHDFilmizlesene"
     override val hasMainPage        = true
     override var lang               = "tr"
+    override val hasQuickSearch     = true
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
@@ -67,6 +68,8 @@ class FullHDFilmizlesene : MainAPI() {
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/arama/$query").document
