@@ -128,14 +128,18 @@ class DiziPal : MainAPI() {
                 return false
             }
 
-            val subtitle = Regex("""subtitle":\"\[Turkce\]([^\"]+)""").find(i_source)?.groups?.get(1)?.value
-            if (subtitle != null) {
-                subtitleCallback.invoke(
-                    SubtitleFile(
-                        lang = "Türkçe",
-                        url  = fixUrl(subtitle)
+            val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            if (subtitles != null) {
+                subtitles.split(",").forEach {
+                    val sub_lang = it.substringAfter("[").substringBefore("]")
+                    val sub_url  = it.replace("[$sub_lang]", "")
+                    subtitleCallback.invoke(
+                        SubtitleFile(
+                            lang = sub_lang,
+                            url  = fixUrl(sub_url)
+                        )
                     )
-                )
+                }
             }
 
             // callback.invoke(
