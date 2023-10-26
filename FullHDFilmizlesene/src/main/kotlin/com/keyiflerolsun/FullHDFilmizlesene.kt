@@ -131,6 +131,7 @@ class FullHDFilmizlesene : MainAPI() {
         return s.map { rot13Char(it) }.joinToString("")
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Any> {
         for ((key, item) in scx) {
             item["tt"] = atob(item["tt"] as String)
