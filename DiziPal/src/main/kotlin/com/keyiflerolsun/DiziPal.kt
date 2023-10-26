@@ -122,7 +122,7 @@ class DiziPal : MainAPI() {
             val i_source = app.get("$iframe", referer="$mainUrl/").text
             Log.d("DZP", "i_source » $i_source")
 
-            val m3u_link = Regex("""file\":\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value ?: return false
+            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value ?: return false
 
             callback.invoke(
                 ExtractorLink(
