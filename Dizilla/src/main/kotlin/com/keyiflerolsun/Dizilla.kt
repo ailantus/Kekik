@@ -169,7 +169,6 @@ class Dizilla : MainAPI() {
             if (iframe.startsWith("contentx.me") || iframe.startsWith("hotlinger.com")) {
                 val i_source  = app.get("https://$iframe", referer="$mainUrl/").text
                 val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
-                val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract", referer="$mainUrl/").text
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)!!.groups[1]?.value ?: return false
