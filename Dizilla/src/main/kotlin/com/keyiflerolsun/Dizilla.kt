@@ -172,7 +172,7 @@ class Dizilla : MainAPI() {
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract", referer="$mainUrl/").text
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
-                val m3u_link    = vid_extract?.replace("\\", "")
+                val m3u_link    = vid_extract?.replace("\\", "") ?: return false
 
                 callback.invoke(
                     ExtractorLink(
