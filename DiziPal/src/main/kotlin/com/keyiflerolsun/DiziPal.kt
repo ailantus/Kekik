@@ -75,9 +75,9 @@ class DiziPal : MainAPI() {
         val cover_style = document.selectFirst("div.cover")?.attr("style") ?: return null
         val poster      = Regex("""url\(['"]?(.*?)['"]?\)""").find(cover_style)?.groups?.get(1)?.value ?: return null
 
-        val year        = document.selectXpath("//div[text()='Yapım Yılı']//following-sibling::div").text()?.trim()?.toIntOrNull()
+        val year        = document.selectXpath("//div[text()='Yapım Yılı']//following-sibling::div").text().trim().toIntOrNull()
         val description = document.selectFirst("div.summary p")?.text()?.trim()
-        val tags        = document.selectXpath("//div[text()='Türler']//following-sibling::div").text()?.trim()?.split(" ")?.mapNotNull { it.trim() }
+        val tags        = document.selectXpath("//div[text()='Türler']//following-sibling::div").text().trim().split(" ").mapNotNull { it.trim() }
         val rating      = document.selectXpath("//div[text()='IMDB Puanı']//following-sibling::div").text()?.split(".")?.first()?.trim()?.toIntOrNull()
         val duration    = Regex("(\\d+)").find(document.selectXpath("//div[text()='Ortalama Süre']//following-sibling::div").text() ?: "")?.value?.toIntOrNull()
 

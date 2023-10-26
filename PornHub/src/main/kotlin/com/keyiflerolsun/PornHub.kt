@@ -65,15 +65,15 @@ class PornHub : MainAPI() {
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
             val recName      = it?.attr("title")?.trim() ?: return@mapNotNull null
-            val recHref      = fixUrlNull(it?.attr("href")) ?: return@mapNotNull null
+            val recHref      = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
             newMovieSearchResponse(recName, recHref, TvType.NSFW) {
                 this.posterUrl = recPosterUrl
             }
         }
 
-        val actors          = document.select("div.pornstarsWrapper a[data-label='Pornstar']")?.mapNotNull {
-            Actor(it.text().trim(), it.select("img")?.attr("src"))
+        val actors          = document.select("div.pornstarsWrapper a[data-label='Pornstar']").mapNotNull {
+            Actor(it.text().trim(), it.select("img").attr("src"))
         }
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
@@ -96,7 +96,7 @@ class PornHub : MainAPI() {
         Log.d("PHub", "url » $data")
         val source          = app.get(data).text
         val extracted_value = Regex("""([^\"]*master.m3u8?.[^\"]*)""").find(source)?.groups?.last()?.value ?: return false
-        val m3u_link        = extracted_value?.replace("\\", "") ?: return false
+        val m3u_link        = extracted_value.replace("\\", "")
         Log.d("PHub", "extracted_value » $extracted_value")
         Log.d("PHub", "m3u_link » $m3u_link")
 

@@ -122,7 +122,7 @@ class Dizilla : MainAPI() {
         }
 
         val episodes    = document.select("div.season-lists div.cursor-pointer").mapNotNull {
-            val ep_name        = it.select("a")?.last()?.text()?.trim() ?: return@mapNotNull null
+            val ep_name        = it.select("a").last()?.text()?.trim() ?: return@mapNotNull null
             val ep_href        = fixUrlNull(it.selectFirst("a.opacity-60")?.attr("href")) ?: return@mapNotNull null
             val ep_description = it.selectFirst("span.t-content")?.text()?.trim()
             val ep_episode     = it.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
@@ -168,11 +168,11 @@ class Dizilla : MainAPI() {
 
             if (iframe.startsWith("contentx.me") || iframe.startsWith("hotlinger.com")) {
                 val i_source  = app.get("https://$iframe", referer="$mainUrl/").text
-                val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)?.groups?.get(1)?.value ?: return false
+                val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
 
                 val vid_source  = app.get("https://contentx.me/source2.php?v=$i_extract", referer="$mainUrl/").text
-                val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)?.groups?.get(1)?.value ?: return false
-                val m3u_link    = vid_extract?.replace("\\", "") ?: return false
+                val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)!!.groups[1]?.value ?: return false
+                val m3u_link    = vid_extract.replace("\\", "")
 
                 callback.invoke(
                     ExtractorLink(
