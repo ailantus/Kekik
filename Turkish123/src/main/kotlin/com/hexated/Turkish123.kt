@@ -2,6 +2,7 @@
 
 package com.hexated
 
+import android.util.Log
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -56,6 +57,8 @@ class Turkish123 : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("$mainUrl/?s=$query").document
+        Log.d("123", "document » $document")
+
         return document.select("div.movies-list div.ml-item").mapNotNull { it.toSearchResult() }
     }
 
