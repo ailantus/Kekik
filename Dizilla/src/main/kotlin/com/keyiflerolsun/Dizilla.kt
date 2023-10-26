@@ -193,8 +193,8 @@ class Dizilla : MainAPI() {
 
                     callback.invoke(
                         ExtractorLink(
-                            source  = "$this.name Türkçe Dublaj",
-                            name    = "$this.name Türkçe Dublaj",
+                            source  = "${this.name} Türkçe Dublaj",
+                            name    = "${this.name} Türkçe Dublaj",
                             url     = dublaj_link,
                             referer = "https://$iframe",
                             quality = Qualities.Unknown.value,
