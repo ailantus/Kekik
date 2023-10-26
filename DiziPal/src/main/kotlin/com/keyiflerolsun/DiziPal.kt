@@ -123,7 +123,7 @@ class DiziPal : MainAPI() {
 
             loadExtractor(
                 url              = iframe,
-                referer          = "$directUrl/",
+                referer          = "$mainUrl/",
                 subtitleCallback = subtitleCallback,
                 callback         = callback
             )
