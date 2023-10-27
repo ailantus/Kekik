@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 
 
@@ -113,16 +114,23 @@ class DiziMom : MainAPI() {
                 return false
             }
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = iframe,
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
-                )
-            )
+            M3u8Helper.generateM3u8(
+                source    = this.name,
+                name      = this.name,
+                streamUrl = m3u_link,
+                referer   = "$iframe/"
+            ).forEach(callback)
+
+            // callback.invoke(
+            //     ExtractorLink(
+            //         source  = this.name,
+            //         name    = this.name,
+            //         url     = m3u_link,
+            //         referer = iframe,
+            //         quality = Qualities.Unknown.value,
+            //         isM3u8  = true
+            //     )
+            // )
 
             return true
     }
