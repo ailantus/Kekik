@@ -15,6 +15,7 @@ class CanliTV : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasChromecastSupport = true
+    override val hasDownloadSupport   = false
     override val supportedTypes       = setOf(TvType.Live)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
