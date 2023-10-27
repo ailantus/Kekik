@@ -31,7 +31,7 @@ class DiziMom : MainAPI() {
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data).document
+        val document = app.get("${request.data}${page}/").document
         val home     = document.select("div.single-item").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -58,19 +58,19 @@ class DiziMom : MainAPI() {
 
         val title       = document.selectFirst("div.title h1")?.text()?.substringBefore(" izle") ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.category_image img")?.attr("src")) ?: return null
-        val year        = document.selectXpath("//div[span[contains(text(), 'Yapım Yılı')]]/text()").text().trim().toIntOrNull()
+        val year        = document.selectXpath("//div[span[contains(text(), 'Yapım Yılı')]]").text().substringAfter("Yapım Yılı : ").trim().toIntOrNull()
         val description = document.selectFirst("div.category_desc")?.text()?.trim()
         val tags        = document.select("div.genres a").mapNotNull { it?.text()?.trim() }
-        val rating      = document.selectXpath("//div[span[contains(text(), 'IMDB')]]/text()").text().trim().toRatingInt()
-        val actors      = document.selectXpath("//div[span[contains(text(), 'Oyuncular')]]/text()").text().split(", ").map {
+        val rating      = document.selectXpath("//div[span[contains(text(), 'IMDB')]]").text().substringAfter("IMDB : ").trim().toRatingInt()
+        val actors      = document.selectXpath("//div[span[contains(text(), 'Oyuncular')]]").text().substringAfter("Oyuncular : ").split(", ").map {
             Actor(it.trim())
         }
 
         val episodes    = document.select("div.bolumust").mapNotNull {
-            val ep_name    = it.selectFirst("div.baslik")?.text()?.trim()?.split(" ")?.get(1) ?: return@mapNotNull null
+            val ep_name    = it.selectFirst("div.baslik")?.text()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val ep_episode = it.selectFirst("div.baslik")?.text()?.trim()?.split(" ")?.get(1)?.substringBefore(".Bölüm")?.toIntOrNull()
-            val ep_season  = it.selectFirst("div.baslik")?.text()?.trim()?.split(" ")?.get(0)?.substringBefore(".Sezon")?.toIntOrNull()
+            val ep_episode = Regex("""(\d+)\.Bölüm""").find(text)?.groups?.get(1)?.toIntOrNull()
+            val ep_season  = Regex("""(\d+)\.Sezon""").find(text)?.groups?.get(1)?.toIntOrNull()
 
             Episode(
                 data        = ep_href,
