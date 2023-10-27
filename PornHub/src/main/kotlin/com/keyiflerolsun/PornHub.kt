@@ -14,7 +14,7 @@ class PornHub : MainAPI() {
     override var name                 = "PornHub"
     override val hasMainPage          = true
     override var lang                 = "en"
-    override val hasQuickSearch       = true
+    override val hasQuickSearch       = false
     override val hasDownloadSupport   = true
     override val hasChromecastSupport = true
     override val supportedTypes       = setOf(TvType.NSFW)

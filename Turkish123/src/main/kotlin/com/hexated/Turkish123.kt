@@ -16,7 +16,7 @@ class Turkish123 : MainAPI() {
     override var name               = "Turkish123"
     override val hasMainPage        = true
     override var lang               = "tr"
-    override val hasQuickSearch     = true
+    override val hasQuickSearch     = false
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 

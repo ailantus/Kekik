@@ -20,7 +20,7 @@ class FullHDFilmizlesene : MainAPI() {
     override var name               = "FullHDFilmizlesene"
     override val hasMainPage        = true
     override var lang               = "tr"
-    override val hasQuickSearch     = true
+    override val hasQuickSearch     = false
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
