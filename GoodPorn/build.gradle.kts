@@ -3,7 +3,7 @@ version = 7
 cloudstream {
     authors     = listOf("Sora")
     language    = "en"
-    description = "Premium porn with 4K support (use VPN if links not working)"
+    description = "(VPN) Premium porn with 4K support"
 
     /**
      * Status int as the following:

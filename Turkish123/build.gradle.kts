@@ -3,7 +3,7 @@ version = 2
 cloudstream {
     authors     = listOf("Hexated", "keyiflerolsun")
     language    = "tr"
-    description = "Watch Turkish Series with English Subtitles"
+    description = "(VPN) Watch Turkish Series with English Subtitles"
 
     /**
      * Status int as the following:

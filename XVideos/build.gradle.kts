@@ -3,7 +3,7 @@ version = 8
 cloudstream {
     authors     = listOf("Stormunblessed", "Jace")
     language    = "en"
-    description = "The best free NSFW site"
+    description = "(VPN) The best free NSFW site"
 
     /**
      * Status int as the following:
