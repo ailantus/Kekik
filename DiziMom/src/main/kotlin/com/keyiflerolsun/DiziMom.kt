@@ -107,6 +107,7 @@ class DiziMom : MainAPI() {
 
             val i_source = app.get("$iframe", referer="$mainUrl/").text
             val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            Log.d("DZM", "m3u_link » $m3u_link")
             if (m3u_link == null) {
                 Log.d("DZM", "i_source » $i_source")
                 return false
