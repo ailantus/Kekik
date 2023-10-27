@@ -61,6 +61,7 @@ class PornHub : MainAPI() {
         val description     = title
         val poster          = fixUrlNull(document.selectFirst("div.mainPlayerDiv img")?.attr("src"))
         val tags            = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
+        val rating          = document.selectFirst("span.percent")?.text()?.get(0)?.toRatingInt()
         val duration        = Regex("duration' : '(.*)',").find(document.html())?.groups?.get(1)?.value?.toIntOrNull()
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
@@ -80,6 +81,7 @@ class PornHub : MainAPI() {
             this.posterUrl       = poster
             this.plot            = description
             this.tags            = tags
+            this.rating          = rating
             this.duration        = duration
             this.recommendations = recommendations
             addActors(actors)

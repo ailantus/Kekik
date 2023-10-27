@@ -89,12 +89,13 @@ class CanliTV : MainAPI() {
         val loadData = parseJson<LoadData>(data)
         callback.invoke(
             ExtractorLink(
-                this.name,
-                loadData.title,
-                loadData.url,
-                "",
-                Qualities.Unknown.value,
-                isM3u8 = true
+                source  = this.name,
+                // name    = loadData.title,
+                name    = this.name,
+                url     = loadData.url,
+                referer = "",
+                quality = Qualities.Unknown.value,
+                isM3u8  = true
             )
         )
         return true
