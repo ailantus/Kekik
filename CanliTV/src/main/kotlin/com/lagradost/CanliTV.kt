@@ -56,7 +56,8 @@ class CanliTV : MainAPI() {
                 val streamurl = channel.url.toString()
                 val channelname = channel.attributes["tvg-id"].toString()
                 val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["group-title"].toString()
+                // val nation = channel.attributes["group-title"].toString()
+                val nation = "TR"
                 LiveSearchResponse(
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
