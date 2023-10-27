@@ -55,7 +55,7 @@ class YouTube : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val videoId = Regex("watch\\?v=([a-zA-Z0-9_-]+)").find(url)?.groups?.get(1)?.value
+        val videoId = Regex("watch\\?v=([a-zA-Z0-9_-]+)").find(url)?.groupValues?.get(1)
         val res =
             tryParseJson<VideoEntry>(
                 app.get(

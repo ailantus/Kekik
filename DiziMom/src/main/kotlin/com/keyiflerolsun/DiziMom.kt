@@ -70,7 +70,7 @@ class DiziMom : MainAPI() {
             val ep_name    = it.selectFirst("div.baslik")?.text()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val ep_episode = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
+            val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
                 data        = ep_href,
@@ -104,6 +104,24 @@ class DiziMom : MainAPI() {
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
             Log.d("DZM", "iframe » $iframe")
+
+            val i_source = app.get("$iframe", referer="$mainUrl/").text
+            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            if (m3u_link == null) {
+                Log.d("DZM", "i_source » $i_source")
+                return false
+            }
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = "$mainUrl/",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
+            )
 
             return true
     }

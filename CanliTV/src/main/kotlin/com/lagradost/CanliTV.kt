@@ -277,7 +277,7 @@ class IptvPlaylistParser {
         val urlRegex = Regex("^(.*)\\|", RegexOption.IGNORE_CASE)
         val keyRegex = Regex("$key=(\\w[^&]*)", RegexOption.IGNORE_CASE)
         val paramsString = replace(urlRegex, "").replaceQuotesAndTrim()
-        return keyRegex.find(paramsString)?.groups?.get(1)?.value
+        return keyRegex.find(paramsString)?.groupValues?.get(1)
     }
 
     /**
@@ -325,7 +325,7 @@ class IptvPlaylistParser {
      */
     private fun String.getTagValue(key: String): String? {
         val keyRegex = Regex("$key=(.*)", RegexOption.IGNORE_CASE)
-        return keyRegex.find(this)?.groups?.get(1)?.value?.replaceQuotesAndTrim()
+        return keyRegex.find(this)?.groupValues?.get(1)?.replaceQuotesAndTrim()
     }
 
     companion object {

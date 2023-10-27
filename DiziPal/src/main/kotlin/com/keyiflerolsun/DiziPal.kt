@@ -74,7 +74,7 @@ class DiziPal : MainAPI() {
 
         val title       = document.selectFirst("div.cover h5")?.text() ?: return null
         val cover_style = document.selectFirst("div.cover")?.attr("style") ?: return null
-        val poster      = Regex("""url\(['"]?(.*?)['"]?\)""").find(cover_style)?.groups?.get(1)?.value ?: return null
+        val poster      = Regex("""url\(['"]?(.*?)['"]?\)""").find(cover_style)?.groupValues?.get(1) ?: return null
 
         val year        = document.selectXpath("//div[text()='Yapım Yılı']//following-sibling::div").text().trim().toIntOrNull()
         val description = document.selectFirst("div.summary p")?.text()?.trim()
@@ -122,13 +122,13 @@ class DiziPal : MainAPI() {
             Log.d("DZP", "iframe » $iframe")
 
             val i_source = app.get("$iframe", referer="$mainUrl/").text
-            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
             if (m3u_link == null) {
                 Log.d("DZP", "i_source » $i_source")
                 return false
             }
 
-            val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groups?.get(1)?.value
+            val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
             if (subtitles != null) {
                 subtitles.split(",").forEach {
                     val sub_lang = it.substringAfter("[").substringBefore("]")
