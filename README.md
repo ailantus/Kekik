@@ -2,11 +2,15 @@
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
-## Repo
+[Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **━** [gitHub | ReCloudStream](https://github.com/recloudstream)
 
-**[https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
+**[» Bizim Repo'yu Yüklemek için Tıkla «](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
 
-[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
+[![Video](https://img.youtube.com/vi/39x9FDTG9QA/hqdefault.jpg)](https://www.youtube.com/embed/39x9FDTG9QA)
+
+## Repo İçeriği
+
+[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ---
 
