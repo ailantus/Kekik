@@ -69,8 +69,8 @@ class DiziMom : MainAPI() {
         val episodes    = document.select("div.bolumust").mapNotNull {
             val ep_name    = it.selectFirst("div.baslik")?.text()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val ep_episode = Regex("""(\d+)\.Bölüm""").find(text)?.groups?.get(1)?.toIntOrNull()
-            val ep_season  = Regex("""(\d+)\.Sezon""").find(text)?.groups?.get(1)?.toIntOrNull()
+            val ep_episode = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
+            val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
 
             Episode(
                 data        = ep_href,
