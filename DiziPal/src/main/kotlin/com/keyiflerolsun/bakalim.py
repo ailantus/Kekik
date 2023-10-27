@@ -4,7 +4,7 @@ from Kekik.cli    import konsol
 from cloudscraper import CloudScraper
 from parsel       import Selector
 
-mainUrl = "https://dizipal639.com"
+mainUrl = "https://dizipal640.com"
 oturum  = CloudScraper()
 istek   = oturum.get(f"{mainUrl}/diziler?kelime=&durum=&tur=1&type=&siralama=")
 secici  = Selector(istek.text)
