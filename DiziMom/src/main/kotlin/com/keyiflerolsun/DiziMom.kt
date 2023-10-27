@@ -117,7 +117,7 @@ class DiziMom : MainAPI() {
                     source  = this.name,
                     name    = this.name,
                     url     = m3u_link,
-                    referer = $iframe,
+                    referer = iframe,
                     quality = Qualities.Unknown.value,
                     isM3u8  = true
                 )
