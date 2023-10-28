@@ -117,24 +117,22 @@ class DiziMom : MainAPI() {
                 i_source      = app.get("$iframe", referer="$mainUrl/").text
                 m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
 
-                val objectMapper        = jacksonObjectMapper()
-                val tracks: List<Track> = emptyList()
-
                 val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
                 if (track_str != null) {
-                    tracks = objectMapper.readValue("[$track_str]")
+                    val tracks:List<Track> = jacksonObjectMapper().readValue("[$track_str]")
 
                     Log.d("DZM", "_tracks » $tracks")
                     for (track in tracks) {
-                        if (track.label != null || track.label?.contains("Force")) {
-                            Log.d("DZM", "${track.label} » ${track.file}")
-                            subtitleCallback.invoke(
-                                SubtitleFile(
-                                    lang = track.label,
-                                    url  = fixUrl("https://hdmomplayer.com" + track.file)
-                                )
+                        if (track.file == null || track.label == null) continue
+                        if (track.label.contains("Forced")) continue
+
+                        Log.d("DZM", "${track.label} » ${track.file}")
+                        subtitleCallback.invoke(
+                            SubtitleFile(
+                                lang = track.label,
+                                url  = fixUrl("https://hdmomplayer.com" + track.file)
                             )
-                        }
+                        )
                     }
                 }
             }
