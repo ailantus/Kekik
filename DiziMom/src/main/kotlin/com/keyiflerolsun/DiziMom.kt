@@ -136,7 +136,7 @@ class DiziMom : MainAPI() {
                 val video_response = response.parsedSafe<VideoResponse>()
                 Log.d("DZM", "response » ${video_response}")
 
-                val vid_extract = video_response?.videoSources?.get(-1)?.file
+                val vid_extract = video_response?.videoSources!![-1]?.file
                 m3u_link        = vid_extract?.replace("\\", "")
             }
 
@@ -160,7 +160,7 @@ class DiziMom : MainAPI() {
                 val video_response = response.parsedSafe<VideoResponse>()
                 Log.d("DZM", "response » ${video_response}")
 
-                val vid_extract = video_response?.videoSources?.get(-1)?.file
+                val vid_extract = video_response?.videoSources!![-1]?.file
                 m3u_link        = vid_extract?.replace("\\", "")
             }
 
