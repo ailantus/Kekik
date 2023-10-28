@@ -63,11 +63,12 @@ class CizgiMax : MainAPI() {
         val rating      = document.selectFirst("span.imdb-rating")?.text()?.substringBefore("IMDB Puanı")?.trim()?.toRatingInt()
 
 
+        val first_ep_name  = document.selectFirst("div.active div.part-name")?.text()?.trim() ?: "Filmi İzle"
         val first_episode  = Episode(
             data        = url,
-            name        = document.selectFirst("div.active div.part-name")?.text()?.trim() ?: "Filmi İzle",
-            season      = Regex("""S(\d+) BÖLÜM""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
-            episode     = Regex("""BÖLÜM (\d+)""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
+            name        = first_ep_name,
+            season      = Regex("""S(\d+) BÖLÜM""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
+            episode     = Regex("""BÖLÜM (\d+)""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
             posterUrl   = null,
             rating      = null,
             date        = null
@@ -107,10 +108,10 @@ class CizgiMax : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("CizgiMax", "data » $data")
+            Log.d("CZGM", "data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
-            Log.d("CizgiMax", "iframe » $iframe")
+            Log.d("CZGM", "iframe » $iframe")
 
             var i_source: String? = null
             var m3u_link: String? = null
@@ -123,9 +124,9 @@ class CizgiMax : MainAPI() {
                 }
             }
 
-            Log.d("CizgiMax", "m3u_link » $m3u_link")
+            Log.d("CZGM", "m3u_link » $m3u_link")
             if (m3u_link == null) {
-                Log.d("CizgiMax", "i_source » $i_source")
+                Log.d("CZGM", "i_source » $i_source")
                 return false
             }
 
