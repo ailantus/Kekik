@@ -5,6 +5,8 @@ package com.keyiflerolsun
 import android.util.Log
 import org.jsoup.nodes.Element
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -102,24 +104,30 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "data » $data")
+            Log.d("DZM", "_data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "iframe » $iframe")
+            Log.d("DZM", "_iframe » $iframe")
 
 
-            var i_source: String? = null
-            var m3u_link: String? = null
+            var i_source: String?    = null
+            var m3u_link: String?    = null
+            val objectMapper         = jacksonObjectMapper()
+            var tracks: List<Track?> = emptyList()
 
             if (iframe.contains("hdmomplayer")) {
-                i_source = app.get("$iframe", referer="$mainUrl/").text
-                m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                i_source      = app.get("$iframe", referer="$mainUrl/").text
+                m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                val track_str = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                if (track_str != null) {
+                    tracks = objectMapper.readValue("[$track_str]")
+                }
             }
 
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
+                Log.d("DZM", "_post_url » $post_url")
 
                 val response = app.post(
                     post_url,
@@ -142,7 +150,7 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
                 val post_url = "${iframe}?do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
+                Log.d("DZM", "_post_url » $post_url")
 
                 val response = app.post(
                     post_url,
@@ -164,11 +172,12 @@ class DiziMom : MainAPI() {
                 }
             }
 
-            Log.d("DZM", "m3u_link » $m3u_link")
+            Log.d("DZM", "_m3u_link » $m3u_link")
             if (m3u_link == null) {
-                Log.d("DZM", "i_source » $i_source")
+                Log.d("DZM", "_i_source » $i_source")
                 return false
             }
+            Log.d("DZM", "_tracks » $tracks")
 
             callback.invoke(
                 ExtractorLink(
@@ -195,5 +204,13 @@ class DiziMom : MainAPI() {
         @JsonProperty("file") val file: String,
         @JsonProperty("label") val label: String,
         @JsonProperty("type") val type: String
+    )
+
+    data class Track(
+        @JsonProperty("file") val file: String?,
+        @JsonProperty("label") val label: String?,
+        @JsonProperty("kind") val kind: String?,
+        @JsonProperty("language") val language: String?,
+        @JsonProperty("default") val default: Any?
     )
 }
