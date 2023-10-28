@@ -154,11 +154,8 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                val video_response = response.parsedSafe<VideoResponse>() ?: return false
-                val video_sources  = video_response.videoSources
-                if (video_sources.isNotEmpty()) {
-                    m3u_link = video_sources.last().file
-                }
+                val video_response = response.parsedSafe<SystemResponse>() ?: return false
+                m3u_link           = video_response.securedLink
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
@@ -178,7 +175,7 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                val video_response = response.parsedSafe<VideoResponse>() ?: return false
+                val video_response = response.parsedSafe<PeaceResponse>() ?: return false
                 val video_sources  = video_response.videoSources
                 if (video_sources.isNotEmpty()) {
                     m3u_link = video_sources.last().file
@@ -205,7 +202,14 @@ class DiziMom : MainAPI() {
             return true
     }
 
-    data class VideoResponse(
+    data class SystemResponse(
+        @JsonProperty("hls") val hls: String,
+        @JsonProperty("videoImage") val videoImage: String,
+        @JsonProperty("videoSource") val videoSource: String,
+        @JsonProperty("securedLink") val securedLink: String
+    )
+
+    data class PeaceResponse(
         @JsonProperty("videoImage") val videoImage: String,
         @JsonProperty("videoSources") val videoSources: List<VideoSource>,
         @JsonProperty("sIndex") val sIndex: String,
