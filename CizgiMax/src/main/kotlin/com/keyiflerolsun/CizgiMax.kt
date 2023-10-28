@@ -56,7 +56,7 @@ class CizgiMax : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("div.title h1")?.text() ?: return null
+        val title       = document.selectFirst("div.title h1")?.text()?.substringBefore(" Türkçe İzle") ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.poster img")?.attr("src")) ?: return null
         val description = document.selectFirst("div.excerpt")?.text()?.trim()
         val tags        = document.select("div.categories a").mapNotNull { it?.text()?.trim() }
@@ -65,9 +65,9 @@ class CizgiMax : MainAPI() {
 
         val first_episode  = Episode(
             data        = url,
-            name        = "BÖLÜM 1",
-            season      = 1,
-            episode     = 1,
+            name        = document.selectFirst("div.active div.part-name")?.text()?.trim() ?: "Filmi İzle",
+            season      = Regex("""S(\d+) BÖLÜM""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
+            episode     = Regex("""BÖLÜM (\d+)""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
             posterUrl   = null,
             rating      = null,
             date        = null
