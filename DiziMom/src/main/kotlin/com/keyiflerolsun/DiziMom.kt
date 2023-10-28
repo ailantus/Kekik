@@ -122,7 +122,7 @@ class DiziMom : MainAPI() {
                         url     = m3u_link,
                         referer = iframe,
                         quality = Qualities.Unknown.value,
-                        isM3u8  = true
+                        isM3u8  = !m3u_link.contains(".mp4")
                     )
                 )
             }
@@ -149,7 +149,7 @@ class DiziMom : MainAPI() {
                         url     = m3u_link,
                         referer = iframe,
                         quality = Qualities.Unknown.value,
-                        isM3u8  = true
+                        isM3u8  = !m3u_link.contains(".mp4")
                     )
                 )
             }
@@ -176,7 +176,7 @@ class DiziMom : MainAPI() {
                         url     = m3u_link,
                         referer = iframe,
                         quality = Qualities.Unknown.value,
-                        isM3u8  = true
+                        isM3u8  = !m3u_link.contains(".mp4")
                     )
                 )
             }
