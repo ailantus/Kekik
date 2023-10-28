@@ -34,7 +34,7 @@ class CanliTV : MainAPI() {
                             val nation = "TR"
                             LiveSearchResponse(
                                 channelname,
-                                LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                                streamurl,
                                 this@CanliTV.name,
                                 TvType.Live,
                                 posterurl,
@@ -60,7 +60,7 @@ class CanliTV : MainAPI() {
                 val nation = "TR"
                 LiveSearchResponse(
                     channelname,
-                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    streamurl,
                     this@CanliTV.name,
                     TvType.Live,
                     posterurl,
