@@ -138,13 +138,9 @@ class DiziMom : MainAPI() {
                         "r"    to "$mainUrl/",
                     )
                 ).text
-                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: return false
                 val m3u_link    = vid_extract.replace("\\", "")
                 Log.d("DZM", "m3u_link » $m3u_link")
-                if (m3u_link == null) {
-                    Log.d("DZM", "i_source » $i_source")
-                    return false
-                }
     
                 callback.invoke(
                     ExtractorLink(
@@ -169,13 +165,9 @@ class DiziMom : MainAPI() {
                         "s"    to ""
                     )
                 ).text
-                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
+                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1) ?: return false
                 val m3u_link    = vid_extract.replace("\\", "")
                 Log.d("DZM", "m3u_link » $m3u_link")
-                if (m3u_link == null) {
-                    Log.d("DZM", "i_source » $i_source")
-                    return false
-                }
     
                 callback.invoke(
                     ExtractorLink(
