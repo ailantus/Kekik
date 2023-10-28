@@ -106,31 +106,88 @@ class DiziMom : MainAPI() {
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
             Log.d("DZM", "iframe » $iframe")
 
-            val i_source = app.get("$iframe", referer="$mainUrl/").text
-            val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-            Log.d("DZM", "m3u_link » $m3u_link")
-            if (m3u_link == null) {
-                Log.d("DZM", "i_source » $i_source")
-                return false
+            if (iframe.contains("hdmomplayer")) {
+                val i_source = app.get("$iframe", referer="$mainUrl/").text
+                val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                Log.d("DZM", "m3u_link » $m3u_link")
+                if (m3u_link == null) {
+                    Log.d("DZM", "i_source » $i_source")
+                    return false
+                }
+    
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = m3u_link,
+                        referer = iframe,
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = true
+                    )
+                )
             }
 
-            M3u8Helper.generateM3u8(
-                source    = this.name,
-                name      = this.name,
-                streamUrl = m3u_link,
-                referer   = "$iframe/"
-            ).forEach(callback)
 
-            // callback.invoke(
-            //     ExtractorLink(
-            //         source  = this.name,
-            //         name    = this.name,
-            //         url     = m3u_link,
-            //         referer = iframe,
-            //         quality = Qualities.Unknown.value,
-            //         isM3u8  = true
-            //     )
-            // )
+            if (iframe.contains("hdplayersystem")) {
+                val vid_id   = iframe.substringAfter("video/")
+                val i_source = app.post(
+                    "https://hdplayersystem.live/player/index.php?data=$vid_id&do=getVideo",
+                    referer = "$mainUrl/",
+                    data    = mapOf(
+                        "hash" to vid_id,
+                        "r"    to "$mainUrl/",
+                    )
+                ).text
+                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                val m3u_link    = vid_extract.replace("\\", "")
+                Log.d("DZM", "m3u_link » $m3u_link")
+                if (m3u_link == null) {
+                    Log.d("DZM", "i_source » $i_source")
+                    return false
+                }
+    
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = m3u_link,
+                        referer = iframe,
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = true
+                    )
+                )
+            }
+
+            if (iframe.contains("peacemakerst")) {
+                val vid_id   = iframe.substringAfter("video/")
+                val i_source = app.post(
+                    "https://peacemakerst.com/tv/video/$vid_id?do=getVideo",
+                    referer = "$mainUrl/",
+                    data    = mapOf(
+                        "hash" to vid_id,
+                        "r"    to "$mainUrl/",
+                        "s"    to ""
+                    )
+                ).text
+                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
+                val m3u_link    = vid_extract.replace("\\", "")
+                Log.d("DZM", "m3u_link » $m3u_link")
+                if (m3u_link == null) {
+                    Log.d("DZM", "i_source » $i_source")
+                    return false
+                }
+    
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = m3u_link,
+                        referer = iframe,
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = true
+                    )
+                )
+            }
 
             return true
     }
