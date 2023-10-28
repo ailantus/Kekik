@@ -4,6 +4,7 @@ package com.keyiflerolsun
 
 import android.util.Log
 import org.jsoup.nodes.Element
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -101,10 +102,10 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "_data » $data")
+            Log.d("DZM", "data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "_iframe » $iframe")
+            Log.d("DZM", "iframe » $iframe")
 
 
             var i_source: String? = null
@@ -118,9 +119,9 @@ class DiziMom : MainAPI() {
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                Log.d("DZM", "_post_url » $post_url")
+                Log.d("DZM", "post_url » $post_url")
 
-                i_source = app.post(
+                val response = app.post(
                     post_url,
                     data = mapOf(
                         "hash" to vid_id,
@@ -131,17 +132,17 @@ class DiziMom : MainAPI() {
                         "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                         "X-Requested-With" to "XMLHttpRequest"
                     )
-                ).text
+                )
+                i_source = response.toString()
 
-                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-                m3u_link        = vid_extract?.replace("\\", "")
+                m3u_link = response.parsedSafe<VideoResponse>()?.videoSources?.get(-1)?.file
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
                 val post_url = "${iframe}?do=getVideo"
-                Log.d("DZM", "_post_url » $post_url")
+                Log.d("DZM", "post_url » $post_url")
 
-                i_source = app.post(
+                val response = app.post(
                     post_url,
                     data = mapOf(
                         "hash" to iframe.substringAfter("video/"),
@@ -153,15 +154,15 @@ class DiziMom : MainAPI() {
                         "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                         "X-Requested-With" to "XMLHttpRequest"
                     )
-                ).text
+                )
+                i_source = response.toString()
 
-                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
-                m3u_link        = vid_extract?.replace("\\", "")
+                m3u_link = response.parsedSafe<VideoResponse>()?.videoSources?.get(-1)?.file
             }
 
-            Log.d("DZM", "_m3u_link » $m3u_link")
+            Log.d("DZM", "m3u_link » $m3u_link")
             if (m3u_link == null) {
-                Log.d("DZM", "_i_source » $i_source")
+                Log.d("DZM", "i_source » $i_source")
                 return false
             }
 
@@ -178,4 +179,17 @@ class DiziMom : MainAPI() {
 
             return true
     }
+
+    data class VideoResponse(
+        @JsonProperty("videoImage") val videoImage: String,
+        @JsonProperty("videoSources") val videoSources: List<VideoSource>,
+        @JsonProperty("sIndex") val sIndex: String,
+        @JsonProperty("sourceList") val sourceList: Map<String, String>
+    )
+
+    data class VideoSource(
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String,
+        @JsonProperty("type") val type: String
+    )
 }
