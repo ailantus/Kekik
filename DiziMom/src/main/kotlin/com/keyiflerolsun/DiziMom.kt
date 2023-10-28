@@ -130,13 +130,12 @@ class DiziMom : MainAPI() {
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
-                val vid_id   = iframe.substringAfter("video/")
                 val post_url = "${iframe}?do=getVideo"
                 Log.d("DZM", "post_url » $post_url")
                 i_source = app.post(
                     post_url,
                     data = mapOf(
-                        "hash" to vid_id,
+                        "hash" to iframe.substringAfter("video/"),
                         "r"    to "$mainUrl/",
                         "s"    to ""
                     )
