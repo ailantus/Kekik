@@ -88,8 +88,9 @@ class CizgiMax : MainAPI() {
                 date        = null
             )
         }
-        val episodes = mutableListOf(first_episode)
+        val episodes       = mutableListOf(first_episode)
         episodes.addAll(other_episodes)
+
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl = poster
@@ -108,10 +109,37 @@ class CizgiMax : MainAPI() {
 
             Log.d("CizgiMax", "data » $data")
             val document = app.get(data).document
-            val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: return false
+            val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
             Log.d("CizgiMax", "iframe » $iframe")
-            return false
 
-            // return true
+            var i_source: String? = null
+            var m3u_link: String? = null
+
+            if (iframe.contains("sibnet.ru")) {
+                i_source      = app.get("$iframe", referer="$mainUrl/").text
+                m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                if (m3u_link != null) {
+                    m3u_link = "https://video.sibnet.ru${m3u_link}"
+                }
+            }
+
+            Log.d("CizgiMax", "m3u_link » $m3u_link")
+            if (m3u_link == null) {
+                Log.d("CizgiMax", "i_source » $i_source")
+                return false
+            }
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = iframe,
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = m3u_link.contains(".m3u8")
+                )
+            )
+
+            return true
     }
 }
