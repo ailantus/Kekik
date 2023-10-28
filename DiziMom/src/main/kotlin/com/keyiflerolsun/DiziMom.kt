@@ -106,8 +106,8 @@ class DiziMom : MainAPI() {
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
             Log.d("DZM", "_iframe » $iframe")
 
-            val m3u_link: String? = null
-            val i_source: String? = null
+            var m3u_link: String? = null
+            var i_source: String? = null
 
             if (iframe.contains("hdmomplayer")) {
                 i_source = app.get("$iframe", referer="$mainUrl/").text
