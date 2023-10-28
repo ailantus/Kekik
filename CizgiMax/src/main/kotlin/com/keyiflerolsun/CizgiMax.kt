@@ -16,7 +16,7 @@ class CizgiMax : MainAPI() {
     override var lang               = "tr"
     override val hasQuickSearch     = false
     override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.TvSeries)
+    override val supportedTypes     = setOf(TvType.Cartoon)
 
     override val mainPage =
         mainPageOf(
@@ -42,7 +42,7 @@ class CizgiMax : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("span.movie-title a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("div.movie-poster img")?.attr("src"))
 
-        return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        return newTvSeriesSearchResponse(title, href, TvType.Cartoon) { this.posterUrl = posterUrl }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -93,7 +93,7 @@ class CizgiMax : MainAPI() {
         episodes.addAll(other_episodes)
 
 
-        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+        return newTvSeriesLoadResponse(title, url, TvType.Cartoon, episodes) {
             this.posterUrl = poster
             this.plot      = description
             this.tags      = tags
