@@ -133,11 +133,10 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                val video_sources = response.parsedSafe<VideoResponse>()?.videoSources
-                Log.d("DZM", "_video_sources » ${video_sources}")
-
+                val video_response = response.parsedSafe<VideoResponse>() ?: return false
+                val video_sources  = video_response.videoSources
                 if (video_sources != null && video_sources.isNotEmpty()) {
-                    m3u_link = video_sources[-1].file
+                    m3u_link = video_sources.last().file
                 }
             }
 
@@ -158,16 +157,14 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                val video_sources = response.parsedSafe<VideoResponse>()?.videoSources
-                Log.d("DZM", "_video_sources » ${video_sources}")
-
+                val video_response = response.parsedSafe<VideoResponse>() ?: return false
+                val video_sources  = video_response.videoSources
                 if (video_sources != null && video_sources.isNotEmpty()) {
-                    m3u_link = video_sources[-1].file
+                    m3u_link = video_sources.last().file
                 }
             }
 
             Log.d("DZM", "_m3u_link » $m3u_link")
-            Lod.d("DZM", "_isM3u8 » ${m3u_link.contains('.m3u8')}")
             if (m3u_link == null) {
                 Log.d("DZM", "_i_source » $i_source")
                 return false
