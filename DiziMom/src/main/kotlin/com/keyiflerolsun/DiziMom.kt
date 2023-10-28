@@ -118,7 +118,7 @@ class DiziMom : MainAPI() {
             if (iframe.contains("hdmomplayer")) {
                 i_source      = app.get("$iframe", referer="$mainUrl/").text
                 m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-                val track_str = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
                 if (track_str != null) {
                     tracks = objectMapper.readValue("[$track_str]")
                 }
