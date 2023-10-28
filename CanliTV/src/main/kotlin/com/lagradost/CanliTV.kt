@@ -29,14 +29,14 @@ class CanliTV : MainAPI() {
                 val streamurl = channel.url.toString()
                 val channelname = channel.title.toString()
                 val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-language"].toString()
+                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
                     this@CanliTV.name,
                     TvType.Live,
                     posterurl,
-                    lang = channel.attributes["tvg-language"]
+                    lang = channel.attributes["tvg-country"]
                 )
             }
             HomePageList(
@@ -54,7 +54,7 @@ class CanliTV : MainAPI() {
                 val streamurl = channel.url.toString()
                 val channelname = channel.attributes["tvg-id"].toString()
                 val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-language"].toString()
+                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
