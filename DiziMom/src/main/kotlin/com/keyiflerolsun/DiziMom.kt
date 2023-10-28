@@ -101,17 +101,17 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "data » $data")
+            Log.d("DZM", "_data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "iframe » $iframe")
+            Log.d("DZM", "_iframe » $iframe")
 
             if (iframe.contains("hdmomplayer")) {
                 val i_source = app.get("$iframe", referer="$mainUrl/").text
                 val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-                Log.d("DZM", "m3u_link » $m3u_link")
+                Log.d("DZM", "_m3u_link » $m3u_link")
                 if (m3u_link == null) {
-                    Log.d("DZM", "i_source » $i_source")
+                    Log.d("DZM", "_i_source » $i_source")
                     return false
                 }
     
@@ -131,18 +131,19 @@ class DiziMom : MainAPI() {
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val i_source = app.post(
-                    "https://hdplayersystem.live/player/index.php?data=$vid_id&do=getVideo",
-                    referer = "$mainUrl/",
-                    data    = mapOf(
+                    "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo",
+                    data = mapOf(
                         "hash" to vid_id,
                         "r"    to "$mainUrl/",
                     )
                 ).text
-                Log.d("DZM", "i_source » $i_source")
-
-                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: return false
+                val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                if (vid_extract == null) {
+                    Log.d("DZM", "_i_source » $i_source")
+                    return false
+                }
                 val m3u_link    = vid_extract.replace("\\", "")
-                Log.d("DZM", "m3u_link » $m3u_link")
+                Log.d("DZM", "_m3u_link » $m3u_link")
     
                 callback.invoke(
                     ExtractorLink(
@@ -159,19 +160,20 @@ class DiziMom : MainAPI() {
             if (iframe.contains("peacemakerst")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val i_source = app.post(
-                    "https://peacemakerst.com/tv/video/$vid_id?do=getVideo",
-                    referer = "$mainUrl/",
-                    data    = mapOf(
+                    "https://peacemakerst.com/tv/video/${vid_id}?do=getVideo",
+                    data = mapOf(
                         "hash" to vid_id,
                         "r"    to "$mainUrl/",
                         "s"    to ""
                     )
                 ).text
-                Log.d("DZM", "i_source » $i_source")
-
-                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1) ?: return false
+                val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
+                if (vid_extract == null) {
+                    Log.d("DZM", "_i_source » $i_source")
+                    return false
+                }
                 val m3u_link    = vid_extract.replace("\\", "")
-                Log.d("DZM", "m3u_link » $m3u_link")
+                Log.d("DZM", "_m3u_link » $m3u_link")
     
                 callback.invoke(
                     ExtractorLink(
