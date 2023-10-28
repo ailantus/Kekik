@@ -40,7 +40,7 @@ class CizgiMax : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("span.movie-title")?.text()?.substringBefore(" Türkçe İzle") ?: return null
         val href      = fixUrlNull(this.selectFirst("span.movie-title a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("span.center-icons img")?.attr("src"))
+        val posterUrl = fixUrlNull(this.selectFirst("div.movie-poster img")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -63,7 +63,7 @@ class CizgiMax : MainAPI() {
         val rating      = document.selectFirst("span.imdb-rating")?.text()?.substringBefore("IMDB Puanı")?.trim()?.toRatingInt()
 
 
-        Episode(
+        val first_episode  = Episode(
             data        = url,
             name        = "BÖLÜM 1",
             season      = 1,
@@ -72,7 +72,7 @@ class CizgiMax : MainAPI() {
             rating      = null,
             date        = null
         )
-        val episodes    = document.select("a.post-page-numbers").mapNotNull {
+        val other_episodes = document.select("a.post-page-numbers").mapNotNull {
             val ep_name    = it.selectFirst("div.part-name")?.text()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
             val ep_episode = Regex("""BÖLÜM (\d+)""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
@@ -88,6 +88,8 @@ class CizgiMax : MainAPI() {
                 date        = null
             )
         }
+        val episodes = mutableListOf(first_episode)
+        episodes.addAll(other_episodes)
 
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl = poster
