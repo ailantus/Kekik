@@ -102,10 +102,10 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "_data » $data")
+            Log.d("DZM", "data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "_iframe » $iframe")
+            Log.d("DZM", "iframe » $iframe")
 
 
             var i_source: String? = null
@@ -119,7 +119,7 @@ class DiziMom : MainAPI() {
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                Log.d("DZM", "_post_url » $post_url")
+                Log.d("DZM", "post_url » $post_url")
 
                 val response = app.post(
                     post_url,
@@ -142,7 +142,7 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
                 val post_url = "${iframe}?do=getVideo"
-                Log.d("DZM", "_post_url » $post_url")
+                Log.d("DZM", "post_url » $post_url")
 
                 val response = app.post(
                     post_url,
@@ -164,9 +164,9 @@ class DiziMom : MainAPI() {
                 }
             }
 
-            Log.d("DZM", "_m3u_link » $m3u_link")
+            Log.d("DZM", "m3u_link » $m3u_link")
             if (m3u_link == null) {
-                Log.d("DZM", "_i_source » $i_source")
+                Log.d("DZM", "i_source » $i_source")
                 return false
             }
 
