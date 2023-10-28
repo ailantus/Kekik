@@ -101,24 +101,24 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "data » $data")
+            Log.d("DZM", "_data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "iframe » $iframe")
+            Log.d("DZM", "_iframe » $iframe")
 
             val m3u_link: String? = null
             val i_source: String? = null
 
             if (iframe.contains("hdmomplayer")) {
-                val i_source = app.get("$iframe", referer="$mainUrl/").text
-                val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                i_source = app.get("$iframe", referer="$mainUrl/").text
+                m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
             }
 
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://peacemakerst.com/tv/video/${vid_id}?do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
-                val i_source = app.post(
+                Log.d("DZM", "_post_url » $post_url")
+                i_source = app.post(
                     post_url,
                     data = mapOf(
                         "hash" to vid_id,
@@ -126,14 +126,14 @@ class DiziMom : MainAPI() {
                     )
                 ).text
                 val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-                val m3u_link    = vid_extract?.replace("\\", "")
+                m3u_link        = vid_extract?.replace("\\", "")
             }
 
             if (iframe.contains("peacemakerst")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://peacemakerst.com/tv/video/${vid_id}?do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
-                val i_source = app.post(
+                Log.d("DZM", "_post_url » $post_url")
+                i_source = app.post(
                     post_url,
                     data = mapOf(
                         "hash" to vid_id,
@@ -142,15 +142,15 @@ class DiziMom : MainAPI() {
                     )
                 ).text
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
-                val m3u_link    = vid_extract?.replace("\\", "")
+                m3u_link        = vid_extract?.replace("\\", "")
             }
 
 
             if (m3u_link == null) {
-                Log.d("DZM", "i_source » $i_source")
+                Log.d("DZM", "_i_source » $i_source")
                 return false
             }
-            Log.d("DZM", "m3u_link » $m3u_link")
+            Log.d("DZM", "_m3u_link » $m3u_link")
 
             callback.invoke(
                 ExtractorLink(
