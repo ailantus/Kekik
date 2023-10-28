@@ -124,9 +124,9 @@ class DiziMom : MainAPI() {
                     post_url,
                     data = mapOf(
                         "hash" to vid_id,
-                        "r"    to "$mainUrl/",
+                        "r"    to "$mainUrl/"
                     ),
-                    referer = "$mainUrl/"
+                    referer = "$mainUrl/",
                     headers = mapOf(
                         "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                         "X-Requested-With" to "XMLHttpRequest"
@@ -148,7 +148,7 @@ class DiziMom : MainAPI() {
                         "r"    to "$mainUrl/",
                         "s"    to ""
                     ),
-                    referer = "$mainUrl/"
+                    referer = "$mainUrl/",
                     headers = mapOf(
                         "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                         "X-Requested-With" to "XMLHttpRequest"
