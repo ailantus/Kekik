@@ -127,14 +127,12 @@ class DiziMom : MainAPI() {
 
                 Log.d("DZM", "tracks » $tracks")
                 for (track in tracks) {
-                    if (track.file != null) {
-                        subtitleCallback.invoke(
-                            SubtitleFile(
-                                lang = track.label,
-                                url  = fixUrl("https://hdmomplayer.com" + track.file)
-                            )
+                    subtitleCallback.invoke(
+                        SubtitleFile(
+                            lang = track.label,
+                            url  = fixUrl("https://hdmomplayer.com" + track.file)
                         )
-                    }
+                    )
                 }
             }
 
@@ -157,7 +155,7 @@ class DiziMom : MainAPI() {
                 )
                 val video_response = response.parsedSafe<VideoResponse>() ?: return false
                 val video_sources  = video_response.videoSources
-                if (video_sources != null && video_sources.isNotEmpty()) {
+                if (video_sources.isNotEmpty()) {
                     m3u_link = video_sources.last().file
                 }
             }
@@ -181,7 +179,7 @@ class DiziMom : MainAPI() {
                 )
                 val video_response = response.parsedSafe<VideoResponse>() ?: return false
                 val video_sources  = video_response.videoSources
-                if (video_sources != null && video_sources.isNotEmpty()) {
+                if (video_sources.isNotEmpty()) {
                     m3u_link = video_sources.last().file
                 }
             }
@@ -220,10 +218,10 @@ class DiziMom : MainAPI() {
     )
 
     data class Track(
-        @JsonProperty("file") val file: String?,
-        @JsonProperty("label") val label: String?,
-        @JsonProperty("kind") val kind: String?,
-        @JsonProperty("language") val language: String?,
-        @JsonProperty("default") val default: Any?
+        @JsonProperty("file") val file: String,
+        @JsonProperty("label") val label: String,
+        @JsonProperty("kind") val kind: String,
+        @JsonProperty("language") val language: String,
+        @JsonProperty("default") val default: String
     )
 }
