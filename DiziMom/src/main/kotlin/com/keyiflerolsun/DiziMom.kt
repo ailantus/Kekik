@@ -123,6 +123,11 @@ class DiziMom : MainAPI() {
                     data = mapOf(
                         "hash" to vid_id,
                         "r"    to "$mainUrl/",
+                    ),
+                    referer = "$mainUrl/"
+                    headers = mapOf(
+                        "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With" to "XMLHttpRequest"
                     )
                 ).text
                 val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
@@ -138,6 +143,11 @@ class DiziMom : MainAPI() {
                         "hash" to iframe.substringAfter("video/"),
                         "r"    to "$mainUrl/",
                         "s"    to ""
+                    ),
+                    referer = "$mainUrl/"
+                    headers = mapOf(
+                        "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With" to "XMLHttpRequest"
                     )
                 ).text
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
