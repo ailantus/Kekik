@@ -23,7 +23,7 @@ class CanliTV : MainAPI() {
         request : MainPageRequest
     ): HomePageResponse {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        return HomePageResponse(data.items.groupBy{it.attributes["tvg-language"]}.map { group ->
+        return HomePageResponse(data.items.groupBy{it.attributes["group-title"]}.map { group ->
             val title = group.key ?: ""
             val show = group.value.map { channel ->
                 val streamurl = channel.url.toString()
