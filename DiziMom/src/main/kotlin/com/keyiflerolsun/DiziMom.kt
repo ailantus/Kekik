@@ -110,10 +110,10 @@ class DiziMom : MainAPI() {
             Log.d("DZM", "_iframe » $iframe")
 
 
-            var i_source: String?    = null
-            var m3u_link: String?    = null
-            val objectMapper         = jacksonObjectMapper()
-            var tracks: List<Track?> = emptyList()
+            var i_source: String?   = null
+            var m3u_link: String?   = null
+            val objectMapper        = jacksonObjectMapper()
+            var tracks: List<Track> = emptyList()
 
             if (iframe.contains("hdmomplayer")) {
                 i_source      = app.get("$iframe", referer="$mainUrl/").text
