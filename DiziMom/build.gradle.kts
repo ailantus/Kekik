@@ -12,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 3 // will be 3 if unspecified
+    status  = 1 // will be 3 if unspecified
     tvTypes = listOf("TvSeries")
     iconUrl = "https://www.google.com/s2/favicons?domain=www.dizimom.pro&sz=%size%"
 }
