@@ -136,7 +136,9 @@ class DiziMom : MainAPI() {
                 val video_sources = response.parsedSafe<VideoResponse>()?.videoSources
                 Log.d("DZM", "_video_sources » ${video_sources}")
 
-                m3u_link = video_sources[0].file
+                if (video_sources != null && video_sources.isNotEmpty()) {
+                    m3u_link = video_sources[0].file
+                }
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
@@ -159,7 +161,9 @@ class DiziMom : MainAPI() {
                 val video_sources = response.parsedSafe<VideoResponse>()?.videoSources
                 Log.d("DZM", "_video_sources » ${video_sources}")
 
-                m3u_link = video_sources[0].file
+                if (video_sources != null && video_sources.isNotEmpty()) {
+                    m3u_link = video_sources[0].file
+                }
             }
 
             Log.d("DZM", "_m3u_link » $m3u_link")
