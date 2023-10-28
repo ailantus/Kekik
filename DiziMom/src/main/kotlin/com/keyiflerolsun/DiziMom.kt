@@ -101,13 +101,14 @@ class DiziMom : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("DZM", "data » $data")
+            Log.d("DZM", "_data » $data")
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "iframe » $iframe")
+            Log.d("DZM", "_iframe » $iframe")
 
-            var m3u_link: String? = null
+
             var i_source: String? = null
+            var m3u_link: String? = null
 
             if (iframe.contains("hdmomplayer")) {
                 i_source = app.get("$iframe", referer="$mainUrl/").text
@@ -117,7 +118,8 @@ class DiziMom : MainAPI() {
             if (iframe.contains("hdplayersystem")) {
                 val vid_id   = iframe.substringAfter("video/")
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
+                Log.d("DZM", "_post_url » $post_url")
+
                 i_source = app.post(
                     post_url,
                     data = mapOf(
@@ -130,13 +132,15 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 ).text
+
                 val vid_extract = Regex("""securedLink\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
                 m3u_link        = vid_extract?.replace("\\", "")
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
                 val post_url = "${iframe}?do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
+                Log.d("DZM", "_post_url » $post_url")
+
                 i_source = app.post(
                     post_url,
                     data = mapOf(
@@ -150,16 +154,16 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 ).text
+
                 val vid_extract = Regex("""file\":\"([^\"]+)""").find(i_source)?.groupValues?.get(-1)
                 m3u_link        = vid_extract?.replace("\\", "")
             }
 
-
+            Log.d("DZM", "_m3u_link » $m3u_link")
             if (m3u_link == null) {
-                Log.d("DZM", "i_source » $i_source")
+                Log.d("DZM", "_i_source » $i_source")
                 return false
             }
-            Log.d("DZM", "m3u_link » $m3u_link")
 
             callback.invoke(
                 ExtractorLink(
