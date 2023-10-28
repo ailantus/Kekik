@@ -105,7 +105,13 @@ class DiziMom : MainAPI() {
         ): Boolean {
 
             Log.d("DZM", "_data » $data")
-            val document = app.get(data, headers=mapOf("Cookie" to "wordpress_logged_in_94427965a200eb7dd292509ed2c7c018=keyiflerolsun|1699733740|0JIZp47atdM5omDeHKtXggF9zuccfZvzTDiAowU7lmA|02b7bca0910b49d5d3d44ed24c2cf7181ecbd006ce747ddd7b824f07343a305f")).document
+            val document = app.get(
+                data,
+                headers = mapOf(
+                    "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                    "Cookie"     to "wordpress_logged_in_94427965a200eb7dd292509ed2c7c018=keyiflerolsun|1699733740|0JIZp47atdM5omDeHKtXggF9zuccfZvzTDiAowU7lmA|02b7bca0910b49d5d3d44ed24c2cf7181ecbd006ce747ddd7b824f07343a305f"
+                )
+            ).document
             val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
             Log.d("DZM", "_iframe » $iframe")
 
