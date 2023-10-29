@@ -1,8 +1,9 @@
 # ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from httpx  import Client as Session
-from parsel import Selector
-from re     import findall
+from Kekik.cli import konsol
+from httpx     import Client as Session
+from parsel    import Selector
+from re        import findall
 import base64, json
 
 def atob(s:str) -> str:
@@ -42,16 +43,21 @@ def fullhdfilmizlesene(url:str) -> str:
     oturum = Session()
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
 
-    istek  = oturum.get("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/")
+    konsol.print(f"\n\n{url}")
+    istek  = oturum.get(url)
     secici = Selector(istek.text)
 
     script = secici.xpath("(//script)[1]").get()
 
     scx_data = json.loads(findall(r'scx = (.*?);', script)[0])
+    konsol.print(scx_data)
+    konsol.print(scx_data.keys())
+    konsol.print(scx_data["atom"].keys())
     scx      = scx_decode(scx_data)
 
     rapidvid = scx["atom"]["sx"]["t"][0]
 
     return rapid2m3u8(rapidvid)
 
-print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/makine-2/"))
