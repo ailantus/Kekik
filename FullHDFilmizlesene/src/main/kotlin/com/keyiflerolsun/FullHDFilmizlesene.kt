@@ -135,23 +135,23 @@ class FullHDFilmizlesene : MainAPI() {
         scx.atom.tt = atob(scx.atom.tt)
         scx.atom.sx.t = scx.atom.sx.t.map { atob(rtt(it)) }
         return scx
-    }    
+    }
 
     private fun getRapidLink(document: Document): String? {
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
         val script_content = script_element?.data()?.trim() ?: return null
-    
+
         val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return null
-    
+
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
         val scx_decode       = scxDecode(scx_map)
-    
+
         val t_list = scx_decode.atom.sx.t
         if (t_list.isEmpty()) return null
         Log.d("FHD", "t_list » $t_list")
-    
+
         return t_list[0]
-    }    
+    }
 
     private fun rapidToM3u8(rapid: String): String? {
         val extracted_value = Regex("""file": "(.*)",""").find(rapid)?.groupValues?.get(1) ?: return null
@@ -196,13 +196,13 @@ class FullHDFilmizlesene : MainAPI() {
     data class SCXData(
         @JsonProperty("atom") val atom: AtomData
     )
-    
+
     data class AtomData(
         @JsonProperty("tt") var tt: String,
         @JsonProperty("sx") var sx: SXData,
         @JsonProperty("order") var order: Int?
     )
-    
+
     data class SXData(
         @JsonProperty("t") var t: List<String>,
         @JsonProperty("p") var p: List<String?> = emptyList()
