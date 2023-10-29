@@ -13,9 +13,11 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 [![ForTheBadge made-with-kotlin](http://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
 
-**[» Bizim Repo'yu Yüklemek için Tıkla «](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
+> **[» Bizim Repo'yu Yüklemek için Tıkla «](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
 
 [![Video](https://img.youtube.com/vi/39x9FDTG9QA/hqdefault.jpg)](https://www.youtube.com/embed/39x9FDTG9QA)
+
+---
 
 ## 📱 Repo İçeriği
 
@@ -45,6 +47,6 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 **[☕️ Kahve Ismarla](https://KekikAkademi.org/Kahve)**
 
-##
+---
 
 > **[@KekikAkademi](https://t.me/KekikAkademi)** *için yazılmıştır..*
