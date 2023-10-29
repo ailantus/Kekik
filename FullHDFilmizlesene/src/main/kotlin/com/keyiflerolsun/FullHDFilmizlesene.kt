@@ -175,7 +175,7 @@ class FullHDFilmizlesene : MainAPI() {
             val document = app.get(data).document
             val iframe   = document.selectFirst("div#plx iframe")?.attr("src")
 
-            var rapid    = app.get(rapidvid).text
+            var rapid    = app.get(iframe).text
             var m3u_link = rapidToM3u8(rapid)
             if (m3u_link == null) {
                 val rapidvid = getRapidLink(document) ?: return false
