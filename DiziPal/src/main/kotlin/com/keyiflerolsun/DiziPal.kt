@@ -9,7 +9,6 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 
-
 class DiziPal : MainAPI() {
     override var mainUrl            = "https://dizipal640.com"
     override var name               = "DiziPal"
@@ -89,13 +88,10 @@ class DiziPal : MainAPI() {
             val ep_season  = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(0)?.replace(".", "")?.toIntOrNull()
 
             Episode(
-                data        = ep_href,
-                name        = ep_name,
-                season      = ep_season,
-                episode     = ep_episode,
-                posterUrl   = null,
-                rating      = null,
-                date        = null
+                data    = ep_href,
+                name    = ep_name,
+                season  = ep_season,
+                episode = ep_episode
             )
         }
 

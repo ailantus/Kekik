@@ -13,7 +13,6 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 
-
 class DiziMom : MainAPI() {
     override var mainUrl            = "https://www.dizimom.pro"
     override var name               = "DiziMom"
@@ -77,13 +76,10 @@ class DiziMom : MainAPI() {
             val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
-                data        = ep_href,
-                name        = ep_name,
-                season      = ep_season,
-                episode     = ep_episode,
-                posterUrl   = null,
-                rating      = null,
-                date        = null
+                data    = ep_href,
+                name    = ep_name,
+                season  = ep_season,
+                episode = ep_episode
             )
         }
 

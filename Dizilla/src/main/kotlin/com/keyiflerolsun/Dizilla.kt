@@ -10,7 +10,6 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
-
 class Dizilla : MainAPI() {
     override var mainUrl            = "https://dizilla.club"
     override var name               = "Dizilla"
@@ -116,7 +115,6 @@ class Dizilla : MainAPI() {
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.trim().toRatingInt()
         val duration    = Regex("(\\d+)").find(document.select("div.gap-3 span.text-sm").get(1).text() ?: "")?.value?.toIntOrNull()
-
         val actors      = document.select("[href*='oyuncu']").map {
             Actor(it.text())
         }
@@ -136,10 +134,7 @@ class Dizilla : MainAPI() {
                 name        = ep_name,
                 season      = ep_season,
                 episode     = ep_episode,
-                posterUrl   = null,
-                rating      = null,
-                description = ep_description,
-                date        = null
+                description = ep_description
             )
         }
 

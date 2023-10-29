@@ -63,6 +63,9 @@ class PornHub : MainAPI() {
         val tags            = document.select("div.categoriesWrapper a[data-label='Category']").map { it?.text()?.trim().toString().replace(", ","") }
         val rating          = document.selectFirst("span.percent")?.text()?.first()?.toString()?.toRatingInt()
         val duration        = Regex("duration' : '(.*)',").find(document.html())?.groupValues?.get(1)?.toIntOrNull()
+        val actors          = document.select("div.pornstarsWrapper a[data-label='Pornstar']").mapNotNull {
+            Actor(it.text().trim(), it.select("img").attr("src"))
+        }
 
         val recommendations = document.selectXpath("//a[contains(@class, 'img')]").mapNotNull {
             val recName      = it?.attr("title")?.trim() ?: return@mapNotNull null
@@ -71,10 +74,6 @@ class PornHub : MainAPI() {
             newMovieSearchResponse(recName, recHref, TvType.NSFW) {
                 this.posterUrl = recPosterUrl
             }
-        }
-
-        val actors          = document.select("div.pornstarsWrapper a[data-label='Pornstar']").mapNotNull {
-            Actor(it.text().trim(), it.select("img").attr("src"))
         }
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {

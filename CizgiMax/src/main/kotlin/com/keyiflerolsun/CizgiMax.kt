@@ -8,7 +8,6 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
-
 class CizgiMax : MainAPI() {
     override var mainUrl            = "https://cizgimax.online"
     override var name               = "CizgiMax"
@@ -65,13 +64,10 @@ class CizgiMax : MainAPI() {
 
         val first_ep_name  = document.selectFirst("div.active div.part-name")?.text()?.trim() ?: "Filmi İzle"
         val first_episode  = Episode(
-            data        = url,
-            name        = first_ep_name,
-            season      = Regex("""S(\d+) BÖLÜM""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
-            episode     = Regex("""BÖLÜM (\d+)""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
-            posterUrl   = null,
-            rating      = null,
-            date        = null
+            data    = url,
+            name    = first_ep_name,
+            season  = Regex("""S(\d+) BÖLÜM""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
+            episode = Regex("""BÖLÜM (\d+)""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
         )
         val other_episodes = document.select("a.post-page-numbers").mapNotNull {
             val ep_name    = it.selectFirst("div.part-name")?.text()?.trim() ?: return@mapNotNull null
@@ -80,13 +76,10 @@ class CizgiMax : MainAPI() {
             val ep_season  = Regex("""S(\d+) BÖLÜM""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
-                data        = ep_href,
-                name        = ep_name,
-                season      = ep_season,
-                episode     = ep_episode,
-                posterUrl   = null,
-                rating      = null,
-                date        = null
+                data    = ep_href,
+                name    = ep_name,
+                season  = ep_season,
+                episode = ep_episode
             )
         }
         val episodes       = mutableListOf(first_episode)
@@ -113,11 +106,10 @@ class CizgiMax : MainAPI() {
             val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
             Log.d("CZGM", "iframe » $iframe")
 
-            var i_source: String? = null
+            var i_source          = app.get("$iframe", referer="$mainUrl/").text
             var m3u_link: String? = null
 
             if (iframe.contains("sibnet.ru")) {
-                i_source      = app.get("$iframe", referer="$mainUrl/").text
                 m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
                 if (m3u_link != null) {
                     m3u_link = "https://video.sibnet.ru${m3u_link}"

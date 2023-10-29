@@ -6,6 +6,7 @@ import android.util.Log
 import android.util.Base64
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Document
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -13,7 +14,6 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
-
 
 class FullHDFilmizlesene : MainAPI() {
     override var mainUrl            = "https://www.fullhdfilmizlesene.pw"
@@ -87,6 +87,12 @@ class FullHDFilmizlesene : MainAPI() {
         val tags            = document.select("a[rel='category tag']").map { it.text() }
         val rating          = document.selectFirst("div.puanx-puan")?.text()?.split(" ")?.last()?.toRatingInt()
         val duration        = document.selectFirst("span.sure")?.text()?.split(" ")?.get(0)?.trim()?.toIntOrNull()
+        val trailer         = Regex("""embedUrl\": \"(.*)\"""").find(document.html())?.groupValues?.get(1)
+        val actors          = document.select("div.film-info ul li:nth-child(2) a > span").map {
+            Actor(it.text())
+        }
+
+
         val recommendations = document.selectXpath("//div[span[text()='Benzer Filmler']]/following-sibling::section/ul/li").mapNotNull {
             val recName      = it.selectFirst("span.film-title")?.text() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
@@ -95,12 +101,6 @@ class FullHDFilmizlesene : MainAPI() {
                 this.posterUrl = recPosterUrl
             }
         }
-
-        val actors = document.select("div.film-info ul li:nth-child(2) a > span").map {
-            Actor(it.text())
-        }
-
-        val trailer = Regex("""embedUrl\": \"(.*)\"""").find(document.html())?.groupValues?.get(1)
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
@@ -131,40 +131,27 @@ class FullHDFilmizlesene : MainAPI() {
         return s.map { rot13Char(it) }.joinToString("")
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Any> {
-        for ((key, item) in scx) {
-            item["tt"] = atob(item["tt"] as String)
-            val sx = item["sx"] as MutableMap<String, Any>
-            sx["t"]?.let { tList ->
-                sx["t"] = (tList as List<String>).map { atob(rtt(it)) }
-            }
-            sx["p"]?.let { pList ->
-                sx["p"] = (pList as List<String>).map { atob(rtt(it)) }
-            }
-            item["sx"] = sx
-            scx[key] = item
-        }
+    private fun scxDecode(scx: SCXData): SCXData {
+        scx.atom.tt = atob(scx.atom.tt)
+        scx.atom.sx.t = scx.atom.sx.t.map { atob(rtt(it)) }
+        scx.atom.sx.p = scx.atom.sx.p.map { atob(rtt(it)) }
         return scx
-    }
+    }    
 
     private fun getRapidLink(document: Document): String? {
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
         val script_content = script_element?.data()?.trim() ?: return null
     
         val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return null
-
-        val objectMapper = jacksonObjectMapper()
-        val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
-        val scx_decode   = scxDecode(scx_map)
     
-        val atom_map = scx_decode["atom"] as? Map<String, Any> ?: return null
-        val sx_map   = atom_map["sx"] as? Map<String, Any> ?: return null
-        val t_list   = sx_map["t"] as? List<String> ?: return null
-        if (t_list.isEmpty()) return null
-        Log.d("FHD", "t_list » $t_list")
+        val scxData: SCXData = jacksonObjectMapper().readValue(scx_data)
+        val scxDecode = scxDecode(scxData)
     
-        return t_list[0]
+        val tList = scxDecode.atom.sx.t
+        if (tList.isEmpty()) return null
+        Log.d("FHD", "t_list » $tList")
+    
+        return tList[0]
     }
 
     private fun rapidToM3u8(rapid: String): String? {
@@ -204,4 +191,18 @@ class FullHDFilmizlesene : MainAPI() {
 
             return true
     }
+
+    data class SCXData(
+        @JsonProperty("atom") val atom: AtomData
+    )
+    
+    data class AtomData(
+        @JsonProperty("tt") var tt: String,
+        @JsonProperty("sx") var sx: SXData
+    )
+    
+    data class SXData(
+        @JsonProperty("t") var t: List<String>,
+        @JsonProperty("p") var p: List<String>
+    )    
 }
