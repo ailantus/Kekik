@@ -1,6 +1,6 @@
 // ! https://github.com/recloudstream/extensions/blob/master/InvidiousProvider/src/main/kotlin/recloudstream/InvidiousProvider.kt
 
-package recloudstream
+package com.recloudstream
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
@@ -101,7 +101,7 @@ class YouTube : MainAPI() {
                         ActorData(
                             Actor(
                                 author,
-                                authorThumbnails.get(authorThumbnails.size - 1)?.url ?: ""
+                                if (authorThumbnails.isNotEmpty()) authorThumbnails.last().url else ""
                             ),
                             roleString = "Author"
                         )
