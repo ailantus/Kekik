@@ -131,12 +131,28 @@ class FullHDFilmizlesene : MainAPI() {
         return s.map { rot13Char(it) }.joinToString("")
     }
 
-    private fun scxDecode(scx: SCXData): SCXData {
-        scx.atom.tt = atob(scx.atom.tt)
-        scx.atom.sx.t = scx.atom.sx.t.map { atob(rtt(it)) }
-        scx.atom.sx.p = scx.atom.sx.p.map { atob(rtt(it)) }
+    // private fun scxDecode(scx: SCXData): SCXData {
+    //     scx.atom.tt = atob(scx.atom.tt)
+    //     scx.atom.sx.t = scx.atom.sx.t.map { atob(rtt(it)) }
+    //     scx.atom.sx.p = scx.atom.sx.p.map { atob(rtt(it)) }
+    //     return scx
+    // }
+
+    private fun scxDecode(scx: MutableMap<String, MutableMap<String, Any>>): Map<String, Any> {
+        for ((key, item) in scx) {
+            item["tt"] = atob(item["tt"] as String)
+            val sx = item["sx"] as MutableMap<String, Any>
+            sx["t"]?.let { tList ->
+                sx["t"] = (tList as List<String>).map { atob(rtt(it)) }
+            }
+            sx["p"]?.let { pList ->
+                sx["p"] = (pList as List<String>).map { atob(rtt(it)) }
+            }
+            item["sx"] = sx
+            scx[key] = item
+        }
         return scx
-    }    
+    }
 
     private fun getRapidLink(document: Document): String? {
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
@@ -144,14 +160,24 @@ class FullHDFilmizlesene : MainAPI() {
     
         val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return null
     
-        val scxData: SCXData = jacksonObjectMapper().readValue(scx_data)
-        val scxDecode = scxDecode(scxData)
+        // val scxData: SCXData = jacksonObjectMapper().readValue(scx_data)
+        // val scxDecode = scxDecode(scxData)
     
-        val tList = scxDecode.atom.sx.t
-        if (tList.isEmpty()) return null
-        Log.d("FHD", "t_list » $tList")
+        // val tList = scxDecode.atom.sx.t
+        // if (tList.isEmpty()) return null
+        // Log.d("FHD", "t_list » $tList")
+
+        val objectMapper = jacksonObjectMapper()
+        val scx_map: MutableMap<String, MutableMap<String, Any>> = objectMapper.readValue(scx_data)
+        val scx_decode   = scxDecode(scx_map)
     
-        return tList[0]
+        val atom_map = scx_decode["atom"] as? Map<String, Any> ?: return null
+        val sx_map   = atom_map["sx"] as? Map<String, Any> ?: return null
+        val t_list   = sx_map["t"] as? List<String> ?: return null
+        if (t_list.isEmpty()) return null
+        Log.d("FHD", "t_list » $t_list")
+    
+        return t_list[0]
     }
 
     private fun rapidToM3u8(rapid: String): String? {
@@ -173,16 +199,10 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD", "data » $data")
             val document = app.get(data).document
-            val iframe   = document.selectFirst("div#plx iframe")?.attr("src") ?: return false
+            val rapidvid = getRapidLink(document) ?: return false
 
-            var rapid    = app.get(iframe).text
-            var m3u_link = rapidToM3u8(rapid)
-            if (m3u_link == null) {
-                val rapidvid = getRapidLink(document) ?: return false
-
-                rapid    = app.get(rapidvid).text
-                m3u_link = rapidToM3u8(rapid) ?: return false
-            }
+            val rapid    = app.get(rapidvid).text
+            val m3u_link = rapidToM3u8(rapid) ?: return false
 
             callback.invoke(
                 ExtractorLink(
