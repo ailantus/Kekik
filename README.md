@@ -4,7 +4,7 @@
 ![Görüntülenme](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/keyiflerolsun/Kekik-cloudstream&title=Görüntülenme)
 <a href="https://KekikAkademi.org/Kahve" target="_blank"><img src="https://img.shields.io/badge/☕️-Kahve Ismarla-ffdd00" title="☕️ Kahve Ismarla" style="padding-left:5px;"></a>
 
-[![CloudStream Derleyici](https://img.shields.io/github/actions/workflow/status/keyiflerolsun/Kekik-cloudstream/Derle.yml?label=CloudStream%20Derleyici&logo=github)](https://github.com/keyiflerolsun/Kekik-cloudstream/blob/master/.github/workflows/Derle.yml)
+[![CloudStream Derleyici](https://img.shields.io/github/actions/workflow/status/keyiflerolsun/Kekik-cloudstream/Derleyici.yml?label=CloudStream%20Derleyici&logo=github)](https://github.com/keyiflerolsun/Kekik-cloudstream/blob/master/.github/workflows/Derleyici.yml)
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
