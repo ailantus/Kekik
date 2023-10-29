@@ -173,10 +173,16 @@ class FullHDFilmizlesene : MainAPI() {
 
             Log.d("FHD", "data » $data")
             val document = app.get(data).document
-            val rapidvid = getRapidLink(document) ?: return false
+            val iframe   = document.selectFirst("div#plx iframe")?.attr("src")
 
-            val rapid    = app.get(rapidvid).text
-            val m3u_link = rapidToM3u8(rapid) ?: return false
+            var rapid    = app.get(rapidvid).text
+            var m3u_link = rapidToM3u8(rapid)
+            if (m3u_link == null) {
+                val rapidvid = getRapidLink(document) ?: return false
+
+                rapid    = app.get(rapidvid).text
+                m3u_link = rapidToM3u8(rapid) ?: return false
+            }
 
             callback.invoke(
                 ExtractorLink(
