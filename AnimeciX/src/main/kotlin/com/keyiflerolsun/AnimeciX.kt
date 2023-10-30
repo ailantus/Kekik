@@ -36,8 +36,8 @@ class AnimeciX : MainAPI() {
         @JsonProperty("results") val results: List<AnimeSearch>,
     )
 
-    data class Tile(
-        @JsonProperty("tile") val tile: Anime,
+    data class Title(
+        @JsonProperty("title") val title: Anime,
     )
 
     data class Pagination(
@@ -112,17 +112,17 @@ class AnimeciX : MainAPI() {
         val episodes = emptyList<Episode>()
 
         return newTvSeriesLoadResponse(
-            response.tile.title,
-            "$mainUrl/titles/${response.tile.id}",
+            response.title.title,
+            "$mainUrl/titles/${response.title.id}",
             TvType.Anime,
             episodes
         ) {
-            this.posterUrl = response.tile.poster
-            this.year      = response.tile.year
-            this.plot      = response.tile.description
-            this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
-            this.rating    = response.tile.rating.toRatingInt()
-            addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
+            this.posterUrl = response.title.poster
+            this.year      = response.title.year
+            this.plot      = response.title.description
+            this.tags      = response.title.tags?.filterNotNull()?.map { it.name }
+            this.rating    = response.title.rating.toRatingInt()
+            addActors(response.title.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
         }
     }
 
