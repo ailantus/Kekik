@@ -21,12 +21,18 @@ class AnimeciX : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Anime)
 
+    // ! CloudFlare bypass
+    override var sequentialMainPage = true
+    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
+    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+
     override val mainPage =
         mainPageOf(
-            "$mainUrl/secure/titles?genre=action&onlyStreamable=true" to "Aksiyon",
-            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true" to "Komedi",
-            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"  to "Dram",
-            "$mainUrl/secure/titles?genre=harem&onlyStreamable=true"  to "Harem"
+            "$mainUrl/secure/titles?genre=action&onlyStreamable=true"  to "Aksiyon",
+            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"   to "Dram",
+            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem",
+            "$mainUrl/secure/titles?genre=harem&onlyStreamable=true"   to "Harem",
+            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true"  to "Komedi"
         )
 
     data class Category(
@@ -63,7 +69,7 @@ class AnimeciX : MainAPI() {
         val response = app.get(request.data + "&page=${page}&perPage=10").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
-            newTvSeriesSearchResponse(
+            newAnimeSearchResponse(
                 anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
@@ -81,7 +87,7 @@ class AnimeciX : MainAPI() {
         val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
 
         return response.results.mapNotNull { anime ->
-            newTvSeriesSearchResponse(
+            newAnimeSearchResponse(
                 anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
