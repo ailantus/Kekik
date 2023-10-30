@@ -190,6 +190,8 @@ class AnimeciX : MainAPI() {
                         )
                     )
                 }
+
+                return true
             }
 
             return false
