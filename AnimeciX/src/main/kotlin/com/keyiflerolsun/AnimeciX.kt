@@ -25,11 +25,12 @@ class AnimeciX : MainAPI() {
 
     override val mainPage =
         mainPageOf(
-            "$mainUrl/secure/titles?genre=action&onlyStreamable=true"  to "Aksiyon",
-            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem",
-            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"   to "Dram",
-            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true"  to "Komedi",
-            "$mainUrl/secure/titles?genre=horror&onlyStreamable=true"  to "Korku",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
+            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
         )
 
     data class Category(
@@ -93,7 +94,7 @@ class AnimeciX : MainAPI() {
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=1",
+                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -120,16 +121,20 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val response = app.get(url).parsedSafe<Title>() ?: return null
+        val response = app.get("${url}1").parsedSafe<Title>() ?: return null
 
         val episodes = mutableListOf<Episode>()
-        for (video in response.title.videos) {
-            episodes.add(Episode(
-                data    = video.url,
-                name    = "${video.season_num}. Sezon | ${video.episode_num}. Bölüm",
-                season  = video.season_num,
-                episode = video.episode_num
-            ))
+
+        for (sezon in 1..response.title.season_count) {
+            val sezon_response = app.get("${url}${sezon}").parsedSafe<Title>() ?: return null
+            for (video in sezon_response.title.videos) {
+                episodes.add(Episode(
+                    data    = video.url,
+                    name    = "${video.season_num}. Sezon | ${video.episode_num}. Bölüm",
+                    season  = video.season_num,
+                    episode = video.episode_num
+                ))
+            }
         }
 
         return newTvSeriesLoadResponse(
