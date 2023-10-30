@@ -52,10 +52,10 @@ class AnimeciX : MainAPI() {
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
         @JsonProperty("description") val description: String,
-        @JsonProperty("year") val year: String? = null,
+        @JsonProperty("year") val year: Int? = null,
         @JsonProperty("mal_vote_average") val rating: String? = null,
-        @JsonProperty("genres") val tags: List?<Genre> = null,
-        @JsonProperty("credits") val actors: List?<Credit> = null,
+        @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
+        @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
     )
 
     data class Genre(
@@ -113,9 +113,9 @@ class AnimeciX : MainAPI() {
             this.posterUrl = response.tile.poster
             this.year      = response.tile.year
             this.plot      = response.tile.description
-            this.tags      = response.tile.tags.map { it.name }
-            this.rating    = response.tile.rating?.toRatingInt()
-            addActors(response.tile.actors.map { Actor(it.name, it.poster) })
+            this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
+            this.rating    = response.tile.rating.toRatingInt()
+            addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
         }
     }
 
