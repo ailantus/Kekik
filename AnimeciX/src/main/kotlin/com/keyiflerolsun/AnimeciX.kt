@@ -71,7 +71,7 @@ class AnimeciX : MainAPI() {
         val response = app.get(request.data + "&page=${page}&perPage=20").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
-            newAnimeSearchResponse(
+            newTvSeriesSearchResponse(
                 anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
@@ -89,7 +89,7 @@ class AnimeciX : MainAPI() {
         val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
 
         return response.results.mapNotNull { anime ->
-            newAnimeSearchResponse(
+            newTvSeriesSearchResponse(
                 anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
@@ -104,7 +104,7 @@ class AnimeciX : MainAPI() {
 
         val episodes = false
 
-        return newAnimeLoadResponse(
+        return newTvSeriesLoadResponse(
             response.tile.title,
             "$mainUrl/titles/${response.tile.id}",
             TvType.Anime,
