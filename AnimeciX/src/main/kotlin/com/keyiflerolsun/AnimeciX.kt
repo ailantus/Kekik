@@ -22,9 +22,9 @@ class AnimeciX : MainAPI() {
     override val supportedTypes     = setOf(TvType.Anime)
 
     // ! CloudFlare bypass
-    override var sequentialMainPage = true
-    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
-    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+    override var sequentialMainPage            = true
+    override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
+    override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
 
     override val mainPage =
         mainPageOf(
