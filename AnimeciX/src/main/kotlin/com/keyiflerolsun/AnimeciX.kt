@@ -139,7 +139,7 @@ class AnimeciX : MainAPI() {
 
         return newTvSeriesLoadResponse(
             response.title.title,
-            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}&seasonNumber=1",
+            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}&seasonNumber=",
             TvType.Anime,
             episodes
         ) {
