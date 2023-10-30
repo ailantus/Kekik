@@ -94,7 +94,7 @@ class AnimeciX : MainAPI() {
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=",
+                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=1",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -112,7 +112,7 @@ class AnimeciX : MainAPI() {
         return response.results.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=",
+                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=1",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -121,25 +121,25 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val response = app.get("${url}1").parsedSafe<Title>() ?: return null
+        val response = app.get(url).parsedSafe<Title>() ?: return null
 
         val episodes = mutableListOf<Episode>()
 
-        for (sezon in 1..response.title.season_count) {
-            val sezon_response = app.get("${url}${sezon}").parsedSafe<Title>() ?: return null
-            for (video in sezon_response.title.videos) {
-                episodes.add(Episode(
-                    data    = video.url,
-                    name    = "${video.season_num}. Sezon | ${video.episode_num}. Bölüm",
-                    season  = video.season_num,
-                    episode = video.episode_num
-                ))
-            }
+        // for (sezon in 1..response.title.season_count) {
+        //     val sezon_response = app.get("${url}${sezon}").parsedSafe<Title>() ?: return null
+        for (video in sezon_response.title.videos) {
+            episodes.add(Episode(
+                data    = video.url,
+                name    = "${video.season_num}. Sezon ${video.episode_num}. Bölüm",
+                season  = video.season_num,
+                episode = video.episode_num
+            ))
         }
+        // }
 
         return newTvSeriesLoadResponse(
             response.title.title,
-            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}&seasonNumber=",
+            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}&seasonNumber=1",
             TvType.Anime,
             episodes
         ) {
