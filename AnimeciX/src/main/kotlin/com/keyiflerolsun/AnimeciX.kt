@@ -119,8 +119,8 @@ class AnimeciX : MainAPI() {
                 for (video in api.urls) {
                     callback.invoke(
                         ExtractorLink(
-                            source  = "${video.label}",
-                            name    = this.name,
+                            source  = this.name,
+                            name    = "${this.name} - ${video.label}",
                             url     = video.url,
                             referer = "$mainUrl/",
                             quality = Qualities.Unknown.value,
