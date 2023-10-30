@@ -174,6 +174,34 @@ class AnimeciX : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
+            if (data.contains("tau-video.xyz")) {
+                val key = data.split("/").last()
+                val api = app.get("https://tau-video.xyz/api/video/${key}").parsedSafe<TauVideo>() ?: return false
+
+                for (video in api.urls) {
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "${this.name} - ${video.label}",
+                            name    = this.name,
+                            url     = video.url,
+                            referer = "$mainUrl/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = m3u_link.contains(".m3u8")
+                        )
+                    )
+                }
+            }
+
             return false
     }
+
+    data class TauVideo(
+        @JsonProperty("urls") val urls: List<TauVideoUrl>
+    )
+
+    data class TauVideoUrl(
+        @JsonProperty("url") val url: String,
+        @JsonProperty("label") val label: String,
+    )
+
 }
