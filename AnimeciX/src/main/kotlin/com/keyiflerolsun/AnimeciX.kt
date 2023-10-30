@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
@@ -34,6 +35,10 @@ class AnimeciX : MainAPI() {
         @JsonProperty("results") val results: List<Anime>,
     )
 
+    data class Tile(
+        @JsonProperty("tile") val tile: Anime,
+    )
+
     data class Pagination(
         @JsonProperty("current_page") val current_page: Int,
         @JsonProperty("last_page") val last_page: Int,
@@ -44,23 +49,30 @@ class AnimeciX : MainAPI() {
 
     data class Anime(
         @JsonProperty("id") val id: Int,
-        @JsonProperty("name") val name: String,
-        @JsonProperty("description") val description: String,
+        @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
-        @JsonProperty("mal_vote_average") val rate: Float?,
-        @JsonProperty("genres") val genres: List<Genre>,
+        @JsonProperty("description") val description: String,
+        @JsonProperty("year") val year: Int,
+        @JsonProperty("mal_vote_average") val rating: String? = null,
+        @JsonProperty("genres") val tags: List<Genre>,
+        @JsonProperty("credits") val actors: List<Credit>,
     )
 
     data class Genre(
         @JsonProperty("display_name") val name: String,
     )
 
+    data class Credit(
+        @JsonProperty("name") val name: String,
+        @JsonProperty("poster") val poster: String,
+    )
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(request.data + "&page=${page}&perPage=3").parsedSafe<Category>()
+        val response = app.get(request.data + "&page=${page}&perPage=20").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
-            newTvSeriesSearchResponse(
-                anime.name,
+            newAnimeSearchResponse(
+                anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
             ) {
@@ -77,8 +89,8 @@ class AnimeciX : MainAPI() {
         val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
 
         return response.results.mapNotNull { anime ->
-            newTvSeriesSearchResponse(
-                anime.name,
+            newAnimeSearchResponse(
+                anime.title,
                 "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
             ) {
@@ -88,7 +100,23 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        return null
+        val response = app.get(url).parsedSafe<Tile>() ?: return null
+
+        val episodes = false
+
+        return newAnimeLoadResponse(
+            response.tile.title,
+            "$mainUrl/titles/${response.tile.id}",
+            TvType.Anime,
+            episodes
+        ) {
+            this.posterUrl = response.tile.poster
+            this.year      = response.tile.year
+            this.plot      = response.tile.description
+            this.tags      = response.tile.tags.map { it.name }
+            this.rating    = response.tile.rating?.toRatingInt()
+            addActors(response.tile.actors.map { Actor(it.name, it.poster) })
+        }
     }
 
     override suspend fun loadLinks(
