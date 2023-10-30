@@ -55,12 +55,14 @@ class AnimeciX : MainAPI() {
 
     data class AnimeSearch(
         @JsonProperty("id") val id: Int,
+        @JsonProperty("title_type") val title_type: String,
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
     )
 
     data class Anime(
         @JsonProperty("id") val id: Int,
+        @JsonProperty("title_type") val title_type: String,
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
         @JsonProperty("description") val description: String,
@@ -127,7 +129,7 @@ class AnimeciX : MainAPI() {
 
         // for (sezon in 1..response.title.season_count) {
         //     val sezon_response = app.get("${url}${sezon}").parsedSafe<Title>() ?: return null
-        for (video in sezon_response.title.videos) {
+        for (video in response.title.videos) {
             episodes.add(Episode(
                 data    = video.url,
                 name    = "${video.season_num}. Sezon ${video.episode_num}. Bölüm",
