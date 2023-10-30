@@ -112,7 +112,7 @@ class AnimeciX : MainAPI() {
         return response.results.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}",
+                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
