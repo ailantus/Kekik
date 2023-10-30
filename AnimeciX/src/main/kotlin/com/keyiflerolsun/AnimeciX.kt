@@ -25,7 +25,10 @@ class AnimeciX : MainAPI() {
     override val mainPage =
         mainPageOf(
             "$mainUrl/secure/titles?genre=action&onlyStreamable=true"  to "Aksiyon",
-            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem"
+            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem",
+            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"   to "Dram",
+            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true"  to "Komedi",
+            "$mainUrl/secure/titles?genre=horror&onlyStreamable=true"  to "Korku",
         )
 
     data class Category(
@@ -113,7 +116,7 @@ class AnimeciX : MainAPI() {
 
         return newTvSeriesLoadResponse(
             response.title.title,
-            "$mainUrl/titles/${response.title.id}",
+            "$mainUrl/secure/titles/${anime.id}",
             TvType.Anime,
             episodes
         ) {
