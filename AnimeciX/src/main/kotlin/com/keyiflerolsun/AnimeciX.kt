@@ -56,17 +56,17 @@ class AnimeciX : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(request.data + "&page=${page}&perPage=3")
+        val response = app.get(request.data + "&page=${page}&perPage=3").parsedSafe<Category>()
 
-        val home     = response.parsedSafe<Category>().pagination.data.mapNotNull {
+        val home     = response?.pagination?.data?.mapNotNull { anime ->
             newTvSeriesSearchResponse(
-                this.name,
-                "$mainUrl/secure/titles/${this.id}",
+                anime.name,
+                "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
             ) {
-                this.posterUrl = this.poster
+                this.posterUrl = anime.poster
             }
-        }
+        } ?: emptyList()
 
         return newHomePageResponse(request.name, home)
     }
@@ -74,15 +74,15 @@ class AnimeciX : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("$mainUrl/secure/search/$query?limit=20")
+        val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
 
-        return response.parsedSafe<Search>().results.mapNotNull {
+        return response.results.mapNotNull { anime ->
             newTvSeriesSearchResponse(
-                this.name,
-                "$mainUrl/secure/titles/${this.id}",
+                anime.name,
+                "$mainUrl/secure/titles/${anime.id}",
                 TvType.Anime
             ) {
-                this.posterUrl = this.poster
+                this.posterUrl = anime.poster
             }
         }
     }
