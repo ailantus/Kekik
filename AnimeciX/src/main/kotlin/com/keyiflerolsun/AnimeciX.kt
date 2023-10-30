@@ -102,7 +102,7 @@ class AnimeciX : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val response = app.get(url).parsedSafe<Tile>() ?: return null
 
-        val episodes = false
+        val episodes = emptyList<Episode>()
 
         return newTvSeriesLoadResponse(
             response.tile.title,
