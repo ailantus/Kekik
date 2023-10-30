@@ -21,18 +21,10 @@ class AnimeciX : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Anime)
 
-    // ! CloudFlare bypass
-    override var sequentialMainPage            = true
-    override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
-    override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
-
     override val mainPage =
         mainPageOf(
             "$mainUrl/secure/titles?genre=action&onlyStreamable=true"  to "Aksiyon",
-            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"   to "Dram",
-            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem",
-            "$mainUrl/secure/titles?genre=harem&onlyStreamable=true"   to "Harem",
-            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true"  to "Komedi"
+            "$mainUrl/secure/titles?genre=mystery&onlyStreamable=true" to "Gizem"
         )
 
     data class Category(
@@ -40,15 +32,29 @@ class AnimeciX : MainAPI() {
     )
 
     data class Search(
-        @JsonProperty("results") val results: List<Anime>,
+        @JsonProperty("results") val results: List<AnimeSearch>,
+    )
+
+    data class Tile(
+        @JsonProperty("tile") val tile: Anime,
     )
 
     data class Pagination(
         @JsonProperty("current_page") val current_page: Int,
         @JsonProperty("last_page") val last_page: Int,
         @JsonProperty("per_page") val per_page: Int,
-        @JsonProperty("data") val data: List<Anime>,
+        @JsonProperty("data") val data: List<AnimeSearch>,
         @JsonProperty("total") val total: Int,
+    )
+
+    data class AnimeSearch(
+        @JsonProperty("id") val id: Int,
+        @JsonProperty("name") val title: String,
+        @JsonProperty("poster") val poster: String,
+        @JsonProperty("description") val description: String,
+        @JsonProperty("year") val year: Int?,
+        @JsonProperty("mal_vote_average") val rating: Float?,
+        @JsonProperty("genres") val tags: List<Genre>,
     )
 
     data class Anime(
@@ -59,14 +65,20 @@ class AnimeciX : MainAPI() {
         @JsonProperty("year") val year: Int?,
         @JsonProperty("mal_vote_average") val rating: Float?,
         @JsonProperty("genres") val tags: List<Genre>,
+        @JsonProperty("credits") val actors: List<Credit>,
     )
 
     data class Genre(
         @JsonProperty("display_name") val name: String,
     )
 
+    data class Credit(
+        @JsonProperty("name") val name: String,
+        @JsonProperty("poster") val poster: String,
+    )
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(request.data + "&page=${page}&perPage=10").parsedSafe<Category>()
+        val response = app.get(request.data + "&page=${page}&perPage=12").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newAnimeSearchResponse(
@@ -98,7 +110,23 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        return null
+        val response = app.get(url).parsedSafe<Tile>() ?: return null
+
+        val episodes = emptyList<Episode>()
+
+        return newTvSeriesLoadResponse(
+            response.tile.title,
+            "$mainUrl/titles/${response.tile.id}",
+            TvType.Anime,
+            episodes
+        ) {
+            this.posterUrl = response.tile.poster
+            this.year      = response.tile.year
+            this.plot      = response.tile.description
+            this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
+            this.rating    = response.tile.rating.toRatingInt()
+            addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
+        }
     }
 
     override suspend fun loadLinks(
