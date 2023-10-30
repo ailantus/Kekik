@@ -186,7 +186,7 @@ class AnimeciX : MainAPI() {
                             url     = video.url,
                             referer = "$mainUrl/",
                             quality = Qualities.Unknown.value,
-                            isM3u8  = m3u_link.contains(".m3u8")
+                            isM3u8  = video.url.contains(".m3u8")
                         )
                     )
                 }
