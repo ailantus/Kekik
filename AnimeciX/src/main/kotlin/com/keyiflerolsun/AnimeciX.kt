@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
@@ -65,7 +66,10 @@ class AnimeciX : MainAPI() {
         @JsonProperty("year") val year: Int?,
         @JsonProperty("mal_vote_average") val rating: String?,
         @JsonProperty("genres") val tags: List<Genre>,
+        @JsonProperty("trailer") val trailer: String?,
         @JsonProperty("credits") val actors: List<Credit>,
+        @JsonProperty("season_count") val season_count: Int,
+        @JsonProperty("videos") val videos: List<Video>
     )
 
     data class Genre(
@@ -77,13 +81,19 @@ class AnimeciX : MainAPI() {
         @JsonProperty("poster") val poster: String?,
     )
 
+    data class Video(
+        @JsonProperty("episode_num") val episode_num: Int,
+        @JsonProperty("season_num") val season_num: Int,
+        @JsonProperty("url") val url: String,
+    )
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val response = app.get(request.data + "&page=${page}&perPage=12").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}",
+                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}&seasonNumber=1",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -112,20 +122,29 @@ class AnimeciX : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val response = app.get(url).parsedSafe<Title>() ?: return null
 
-        val episodes = emptyList<Episode>()
+        val episodes = mutableListOf<Episode>()
+        for (video in response.title.videos) {
+            episodes.add(Episode(
+                data    = video.url,
+                name    = "${video.season_num}. Sezon | ${video.episode_num}. Bölüm",
+                season  = video.season_num,
+                episode = video.episode_num
+            ))
+        }
 
         return newTvSeriesLoadResponse(
             response.title.title,
-            "$mainUrl/secure/titles/${response.title.id}",
+            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}&seasonNumber=1",
             TvType.Anime,
             episodes
         ) {
             this.posterUrl = response.title.poster
             this.year      = response.title.year
             this.plot      = response.title.description
-            this.tags      = response.title.tags?.filterNotNull()?.map { it.name }
+            this.tags      = response.title.tags.filterNotNull().map { it.name }
             this.rating    = response.title.rating.toRatingInt()
-            addActors(response.title.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
+            addActors(response.title.actors.filterNotNull().map { Actor(it.name, it.poster) })
+            addTrailer(response.title.trailer)
         }
     }
 
