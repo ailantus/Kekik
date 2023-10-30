@@ -54,8 +54,8 @@ class AnimeciX : MainAPI() {
         @JsonProperty("description") val description: String,
         @JsonProperty("year") val year: Int? = null,
         @JsonProperty("mal_vote_average") val rating: String? = null,
-        @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
-        @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
+        // @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
+        // @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
     )
 
     data class Genre(
@@ -100,23 +100,25 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val response = app.get(url).parsedSafe<Tile>() ?: return null
+        return null
 
-        val episodes = emptyList<Episode>()
+        // val response = app.get(url).parsedSafe<Tile>() ?: return null
 
-        return newTvSeriesLoadResponse(
-            response.tile.title,
-            "$mainUrl/titles/${response.tile.id}",
-            TvType.Anime,
-            episodes
-        ) {
-            this.posterUrl = response.tile.poster
-            this.year      = response.tile.year
-            this.plot      = response.tile.description
-            this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
-            this.rating    = response.tile.rating.toRatingInt()
-            addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
-        }
+        // val episodes = emptyList<Episode>()
+
+        // return newTvSeriesLoadResponse(
+        //     response.tile.title,
+        //     "$mainUrl/titles/${response.tile.id}",
+        //     TvType.Anime,
+        //     episodes
+        // ) {
+        //     this.posterUrl = response.tile.poster
+        //     this.year      = response.tile.year
+        //     this.plot      = response.tile.description
+        //     this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
+        //     this.rating    = response.tile.rating.toRatingInt()
+        //     addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
+        // }
     }
 
     override suspend fun loadLinks(
