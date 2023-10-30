@@ -52,10 +52,10 @@ class AnimeciX : MainAPI() {
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
         @JsonProperty("description") val description: String,
-        @JsonProperty("year") val year: Int,
+        @JsonProperty("year") val year: String? = null,
         @JsonProperty("mal_vote_average") val rating: String? = null,
-        @JsonProperty("genres") val tags: List<Genre>,
-        @JsonProperty("credits") val actors: List<Credit>,
+        @JsonProperty("genres") val tags: List?<Genre> = null,
+        @JsonProperty("credits") val actors: List?<Credit> = null,
     )
 
     data class Genre(
