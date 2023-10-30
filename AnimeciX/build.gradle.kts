@@ -1,10 +1,9 @@
-version = 0
+version = 1
 
 cloudstream {
     authors     = listOf("keyiflerolsun")
     language    = "tr"
-    description = "YAPIM AŞAMASINDA!"
-    // description = "AnimeciX, animeleri keşfedebileceğiniz ve animeler hakkında her şeyi öğrenebileceğiniz bir paylaşım platformudur."
+    description = "AnimeciX, animeleri keşfedebileceğiniz ve animeler hakkında her şeyi öğrenebileceğiniz bir paylaşım platformudur."
 
     /**
      * Status int as the following:
@@ -13,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 3 // will be 3 if unspecified
+    status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Anime")
     iconUrl = "https://www.google.com/s2/favicons?domain=animecix.net&sz=%size%"
 }
