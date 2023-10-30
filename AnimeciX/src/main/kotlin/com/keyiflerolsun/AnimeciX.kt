@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
@@ -51,10 +52,6 @@ class AnimeciX : MainAPI() {
         @JsonProperty("id") val id: Int,
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
-        @JsonProperty("description") val description: String,
-        @JsonProperty("year") val year: Int?,
-        @JsonProperty("mal_vote_average") val rating: Float?,
-        @JsonProperty("genres") val tags: List<Genre>,
     )
 
     data class Anime(
@@ -63,9 +60,9 @@ class AnimeciX : MainAPI() {
         @JsonProperty("poster") val poster: String,
         @JsonProperty("description") val description: String,
         @JsonProperty("year") val year: Int?,
-        @JsonProperty("mal_vote_average") val rating: Float?,
-        @JsonProperty("genres") val tags: List<Genre>,
-        @JsonProperty("credits") val actors: List<Credit>,
+        @JsonProperty("mal_vote_average") val rating: String?,
+        @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
+        @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
     )
 
     data class Genre(
