@@ -64,8 +64,8 @@ class AnimeciX : MainAPI() {
         @JsonProperty("description") val description: String,
         @JsonProperty("year") val year: Int?,
         @JsonProperty("mal_vote_average") val rating: String?,
-        @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
-        @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
+        @JsonProperty("genres") val tags: List<Genre>,
+        @JsonProperty("credits") val actors: List<Credit>,
     )
 
     data class Genre(
