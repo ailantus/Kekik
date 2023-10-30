@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 import com.lagradost.cloudstream3.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
@@ -24,7 +23,10 @@ class AnimeciX : MainAPI() {
 
     override val mainPage =
         mainPageOf(
-            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true" to "Aksiyon",
+            "$mainUrl/secure/titles?genre=action&onlyStreamable=true" to "Aksiyon",
+            "$mainUrl/secure/titles?genre=comedy&onlyStreamable=true" to "Komedi",
+            "$mainUrl/secure/titles?genre=drama&onlyStreamable=true"  to "Dram",
+            "$mainUrl/secure/titles?genre=harem&onlyStreamable=true"  to "Harem"
         )
 
     data class Category(
@@ -33,10 +35,6 @@ class AnimeciX : MainAPI() {
 
     data class Search(
         @JsonProperty("results") val results: List<Anime>,
-    )
-
-    data class Tile(
-        @JsonProperty("tile") val tile: Anime,
     )
 
     data class Pagination(
@@ -52,23 +50,17 @@ class AnimeciX : MainAPI() {
         @JsonProperty("name") val title: String,
         @JsonProperty("poster") val poster: String,
         @JsonProperty("description") val description: String,
-        @JsonProperty("year") val year: Int? = null,
-        @JsonProperty("mal_vote_average") val rating: String? = null,
-        // @JsonProperty("genres") val tags: List<Genre?> = emptyList(),
-        // @JsonProperty("credits") val actors: List<Credit?> = emptyList(),
+        @JsonProperty("year") val year: Int?,
+        @JsonProperty("mal_vote_average") val rating: Float?,
+        @JsonProperty("genres") val tags: List<Genre>,
     )
 
     data class Genre(
         @JsonProperty("display_name") val name: String,
     )
 
-    data class Credit(
-        @JsonProperty("name") val name: String,
-        @JsonProperty("poster") val poster: String,
-    )
-
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(request.data + "&page=${page}&perPage=20").parsedSafe<Category>()
+        val response = app.get(request.data + "&page=${page}&perPage=10").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newTvSeriesSearchResponse(
@@ -101,24 +93,6 @@ class AnimeciX : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         return null
-
-        // val response = app.get(url).parsedSafe<Tile>() ?: return null
-
-        // val episodes = emptyList<Episode>()
-
-        // return newTvSeriesLoadResponse(
-        //     response.tile.title,
-        //     "$mainUrl/titles/${response.tile.id}",
-        //     TvType.Anime,
-        //     episodes
-        // ) {
-        //     this.posterUrl = response.tile.poster
-        //     this.year      = response.tile.year
-        //     this.plot      = response.tile.description
-        //     this.tags      = response.tile.tags?.filterNotNull()?.map { it.name }
-        //     this.rating    = response.tile.rating.toRatingInt()
-        //     addActors(response.tile.actors?.filterNotNull()?.map { Actor(it.name, it.poster) })
-        // }
     }
 
     override suspend fun loadLinks(
