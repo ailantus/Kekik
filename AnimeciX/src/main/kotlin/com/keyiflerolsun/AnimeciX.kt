@@ -74,7 +74,7 @@ class AnimeciX : MainAPI() {
 
     data class Credit(
         @JsonProperty("name") val name: String,
-        @JsonProperty("poster") val poster: String,
+        @JsonProperty("poster") val poster: String?,
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
