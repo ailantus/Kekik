@@ -56,13 +56,13 @@ data class VSTrack(
 )
 
 data class Teve2ApiResponse(
-    @JsonProperty("media") val media: Teve2Media
+    @JsonProperty("Media") val media: Teve2Media
 )
 
 data class Teve2Media(
-    @JsonProperty("link") val link: Teve2Link
+    @JsonProperty("Link") val link: Teve2Link
 )
 
 data class Teve2Link(
-    @JsonProperty("securePath") val securePath: String
+    @JsonProperty("SecurePath") val securePath: String
 )

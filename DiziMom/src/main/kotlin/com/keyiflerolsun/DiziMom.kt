@@ -190,7 +190,7 @@ class DiziMom : MainAPI() {
                         referer = "https://www.teve2.com.tr/embed/${teve2_id}"
                     ).parsedSafe<Teve2ApiResponse>() ?: return false
 
-                    m3u_link           = teve2_response.media.link.securePath
+                    m3u_link           = "https://teve2vod.duhnet.tv//" + teve2_response.media.link.securePath
                 } else {
                     val video_response = response.parsedSafe<PeaceResponse>() ?: return false
                     val video_sources  = video_response.videoSources
