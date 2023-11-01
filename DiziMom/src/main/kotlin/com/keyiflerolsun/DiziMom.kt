@@ -187,10 +187,11 @@ class DiziMom : MainAPI() {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
                 val response = app.get(
                     "https://videoseyred.in/playlist/${video_id}.json"
-                ).substringAfter("[").substringBefore("]").parsedSafe<VideoSeyred>() ?: return false
-                Log.d("DZM", "response » $response")
+                ).text.substringAfter("[").substringBefore("]")
+                val vs_map: VideoSeyred = jacksonObjectMapper().readValue(response)
+                Log.d("DZM", "vs_map » $vs_map")
 
-                for (track in response.tracks) {
+                for (track in vs_map.tracks) {
                     if (track.label != null && track.kind == "captions") {
                         subtitleCallback.invoke(
                             SubtitleFile(
@@ -205,10 +206,10 @@ class DiziMom : MainAPI() {
                     ExtractorLink(
                         source  = this.name,
                         name    = this.name,
-                        url     = response.sources.first().file,
+                        url     = vs_map.sources.first().file,
                         referer = "https://videoseyred.in/",
                         quality = Qualities.Unknown.value,
-                        isM3u8  = response.sources.first().file.contains(".m3u8")
+                        isM3u8  = vs_map.sources.first().file.contains(".m3u8")
                     )
                 )
 
