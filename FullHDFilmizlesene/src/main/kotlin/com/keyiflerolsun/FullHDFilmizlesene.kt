@@ -175,7 +175,7 @@ class FullHDFilmizlesene : MainAPI() {
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "decoded » $decoded")
+        Log.d("FHD", "_decoded » $decoded")
 
         return decoded
     }
@@ -183,27 +183,29 @@ class FullHDFilmizlesene : MainAPI() {
     private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
         val file     = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: return emptyList()
         val postLink = "https://trstx.org/" + file.replace("\\", "")
-        Log.d("FHD", "postLink » $postLink")
+        Log.d("FHD", "_postLink » $postLink")
 
-        val rawList = app.post(postLink, referer="$mainUrl/").parsedSafe<List<Any>>() ?: return emptyList()
-        val filteredList = rawList.drop(1)
-        val postJson: List<TrstxVideoData> = filteredList.map { item ->
-            val mapItem = item as Map<*, *>
-            TrstxVideoData(
-                title = mapItem["title"] as? String,
-                file = mapItem["file"] as? String
-            )
-        }
-        Log.d("FHD", "postJson » $postJson")
+        val rawList = app.post(postLink, referer="$mainUrl/").parsedSafe<List<Map<String, Any?>>>() ?: return emptyList()
+        val postJson: List<TrstxVideoData> = rawList.mapNotNull { item ->
+            val get_title = item["title"] as? String
+            val get_file  = item["file"] as? String
+        
+            get_title?.let { us_title -> 
+                get_file?.let { us_file -> 
+                    TrstxVideoData(title = us_title, file = us_file)
+                }
+            }
+        }        
+        Log.d("FHD", "_postJson » $postJson")
 
         val vid_data = mutableListOf<Map<String, String>>()
         for (item in postJson) {
             if (item.file == null || item.title == null) continue
 
             val fileUrl = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
-            Log.d("FHD", "fileUrl » $fileUrl")
+            Log.d("FHD", "_fileUrl » $fileUrl")
             val videoData = app.post(fileUrl, referer="$mainUrl/").text
-            Log.d("FHD", "videoData » $videoData")
+            Log.d("FHD", "_videoData » $videoData")
 
             vid_data.add(mapOf(
                 "title" to item.title,
@@ -211,7 +213,7 @@ class FullHDFilmizlesene : MainAPI() {
             ))
         }
 
-        Log.d("FHD", "vid_data » $vid_data")
+        Log.d("FHD", "_vid_data » $vid_data")
         return vid_data
     }
 
@@ -222,10 +224,10 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("FHD", "data » $data")
+            Log.d("FHD", "_data » $data")
             val document    = app.get(data).document
             val video_links = getVideoLinks(document)
-            Log.d("FHD", "video_links » $video_links")
+            Log.d("FHD", "_video_links » $video_links")
             if (video_links.isEmpty()) return false
 
 
@@ -236,7 +238,7 @@ class FullHDFilmizlesene : MainAPI() {
                     if (value.contains("rapidvid.net")) {
                         val m3u_link = rapid2M3u8(video_req) ?: continue
 
-                        Log.d("FHD", "m3u_link » $m3u_link")
+                        Log.d("FHD", "_m3u_link » $m3u_link")
 
                         callback.invoke(
                             ExtractorLink(
