@@ -175,7 +175,7 @@ class FullHDFilmizlesene : MainAPI() {
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "decoded » $decoded")
+        Log.d("FHD", "_decoded » $decoded")
 
         return decoded
     }
@@ -209,10 +209,10 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("FHD", "data » $data")
+            Log.d("FHD", "_data » $data")
             val document    = app.get(data).document
             val video_links = getVideoLinks(document)
-            Log.d("FHD", "video_links » $video_links")
+            Log.d("FHD", "_video_links » $video_links")
             if (video_links.isEmpty()) return false
 
 
@@ -223,7 +223,7 @@ class FullHDFilmizlesene : MainAPI() {
                     if (value.contains("rapidvid.net")) {
                         val m3u_link = rapid2M3u8(video_req) ?: continue
 
-                        Log.d("FHD", "m3u_link » $m3u_link")
+                        Log.d("FHD", "_m3u_link » $m3u_link")
 
                         callback.invoke(
                             ExtractorLink(
@@ -261,12 +261,14 @@ class FullHDFilmizlesene : MainAPI() {
             return true
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class SCXData(
         @JsonProperty("atom") val atom: AtomData? = null,
         @JsonProperty("advid") val advid: AtomData? = null,
         @JsonProperty("advidprox") val advidprox: AtomData? = null
     )
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class AtomData(
         @JsonProperty("sx") var sx: SXData
     )
@@ -276,6 +278,7 @@ class FullHDFilmizlesene : MainAPI() {
         @JsonProperty("t") var t: Any
     )
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class TrstxVideoData(
         @JsonProperty("title") val title: String? = null,
         @JsonProperty("file") val file: String? = null
