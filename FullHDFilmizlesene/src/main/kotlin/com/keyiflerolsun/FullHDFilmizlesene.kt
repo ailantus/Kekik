@@ -175,32 +175,43 @@ class FullHDFilmizlesene : MainAPI() {
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "_decoded » $decoded")
+        Log.d("FHD", "decoded » $decoded")
 
         return decoded
     }
 
     private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
-        val file         = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: return emptyList()
-        val postLink     = file.replace("\\\\", "")
+        Log.d("FHD", "Starting trstx2M3u8 function with URL: $trstx")
 
-        val postJson = app.post("https://trstx.org/$postLink", referer="$mainUrl/").parsedSafe<List<TrstxVideoData>>() ?: return emptyList()
+        val file = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: run {
+            Log.d("FHD", "Failed to extract 'file' from trstx data.")
+            return emptyList()
+        }
+
+        val postLink = file.replace("\\\\", "")
+
+        val postJson = app.post("https://trstx.org/$postLink", referer="$mainUrl/").parsedSafe<List<TrstxVideoData>>() ?: run {
+            Log.d("FHD", "Failed to get postJson from trstx.org.")
+            return emptyList()
+        }
 
         val vid_data = mutableListOf<Map<String, String>>()
 
         for (item in postJson.drop(1)) {
             if (item.file == null || item.title == null) continue
 
-            val fileUrl   = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
+            val fileUrl = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
             val videoData = app.post(fileUrl, referer="$mainUrl/").text
+
             vid_data.add(mapOf(
-                "title"     to item.title,
+                "title" to item.title,
                 "videoData" to videoData
             ))
         }
 
+        Log.d("FHD", "trstx2M3u8 function finished with vid_data: $vid_data")
         return vid_data
-    }
+    }    
 
     override suspend fun loadLinks(
         data: String,
@@ -209,10 +220,10 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("FHD", "_data » $data")
+            Log.d("FHD", "data » $data")
             val document    = app.get(data).document
             val video_links = getVideoLinks(document)
-            Log.d("FHD", "_video_links » $video_links")
+            Log.d("FHD", "video_links » $video_links")
             if (video_links.isEmpty()) return false
 
 
@@ -223,7 +234,7 @@ class FullHDFilmizlesene : MainAPI() {
                     if (value.contains("rapidvid.net")) {
                         val m3u_link = rapid2M3u8(video_req) ?: continue
 
-                        Log.d("FHD", "_m3u_link » $m3u_link")
+                        Log.d("FHD", "m3u_link » $m3u_link")
 
                         callback.invoke(
                             ExtractorLink(
