@@ -188,6 +188,10 @@ class DiziMom : MainAPI() {
                 val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
 
                 Log.d("DZM", "response » $response")
+                for bakalim in response {
+                    Log.d("DZM", "bakalim » $bakalim")
+                }
+
                 val first_response = response.get(0)
                 Log.d("DZM", "first_response » $first_response")
 
