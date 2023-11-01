@@ -181,10 +181,19 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                val video_response = response.parsedSafe<PeaceResponse>() ?: return false
-                val video_sources  = video_response.videoSources
-                if (video_sources.isNotEmpty()) {
-                    m3u_link = video_sources.last().file
+                if (response.text.contains("teve2.com.tr/embed/")) {
+                    val teve2_id       = response.text.substringAfter("teve2.com.tr/embed/").substringBefore("\"")
+                    val teve2_response = app.get(
+                        "https://www.teve2.com.tr/action/media/${teve2_id}",
+                        referer = "https://www.teve2.com.tr/embed/${teve2_id}"
+                    ).parsedSafe<Teve2ApiResponse>() ?: return false
+                    m3u_link           = teve2_response.media.link.securePath
+                } else {
+                    val video_response = response.parsedSafe<PeaceResponse>() ?: return false
+                    val video_sources  = video_response.videoSources
+                    if (video_sources.isNotEmpty()) {
+                        m3u_link = video_sources.last().file
+                    }
                 }
             }
 
