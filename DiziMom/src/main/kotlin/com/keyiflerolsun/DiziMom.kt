@@ -185,7 +185,8 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("videoseyred.in")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                val response_list = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
+                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
+                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
                 Log.d("DZM", "response_list » $response_list")
                 val response = response_list[0]
                 Log.d("DZM", "response » $response")
