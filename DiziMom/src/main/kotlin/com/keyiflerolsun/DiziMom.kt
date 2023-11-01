@@ -190,6 +190,17 @@ class DiziMom : MainAPI() {
                 val first_response = response.first()
                 Log.d("DZM", "first_response » $first_response")
 
+                for (track in first_response.tracks) {
+                    if (track.label != null && track.kind == "captions") {
+                        subtitleCallback.invoke(
+                            SubtitleFile(
+                                lang = track.label,
+                                url  = fixUrl(track.file)
+                            )
+                        )
+                    }
+                }
+
                 callback.invoke(
                     ExtractorLink(
                         source  = this.name,
@@ -200,17 +211,6 @@ class DiziMom : MainAPI() {
                         isM3u8  = first_response.sources.first().file.contains(".m3u8")
                     )
                 )
-
-                for (track in first_response.tracks) {
-                    if (track.label != null  && track.kind == "captions") {
-                        subtitleCallback.invoke(
-                            SubtitleFile(
-                                lang = track.label,
-                                url  = fixUrl(track.file)
-                            )
-                        )
-                    }
-                }
 
                 return true
             }
