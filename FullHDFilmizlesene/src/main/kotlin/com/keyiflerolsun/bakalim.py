@@ -19,17 +19,6 @@ def rtt(s:str) -> str:
 
     return "".join(rot13_char(c) for c in s)
 
-def scx_decode(scx:dict) -> dict:
-    for key, item in scx.items():
-        item["tt"] = atob(item["tt"])
-        if "t" in item["sx"]:
-            item["sx"]["t"] = [atob(rtt(ii)) for ii in item["sx"]["t"]]
-        if "p" in item["sx"]:
-            item["sx"]["p"] = [atob(rtt(ii)) for ii in item["sx"]["p"]]
-        scx[key] = item
-
-    return scx
-
 def rapid2m3u8(url:str) -> str:
     oturum = Session()
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
@@ -39,7 +28,24 @@ def rapid2m3u8(url:str) -> str:
 
     return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
 
-def fullhdfilmizlesene(url:str) -> str:
+def trstx2m3u8(url:str) -> list[dict]:
+    oturum = Session()
+    oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://www.fullhdfilmizlesene.pw/"})
+
+    istek     = oturum.get(url)
+    file      = findall(r"file\":\"([^\"]+)", istek.text)[0]
+    post_link = file.replace("\\", "")
+
+    post_istek = oturum.post(f"https://trstx.org/{post_link}").json()
+
+    veriler = []
+    for bak in post_istek[1:]:
+        vid_url = "https://trstx.org/playlist/" + bak.get("file")[1:] + ".txt"
+        veriler.append({bak.get("title") : oturum.post(vid_url).text})
+
+    return veriler
+
+def fullhdfilmizlesene(url:str) -> list:
     oturum = Session()
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
 
@@ -47,17 +53,28 @@ def fullhdfilmizlesene(url:str) -> str:
     istek  = oturum.get(url)
     secici = Selector(istek.text)
 
-    script = secici.xpath("(//script)[1]").get()
-
+    script   = secici.xpath("(//script)[1]").get()
     scx_data = json.loads(findall(r'scx = (.*?);', script)[0])
-    konsol.print(scx_data)
-    konsol.print(scx_data.keys())
-    konsol.print(scx_data["atom"].keys())
-    scx      = scx_decode(scx_data)
+    scx_keys = list(scx_data.keys())
 
-    rapidvid = scx["atom"]["sx"]["t"][0]
+    link_list = []
+    for key in scx_keys:
+        t = scx_data[key]["sx"]["t"]
+        if isinstance(t, list):
+            link_list.append({key: atob(rtt(elem)) for elem in t})
+        if isinstance(t, dict):
+            link_list.append({k: atob(rtt(v)) for k, v in t.items()})
 
-    return rapid2m3u8(rapidvid)
+    vid_links = []
+    for elem in link_list:
+        for key, value in elem.items():
+            if "rapidvid" in value:
+                vid_links.append({key: rapid2m3u8(value)})
+            if "trstx.org" in value:
+                vid_links.append({key: trstx2m3u8(value)})
 
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
+    return vid_links
+
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
 konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/makine-2/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/bula-izle-1/"))

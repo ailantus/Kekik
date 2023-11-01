@@ -131,29 +131,45 @@ class FullHDFilmizlesene : MainAPI() {
         return s.map { rot13Char(it) }.joinToString("")
     }
 
-    private fun scxDecode(scx: SCXData): SCXData {
-        scx.atom.tt = atob(scx.atom.tt)
-        scx.atom.sx.t = scx.atom.sx.t.map { atob(rtt(it)) }
-        return scx
-    }
-
-    private fun getRapidLink(document: Document): String? {
+    private fun getVideoLinks(document: Document): List<Map<String, String>> {
         val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
-        val script_content = script_element?.data()?.trim() ?: return null
+        val script_content = script_element?.data()?.trim() ?: return emptyList()
 
-        val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return null
-
+        val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return emptyList()
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
-        val scx_decode       = scxDecode(scx_map)
+        val keys = listOf("atom", "advid", "advidprox")
 
-        val t_list = scx_decode.atom.sx.t
-        if (t_list.isEmpty()) return null
-        Log.d("FHD", "t_list » $t_list")
+        val linkList = mutableListOf<Map<String, String>>()
 
-        return t_list[0]
+        for (key in keys) {
+            val t = when (key) {
+                "atom" -> scx_map.atom?.sx?.t
+                "advid" -> scx_map.advid?.sx?.t
+                "advidprox" -> scx_map.advidprox?.sx?.t
+                else -> null
+            }
+
+            when (t) {
+                is List<*> -> {
+                    val links = t.filterIsInstance<String>().map { link -> atob(rtt(link)) }
+                    linkList.add(mapOf(key to links.joinToString(",")))
+                }
+                is Map<*, *> -> {
+                    val links = t.mapValues { (_, value) ->
+                        if (value is String) atob(rtt(value)) else ""
+                    }
+                    val safeLinks = links.mapKeys { (key, _) ->
+                        key?.toString() ?: "Unknown"
+                    }
+                    linkList.add(safeLinks)
+                }
+            }
+        }
+
+        return linkList
     }
 
-    private fun rapidToM3u8(rapid: String): String? {
+    private fun rapid2M3u8(rapid: String): String? {
         val extracted_value = Regex("""file": "(.*)",""").find(rapid)?.groupValues?.get(1) ?: return null
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
@@ -161,6 +177,28 @@ class FullHDFilmizlesene : MainAPI() {
         Log.d("FHD", "decoded » $decoded")
 
         return decoded
+    }
+
+    private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
+        val file         = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: return emptyList()
+        val postLink     = file.replace("\\\\", "")
+
+        val postJson = app.post("https://trstx.org/$postLink", referer="$mainUrl/").parsedSafe<List<TrstxVideoData>>() ?: return emptyList()
+
+        val vid_data = mutableListOf<Map<String, String>>()
+
+        for (item in postJson.drop(1)) {
+            if (item.file == null || item.title == null) continue
+
+            val fileUrl   = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
+            val videoData = app.post(fileUrl, referer="$mainUrl/").text
+            vid_data.add(mapOf(
+                "title"     to item.title,
+                "videoData" to videoData
+            ))
+        }
+
+        return vid_data
     }
 
     override suspend fun loadLinks(
@@ -171,40 +209,73 @@ class FullHDFilmizlesene : MainAPI() {
         ): Boolean {
 
             Log.d("FHD", "data » $data")
-            val document = app.get(data).document
-            val rapidvid = getRapidLink(document) ?: return false
-            Log.d("FHD", "rapidvid » $rapidvid")
+            val document    = app.get(data).document
+            val video_links = getVideoLinks(document)
+            Log.d("FHD", "video_links » $video_links")
+            if (video_links.isEmpty()) return false
 
-            val rapid    = app.get(rapidvid).text
-            val m3u_link = rapidToM3u8(rapid) ?: return false
-            Log.d("FHD", "m3u_link » $m3u_link")
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = "$mainUrl/",
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
-                )
-            )
+            for (video_map in video_links) {
+                for ((key, value) in video_map) {
+                    val video_req = app.get(value, referer="$mainUrl/").text
+
+                    if (value.contains("rapidvid.net")) {
+                        val m3u_link = rapid2M3u8(video_req) ?: continue
+
+                        Log.d("FHD", "m3u_link » $m3u_link")
+
+                        callback.invoke(
+                            ExtractorLink(
+                                source  = "${this.name} - $key",
+                                name    = "${this.name} - $key",
+                                url     = m3u_link,
+                                referer = "$mainUrl/",
+                                quality = Qualities.Unknown.value,
+                                isM3u8  = true
+                            )
+                        )
+                    }
+
+                    if (value.contains("trstx.org")) {
+                        val m3u_map = trstx2M3u8(video_req)
+                        for (mapEntry in m3u_map) {
+                            val title    = mapEntry["title"] ?: continue
+                            val m3u_link = mapEntry["videoData"] ?: continue
+
+                            callback.invoke(
+                                ExtractorLink(
+                                    source  = "${this.name} - $title",
+                                    name    = "${this.name} - $title",
+                                    url     = m3u_link,
+                                    referer = "$mainUrl/",
+                                    quality = Qualities.Unknown.value,
+                                    isM3u8  = m3u_link.contains(".m3u8")
+                                )
+                            )
+                        }
+                    }
+                }
+            }
 
             return true
     }
 
     data class SCXData(
-        @JsonProperty("atom") val atom: AtomData
+        @JsonProperty("atom") val atom: AtomData? = null,
+        @JsonProperty("advid") val advid: AtomData? = null,
+        @JsonProperty("advidprox") val advidprox: AtomData? = null
     )
-
+    
     data class AtomData(
-        @JsonProperty("tt") var tt: String,
-        @JsonProperty("sx") var sx: SXData,
-        @JsonProperty("order") var order: Int?
+        @JsonProperty("sx") var sx: SXData
+    )
+    
+    data class SXData(
+        @JsonProperty("t") var t: Any
     )
 
-    data class SXData(
-        @JsonProperty("t") var t: List<String>,
-        @JsonProperty("p") var p: List<String?> = emptyList()
+    data class TrstxVideoData(
+        @JsonProperty("title") val title: String? = null,
+        @JsonProperty("file") val file: String? = null
     )
 }
