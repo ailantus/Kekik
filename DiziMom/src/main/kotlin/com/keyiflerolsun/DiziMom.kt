@@ -162,6 +162,7 @@ class DiziMom : MainAPI() {
                 )
                 val video_response = response.parsedSafe<SystemResponse>() ?: return false
                 m3u_link           = video_response.securedLink
+                Log.d("DZM", "m3u_link » $m3u_link")
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
@@ -236,7 +237,7 @@ class DiziMom : MainAPI() {
                     url     = m3u_link,
                     referer = iframe,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8") || m3u_link.contains(".txt")
+                    isM3u8  = m3u_link.contains(".m3u8")
                 )
             )
 
