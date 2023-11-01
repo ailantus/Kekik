@@ -185,17 +185,12 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("videoseyred.in")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
-
+                val responseList = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
+                Log.d("DZM", "responseList » $responseList")
+                val response = responseList.firstOrNull() ?: return false
                 Log.d("DZM", "response » $response")
-                for (bakalim in response) {
-                    Log.d("DZM", "bakalim » $bakalim")
-                }
 
-                val first_response = response.get(0)
-                Log.d("DZM", "first_response » $first_response")
-
-                for (track in first_response.tracks) {
+                for (track in response.tracks) {
                     if (track.label != null && track.kind == "captions") {
                         subtitleCallback.invoke(
                             SubtitleFile(
@@ -210,10 +205,10 @@ class DiziMom : MainAPI() {
                     ExtractorLink(
                         source  = this.name,
                         name    = this.name,
-                        url     = first_response.sources.first().file,
+                        url     = response.sources.first().file,
                         referer = "https://videoseyred.in/",
                         quality = Qualities.Unknown.value,
-                        isM3u8  = first_response.sources.first().file.contains(".m3u8")
+                        isM3u8  = response.sources.first().file.contains(".m3u8")
                     )
                 )
 
