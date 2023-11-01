@@ -175,23 +175,27 @@ class FullHDFilmizlesene : MainAPI() {
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "decoded » $decoded")
+        Log.d("FHD", "_decoded » $decoded")
 
         return decoded
     }
 
     private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
-        Log.d("FHD", "Starting trstx2M3u8 function with URL: $trstx")
+        Log.d("FHD", "_Starting trstx2M3u8 function with URL: $trstx")
+    
+        val fileRegex = Regex("""\"file\":\"(\\/playlist\\/[^"]+)""")
+        val fileMatch = fileRegex.find(trstx)
 
-        val file = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: run {
-            Log.d("FHD", "Failed to extract 'file' from trstx data.")
+        if (fileMatch == null) {
+            Log.d("FHD", "_Failed to extract 'file' from trstx data.")
             return emptyList()
         }
 
+        val file = fileMatch.groupValues[1]
         val postLink = file.replace("\\\\", "")
 
         val postJson = app.post("https://trstx.org/$postLink", referer="$mainUrl/").parsedSafe<List<TrstxVideoData>>() ?: run {
-            Log.d("FHD", "Failed to get postJson from trstx.org.")
+            Log.d("FHD", "_Failed to get postJson from trstx.org.")
             return emptyList()
         }
 
@@ -209,9 +213,9 @@ class FullHDFilmizlesene : MainAPI() {
             ))
         }
 
-        Log.d("FHD", "trstx2M3u8 function finished with vid_data: $vid_data")
+        Log.d("FHD", "_trstx2M3u8 function finished with vid_data: $vid_data")
         return vid_data
-    }    
+    }
 
     override suspend fun loadLinks(
         data: String,
@@ -220,10 +224,10 @@ class FullHDFilmizlesene : MainAPI() {
         callback: (ExtractorLink) -> Unit
         ): Boolean {
 
-            Log.d("FHD", "data » $data")
+            Log.d("FHD", "_data » $data")
             val document    = app.get(data).document
             val video_links = getVideoLinks(document)
-            Log.d("FHD", "video_links » $video_links")
+            Log.d("FHD", "_video_links » $video_links")
             if (video_links.isEmpty()) return false
 
 
@@ -234,7 +238,7 @@ class FullHDFilmizlesene : MainAPI() {
                     if (value.contains("rapidvid.net")) {
                         val m3u_link = rapid2M3u8(video_req) ?: continue
 
-                        Log.d("FHD", "m3u_link » $m3u_link")
+                        Log.d("FHD", "_m3u_link » $m3u_link")
 
                         callback.invoke(
                             ExtractorLink(
