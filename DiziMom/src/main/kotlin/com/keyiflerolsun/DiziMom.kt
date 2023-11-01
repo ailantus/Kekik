@@ -160,9 +160,10 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
+                Log.d("DZM", "response » $response")
+                Log.d("DZM", "response.text » ${response.text}")
                 val video_response = response.parsedSafe<SystemResponse>() ?: return false
                 m3u_link           = video_response.securedLink
-                Log.d("DZM", "m3u_link » $m3u_link")
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
