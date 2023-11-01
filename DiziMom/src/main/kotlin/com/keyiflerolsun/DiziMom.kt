@@ -185,28 +185,24 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("videoseyred.in")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                Log.d("DZM", "video_id » $video_id")
                 val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
-                Log.d("DZM", "response » $response")
 
-                for (elem in response) {
-                    for (video in elem.sources) {
-                        callback.invoke(
-                            ExtractorLink(
-                                source  = this.name,
-                                name    = this.name,
-                                url     = video.file,
-                                referer = "https://videoseyred.in/",
-                                quality = Qualities.Unknown.value,
-                                isM3u8  = video.file.contains(".m3u8")
-                            )
-                        )
-                    }
+                val first_response = response.first()
+                Log.d("DZM", "first_response » $first_response")
 
-                    for (track in elem.tracks) {
-                        if (track.kind != "captions") continue
-                        if (track.label == null) continue
-    
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = first_response.sources.first().file,
+                        referer = "https://videoseyred.in/",
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = first_response.sources.first().file.contains(".m3u8")
+                    )
+                )
+
+                for (track in first_response.tracks) {
+                    if (track.label != null  && track.kind == "captions") {
                         subtitleCallback.invoke(
                             SubtitleFile(
                                 lang = track.label,
