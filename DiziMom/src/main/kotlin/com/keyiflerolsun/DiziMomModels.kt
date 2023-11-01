@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 
 data class SystemResponse(
     @JsonProperty("hls") val hls: String,
-    @JsonProperty("videoImage") val videoImage: String,
+    @JsonProperty("videoImage") val videoImage: String? = null,
     @JsonProperty("videoSource") val videoSource: String,
     @JsonProperty("securedLink") val securedLink: String
 )
