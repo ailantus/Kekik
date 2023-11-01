@@ -185,7 +185,9 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("videoseyred.in")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
+                Log.d("DZM", "video_id » $video_id")
                 val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
+                Log.d("DZM", "response » $response")
 
                 for (elem in response) {
                     for (video in elem.sources) {
