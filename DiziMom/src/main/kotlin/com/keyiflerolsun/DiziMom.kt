@@ -196,7 +196,7 @@ class DiziMom : MainAPI() {
                                 source  = this.name,
                                 name    = this.name,
                                 url     = video.file,
-                                referer = "$mainUrl/",
+                                referer = "https://videoseyred.in/",
                                 quality = Qualities.Unknown.value,
                                 isM3u8  = video.file.contains(".m3u8")
                             )
