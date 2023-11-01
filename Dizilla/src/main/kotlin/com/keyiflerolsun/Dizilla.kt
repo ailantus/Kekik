@@ -124,39 +124,39 @@ class Dizilla : MainAPI() {
             val ep_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
         
             ep_doc.select("div.episodes div.cursor-pointer").forEach inner1@ { episodeElement ->
-                val ep_name = episodeElement.select("a").last()?.text()?.trim() ?: return@inner1
-                val ep_href = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner1
+                val ep_name        = episodeElement.select("a").last()?.text()?.trim() ?: return@inner1
+                val ep_href        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner1
                 val ep_description = episodeElement.selectFirst("span.t-content")?.text()?.trim()
-                val ep_episode = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
+                val ep_episode     = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
-                val parent_div = episodeElement.parent()
+                val parent_div   = episodeElement.parent()
                 val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
-                val ep_season = season_class?.substringAfter("szn")?.toIntOrNull()
+                val ep_season    = season_class?.substringAfter("szn")?.toIntOrNull()
         
                 episode_list.add(Episode(
-                    data = ep_href,
-                    name = ep_name,
-                    season = ep_season,
-                    episode = ep_episode,
+                    data        = ep_href,
+                    name        = ep_name,
+                    season      = ep_season,
+                    episode     = ep_episode,
                     description = ep_description
                 ))
             }
         
             ep_doc.select("div.dub-episodes div.cursor-pointer").forEach inner2@ { dubEpisodeElement ->
-                val ep_name = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@inner2
-                val ep_href = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner2
+                val ep_name        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@inner2
+                val ep_href        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner2
                 val ep_description = dubEpisodeElement.selectFirst("span.t-content")?.text()?.trim()
-                val ep_episode = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
+                val ep_episode     = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
-                val parent_div = dubEpisodeElement.parent()
+                val parent_div   = dubEpisodeElement.parent()
                 val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
-                val ep_season = season_class?.substringAfter("szn")?.toIntOrNull()
+                val ep_season    = season_class?.substringAfter("szn")?.toIntOrNull()
         
                 episode_list.add(Episode(
-                    data = ep_href,
-                    name = "${ep_name} Dublaj",
-                    season = ep_season,
-                    episode = ep_episode,
+                    data        = ep_href,
+                    name        = "${ep_name} Dublaj",
+                    season      = ep_season,
+                    episode     = ep_episode,
                     description = ep_description
                 ))
             }
