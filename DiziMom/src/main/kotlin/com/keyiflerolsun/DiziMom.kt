@@ -185,13 +185,10 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("videoseyred.in")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                val response = app.get(
-                    "https://videoseyred.in/playlist/${video_id}.json"
-                ).text.substringAfter("[").substringBefore("]")
-                val vs_map: VideoSeyred = jacksonObjectMapper().readValue(response)
-                Log.d("DZM", "vs_map » $vs_map")
+                val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<VideoSeyred>() ?: return false
+                Log.d("DZM", "response » $response")
 
-                for (track in vs_map.tracks) {
+                for (track in response.tracks) {
                     if (track.label != null && track.kind == "captions") {
                         subtitleCallback.invoke(
                             SubtitleFile(
@@ -202,16 +199,18 @@ class DiziMom : MainAPI() {
                     }
                 }
 
-                callback.invoke(
-                    ExtractorLink(
-                        source  = this.name,
-                        name    = this.name,
-                        url     = vs_map.sources.first().file,
-                        referer = "https://videoseyred.in/",
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = vs_map.sources.first().file.contains(".m3u8")
+                for (source in response.sources) {
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = this.name,
+                            name    = this.name,
+                            url     = source.file,
+                            referer = "https://videoseyred.in/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = source.file.contains(".m3u8")
+                        )
                     )
-                )
+                }
 
                 return true
             }
