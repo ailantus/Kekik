@@ -4,7 +4,6 @@ package com.keyiflerolsun
 
 import android.util.Log
 import org.jsoup.nodes.Element
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -184,6 +183,40 @@ class DiziMom : MainAPI() {
                 }
             }
 
+            if (iframe.contains("videoseyred.in")) {
+                val video_id = iframe.substringAfter("embed/").substringBefore("?")
+                val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
+
+                for (elem in response) {
+                    for (video in elem.sources) {
+                        callback.invoke(
+                            ExtractorLink(
+                                source  = this.name,
+                                name    = this.name,
+                                url     = video.file,
+                                referer = "$mainUrl/",
+                                quality = Qualities.Unknown.value,
+                                isM3u8  = video.file.contains(".m3u8")
+                            )
+                        )
+                    }
+
+                    for (track in elem.tracks) {
+                        if (track.kind != "captions") continue
+                        if (track.label == null) continue
+    
+                        subtitleCallback.invoke(
+                            SubtitleFile(
+                                lang = track.label,
+                                url  = fixUrl(track.file)
+                            )
+                        )
+                    }
+                }
+
+                return true
+            }
+
             Log.d("DZM", "m3u_link » $m3u_link")
             if (m3u_link == null) {
                 Log.d("DZM", "i_source » $i_source")
@@ -203,32 +236,4 @@ class DiziMom : MainAPI() {
 
             return true
     }
-
-    data class SystemResponse(
-        @JsonProperty("hls") val hls: String,
-        @JsonProperty("videoImage") val videoImage: String,
-        @JsonProperty("videoSource") val videoSource: String,
-        @JsonProperty("securedLink") val securedLink: String
-    )
-
-    data class PeaceResponse(
-        @JsonProperty("videoImage") val videoImage: String,
-        @JsonProperty("videoSources") val videoSources: List<VideoSource>,
-        @JsonProperty("sIndex") val sIndex: String,
-        @JsonProperty("sourceList") val sourceList: Map<String, String>
-    )
-
-    data class VideoSource(
-        @JsonProperty("file") val file: String,
-        @JsonProperty("label") val label: String,
-        @JsonProperty("type") val type: String
-    )
-
-    data class Track(
-        @JsonProperty("file") val file: String?,
-        @JsonProperty("label") val label: String?,
-        @JsonProperty("kind") val kind: String?,
-        @JsonProperty("language") val language: String?,
-        @JsonProperty("default") val default: String?
-    )
 }
