@@ -64,5 +64,6 @@ data class Teve2Media(
 )
 
 data class Teve2Link(
+    @JsonProperty("ServiceUrl") val serviceUrl: String,
     @JsonProperty("SecurePath") val securePath: String
 )
