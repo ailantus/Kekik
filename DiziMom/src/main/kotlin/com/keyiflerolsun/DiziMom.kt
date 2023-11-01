@@ -139,10 +139,10 @@ class DiziMom : MainAPI() {
             }
 
             if (iframe.contains("hdplayersystem")) {
-                if (iframe.contains("video/")) {
-                    val vid_id = iframe.substringAfter("video/")
+                val vid_id = if (iframe.contains("video/")) {
+                    iframe.substringAfter("video/")
                 } else {
-                    val vid_id = iframe.substringAfter("?data=")
+                    iframe.substringAfter("?data=")
                 }
 
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
