@@ -188,7 +188,7 @@ class DiziMom : MainAPI() {
                 val response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>() ?: return false
 
                 Log.d("DZM", "response » $response")
-                val first_response = response.firstOrNull() ?: return false
+                val first_response = response.get(0)
                 Log.d("DZM", "first_response » $first_response")
 
                 for (track in first_response.tracks) {
