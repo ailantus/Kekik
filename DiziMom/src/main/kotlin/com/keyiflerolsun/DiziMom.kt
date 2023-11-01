@@ -122,12 +122,10 @@ class DiziMom : MainAPI() {
                 if (track_str != null) {
                     val tracks:List<Track> = jacksonObjectMapper().readValue("[$track_str]")
 
-                    Log.d("DZM", "tracks » $tracks")
                     for (track in tracks) {
                         if (track.file == null || track.label == null) continue
                         if (track.label.contains("Forced")) continue
 
-                        Log.d("DZM", "${track.label} » ${track.file}")
                         subtitleCallback.invoke(
                             SubtitleFile(
                                 lang = track.label,
@@ -146,8 +144,6 @@ class DiziMom : MainAPI() {
                 }
 
                 val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
-
                 val response = app.post(
                     post_url,
                     data = mapOf(
@@ -166,8 +162,6 @@ class DiziMom : MainAPI() {
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
                 val post_url = "${iframe}?do=getVideo"
-                Log.d("DZM", "post_url » $post_url")
-
                 val response = app.post(
                     post_url,
                     data = mapOf(
@@ -181,10 +175,8 @@ class DiziMom : MainAPI() {
                         "X-Requested-With" to "XMLHttpRequest"
                     )
                 )
-                Log.d("DZM", "response » ${response.text}")
                 if (response.text.contains("teve2.com.tr\\/embed\\/")) {
                     val teve2_id       = response.text.substringAfter("teve2.com.tr\\/embed\\/").substringBefore("\"")
-                    Log.d("DZM", "teve2_id » $teve2_id")
                     val teve2_response = app.get(
                         "https://www.teve2.com.tr/action/media/${teve2_id}",
                         referer = "https://www.teve2.com.tr/embed/${teve2_id}"
@@ -204,9 +196,7 @@ class DiziMom : MainAPI() {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
                 val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
                 val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
-                Log.d("DZM", "response_list » $response_list")
                 val response = response_list[0]
-                Log.d("DZM", "response » $response")
 
                 for (track in response.tracks) {
                     if (track.label != null && track.kind == "captions") {
