@@ -7,6 +7,7 @@ import android.util.Base64
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Document
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -265,11 +266,12 @@ class FullHDFilmizlesene : MainAPI() {
         @JsonProperty("advid") val advid: AtomData? = null,
         @JsonProperty("advidprox") val advidprox: AtomData? = null
     )
-    
+
     data class AtomData(
         @JsonProperty("sx") var sx: SXData
     )
-    
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class SXData(
         @JsonProperty("t") var t: Any
     )
