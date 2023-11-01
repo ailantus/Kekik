@@ -123,9 +123,9 @@ class Dizilla : MainAPI() {
         document.selectXpath("//div[contains(@class, 'episodes')]/div/a[contains(@href, '-sezon')]").forEach {
             val ep_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
         
-            ep_doc.select("div.episodes div.cursor-pointer").forEach inner1@ { episodeElement ->
-                val ep_name        = episodeElement.select("a").last()?.text()?.trim() ?: return@inner1
-                val ep_href        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner1
+            ep_doc.select("div.episodes div.cursor-pointer").forEach ep@ { episodeElement ->
+                val ep_name        = episodeElement.select("a").last()?.text()?.trim() ?: return@ep
+                val ep_href        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep
                 val ep_description = episodeElement.selectFirst("span.t-content")?.text()?.trim()
                 val ep_episode     = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
@@ -142,9 +142,9 @@ class Dizilla : MainAPI() {
                 ))
             }
         
-            ep_doc.select("div.dub-episodes div.cursor-pointer").forEach inner2@ { dubEpisodeElement ->
-                val ep_name        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@inner2
-                val ep_href        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@inner2
+            ep_doc.select("div.dub-episodes div.cursor-pointer").forEach ep_dub@ { dubEpisodeElement ->
+                val ep_name        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@ep_dub
+                val ep_href        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep_dub
                 val ep_description = dubEpisodeElement.selectFirst("span.t-content")?.text()?.trim()
                 val ep_episode     = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
