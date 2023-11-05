@@ -1,4 +1,4 @@
-// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/FreeTVProvider/src/main/kotlin/com/lagradost/FreeTVProvider.kt
+// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/CanliTV/src/main/kotlin/com/lagradost/CanliTV.kt
 
 package com.lagradost
 
@@ -27,17 +27,13 @@ class CanliTV : MainAPI() {
         return HomePageResponse(data.items.groupBy{it.attributes["group-title"]}.map { group ->
             val title = group.key ?: ""
             val show = group.value.map { channel ->
-                val streamurl = channel.url.toString()
-                val channelname = channel.title.toString()
-                val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
-                    channelname,
-                    streamurl,
-                    this@CanliTV.name,
-                    TvType.Live,
-                    posterurl,
-                    lang = channel.attributes["tvg-country"]
+                    name      = channel.attributes["tvg-id"].toString(),
+                    url       = channel.url.toString(),
+                    apiName   = this@CanliTV.name,
+                    type      = TvType.Live,
+                    posterUrl = channel.attributes["tvg-logo"].toString(),
+                    lang      = channel.attributes["tvg-country"].toString()
                 )
             }
             HomePageList(
@@ -52,17 +48,13 @@ class CanliTV : MainAPI() {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return data.items.filter { it.attributes["tvg-id"]?.contains(query) ?: false }.map { channel ->
-                val streamurl = channel.url.toString()
-                val channelname = channel.attributes["tvg-id"].toString()
-                val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
-                    channelname,
-                    streamurl,
-                    this@CanliTV.name,
-                    TvType.Live,
-                    posterurl,
-                    lang = channel.attributes["tvg-country"]
+                    name      = channel.attributes["tvg-id"].toString(),
+                    url       = channel.url.toString(),
+                    apiName   = this@CanliTV.name,
+                    type      = TvType.Live,
+                    posterUrl = channel.attributes["tvg-logo"].toString(),
+                    lang      = channel.attributes["tvg-country"].toString()
                 )
         }
     }
