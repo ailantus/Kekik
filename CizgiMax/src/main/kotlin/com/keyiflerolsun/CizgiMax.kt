@@ -17,20 +17,19 @@ class CizgiMax : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Cartoon)
 
-    override val mainPage =
-        mainPageOf(
-            "$mainUrl/category/genel/aile/page/"        to "Aile",
-            "$mainUrl/category/genel/aksyion/page/"     to "Aksyion",
-            "$mainUrl/category/genel/bilim-kurgu/page/" to "Bilim Kurgu",
-            "$mainUrl/category/genel/fantastik/page/"   to "Fantastik",
-            "$mainUrl/category/genel/komedi/page/"      to "Komedi",
-            "$mainUrl/category/genel/korku/page/"       to "Korku",
-            "$mainUrl/category/genel/macera/page/"      to "Macera",
-            "$mainUrl/category/genel/tarih/page/"       to "Tarih"
-        )
+    override val mainPage = mainPageOf(
+        "${mainUrl}/category/genel/aile/page/"        to "Aile",
+        "${mainUrl}/category/genel/aksyion/page/"     to "Aksyion",
+        "${mainUrl}/category/genel/bilim-kurgu/page/" to "Bilim Kurgu",
+        "${mainUrl}/category/genel/fantastik/page/"   to "Fantastik",
+        "${mainUrl}/category/genel/komedi/page/"      to "Komedi",
+        "${mainUrl}/category/genel/korku/page/"       to "Korku",
+        "${mainUrl}/category/genel/macera/page/"      to "Macera",
+        "${mainUrl}/category/genel/tarih/page/"       to "Tarih"
+    )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page + "/?sort=views").document
+        val document = app.get("${request.data}${page}/?sort=views").document
         val home     = document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -44,13 +43,13 @@ class CizgiMax : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.Cartoon) { this.posterUrl = posterUrl }
     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("$mainUrl/?s=$query").document
+        val document = app.get("${mainUrl}/?s=${query}").document
 
         return document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
@@ -94,45 +93,39 @@ class CizgiMax : MainAPI() {
         }
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-        ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("CZGM", "data » ${data}")
+        val document = app.get(data).document
+        val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
+        Log.d("CZGM", "iframe » ${iframe}")
 
-            Log.d("CZGM", "data » $data")
-            val document = app.get(data).document
-            val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
-            Log.d("CZGM", "iframe » $iframe")
+        var i_source          = app.get("${iframe}", referer="${mainUrl}/").text
+        var m3u_link: String? = null
 
-            var i_source          = app.get("$iframe", referer="$mainUrl/").text
-            var m3u_link: String? = null
-
-            if (iframe.contains("sibnet.ru")) {
-                m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-                if (m3u_link != null) {
-                    m3u_link = "https://video.sibnet.ru${m3u_link}"
-                }
+        if (iframe.contains("sibnet.ru")) {
+            m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            if (m3u_link != null) {
+                m3u_link = "https://video.sibnet.ru${m3u_link}"
             }
+        }
 
-            Log.d("CZGM", "m3u_link » $m3u_link")
-            if (m3u_link == null) {
-                Log.d("CZGM", "i_source » $i_source")
-                return false
-            }
+        Log.d("CZGM", "m3u_link » ${m3u_link}")
+        if (m3u_link == null) {
+            Log.d("CZGM", "i_source » ${i_source}")
+            return false
+        }
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = iframe,
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8")
-                )
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = m3u_link,
+                referer = iframe,
+                quality = Qualities.Unknown.value,
+                isM3u8  = m3u_link.contains(".m3u8")
             )
+        )
 
-            return true
+        return true
     }
 }

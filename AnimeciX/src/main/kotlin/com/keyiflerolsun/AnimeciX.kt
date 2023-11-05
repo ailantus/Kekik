@@ -19,21 +19,21 @@ class AnimeciX : MainAPI() {
     override val supportedTypes     = setOf(TvType.Anime)
 
     override val mainPage = mainPageOf(
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
-        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
+        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get(request.data + "&page=${page}&perPage=12").parsedSafe<Category>()
+        val response = app.get("${request.data}&page=${page}&perPage=12").parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}",
+                "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -44,12 +44,12 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
+        val response = app.get("${mainUrl}/secure/search/${query}?limit=20").parsedSafe<Search>() ?: return emptyList()
 
         return response.results.mapNotNull { anime ->
             newAnimeSearchResponse(
                 anime.title,
-                "$mainUrl/secure/titles/${anime.id}?titleId=${anime.id}",
+                "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
                 TvType.Anime
             ) {
                 this.posterUrl = anime.poster
@@ -90,7 +90,7 @@ class AnimeciX : MainAPI() {
 
         return newTvSeriesLoadResponse(
             response.title.title,
-            "$mainUrl/secure/titles/${response.title.id}?titleId=${response.title.id}",
+            "${mainUrl}/secure/titles/${response.title.id}?titleId=${response.title.id}",
             TvType.Anime,
             episodes
         ) {
@@ -115,7 +115,7 @@ class AnimeciX : MainAPI() {
                         source  = this.name,
                         name    = "${this.name} - ${video.label}",
                         url     = video.url,
-                        referer = "$mainUrl/",
+                        referer = "${mainUrl}/",
                         quality = Qualities.Unknown.value,
                         isM3u8  = video.url.contains(".m3u8")
                     )
