@@ -1,4 +1,4 @@
-// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/CanliTV/src/main/kotlin/com/lagradost/CanliTV.kt
+// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/FreeTVProvider/src/main/kotlin/com/lagradost/FreeTVProvider.kt
 
 package com.lagradost
 
@@ -14,6 +14,7 @@ class CanliTV : MainAPI() {
     override var name                 = "CanliTV"
     override val hasMainPage          = true
     override var lang                 = "tr"
+    override val hasQuickSearch       = true
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = false
     override val supportedTypes       = setOf(TvType.Live)
@@ -32,7 +33,7 @@ class CanliTV : MainAPI() {
                 val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
                     channelname,
-                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    streamurl,
                     this@CanliTV.name,
                     TvType.Live,
                     posterurl,
@@ -57,13 +58,16 @@ class CanliTV : MainAPI() {
                 val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
                     channelname,
-                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    streamurl,
                     this@CanliTV.name,
                     TvType.Live,
                     posterurl,
+                    lang = channel.attributes["tvg-country"]
                 )
         }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse {
         val data = parseJson<LoadData>(url)
