@@ -98,7 +98,7 @@ class CanliTV : MainAPI() {
                 source  = this.name,
                 name    = loadData.title,
                 url     = loadData.url,
-                referer = "https://$iframe",
+                referer = "",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
             )
