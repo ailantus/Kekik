@@ -108,8 +108,8 @@ class CanliTV : MainAPI() {
     override suspend fun loadLinks(
         data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit
     ): Boolean {
+        Log.d("d_CanliTV", "loadLinks » ${data}")
         val loadData = parseJson<LoadData>(data)
-        Log.d("d_CanliTV", "${loadData}")
 
         callback.invoke(
             ExtractorLink(
