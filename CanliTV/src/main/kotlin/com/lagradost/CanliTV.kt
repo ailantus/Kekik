@@ -21,18 +21,18 @@ class CanliTV : MainAPI() {
     override val supportedTypes       = setOf(TvType.Live)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
+        val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return newHomePageResponse(
-            data.items
+            kanallar.items
                 .groupBy { it.attributes["group-title"] }
                 .map { group ->
                     val title = group.key ?: ""
-                    val show  = group.value.map { channel ->
-                        val streamurl   = channel.url.toString()
-                        val channelname = channel.title.toString()
-                        val posterurl   = channel.attributes["tvg-logo"].toString()
-                        val nation      = channel.attributes["tvg-country"].toString()
+                    val show  = group.value.map { kanal ->
+                        val streamurl   = kanal.url.toString()
+                        val channelname = kanal.title.toString()
+                        val posterurl   = kanal.attributes["tvg-logo"].toString()
+                        val nation      = kanal.attributes["tvg-country"].toString()
 
                         LiveSearchResponse(
                             channelname,
@@ -51,15 +51,15 @@ class CanliTV : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
+        val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        return data.items
+        return kanallar.items
             .filter { it.attributes["tvg-name"]?.lowercase()?.contains(query.lowercase()) ?: false }
-            .map { channel ->
-                val streamurl   = channel.url.toString()
-                val channelname = channel.title.toString()
-                val posterurl   = channel.attributes["tvg-logo"].toString()
-                val nation      = channel.attributes["tvg-country"].toString()
+            .map { kanal ->
+                val streamurl   = kanal.url.toString()
+                val channelname = kanal.title.toString()
+                val posterurl   = kanal.attributes["tvg-logo"].toString()
+                val nation      = kanal.attributes["tvg-country"].toString()
 
                 LiveSearchResponse(
                     channelname,
@@ -75,41 +75,20 @@ class CanliTV : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse {
-        Log.d("d_CanliTV", "load » ${url}")
-
-        lateinit var data: LoadData
-        if (url.startsWith("{")) {
-            data = parseJson<LoadData>(url)
-        } else {
-            val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-            kanallar.items.forEach {
-                if (it.url == url) {
-                    val streamurl   = it.url.toString()
-                    val channelname = it.title.toString()
-                    val posterurl   = it.attributes["tvg-logo"].toString()
-                    val nation      = it.attributes["tvg-country"].toString()
-                    data = LoadData(streamurl, channelname, posterurl, nation)
-                }
-            }
-        }
+        val loadData = fetchDataFromUrlOrJson(url)
 
         return LiveStreamLoadResponse(
-            data.title,
-            data.url,
+            loadData.title,
+            loadData.url,
             this.name,
             url,
-            data.poster,
-            plot = data.nation
+            loadData.poster,
+            plot = loadData.nation
         )
     }
 
-    data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
-
-    override suspend fun loadLinks(
-        data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit
-    ): Boolean {
-        Log.d("d_CanliTV", "loadLinks » ${data}")
-        val loadData = parseJson<LoadData>(data)
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        val loadData = fetchDataFromUrlOrJson(data)
 
         callback.invoke(
             ExtractorLink(
@@ -123,6 +102,25 @@ class CanliTV : MainAPI() {
         )
 
         return true
+    }
+
+    data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
+
+    private fun fetchDataFromUrlOrJson(data: String): LoadData {
+        if (data.startsWith("{")) {
+            return parseJson<LoadData>(data)
+        } else {
+            val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
+            val kanal    = kanallar.items.firstOrNull { it.url == data }
+
+            return if (kanal != null) {
+                val streamurl = kanal.url.toString()
+                val channelname = kanal.title.toString()
+                val posterurl = kanal.attributes["tvg-logo"].toString()
+                val nation = kanal.attributes["tvg-country"].toString()
+                LoadData(streamurl, channelname, posterurl, nation)
+            } 
+        }
     }
 }
 
