@@ -9,6 +9,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 import java.io.InputStream
 
+
 class CanliTV : MainAPI() {
     override var mainUrl              = "https://raw.githubusercontent.com/keyiflerolsun/IPTV_YenirMi/main/Kanallar/KekikAkademi.m3u"
     override var name                 = "CanliTV"
@@ -19,43 +20,42 @@ class CanliTV : MainAPI() {
     override val hasDownloadSupport   = false
     override val supportedTypes       = setOf(TvType.Live)
 
-    override suspend fun getMainPage(
-        page: Int,
-        request : MainPageRequest
-    ): HomePageResponse {
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        return HomePageResponse(data.items.groupBy{it.attributes["group-title"]}.map { group ->
-            val title = group.key ?: ""
-            val show = group.value.map { channel ->
-                val streamurl = channel.url.toString()
-                val channelname = channel.title.toString()
-                val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-country"].toString()
-                LiveSearchResponse(
-                    channelname,
-                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
-                    this@CanliTV.name,
-                    TvType.Live,
-                    posterurl,
-                    lang = channel.attributes["tvg-country"]
-                )
-            }
-            HomePageList(
-                title,
-                show,
-                isHorizontalImages = true
-            )
-        })
+        return HomePageResponse(
+            data.items
+                .groupBy { it.attributes["group-title"] }
+                .map { group ->
+                    val title = group.key ?: ""
+                    val show =
+                        group.value.map { channel ->
+                            val streamurl   = channel.url.toString()
+                            val channelname = channel.title.toString()
+                            val posterurl   = channel.attributes["tvg-logo"].toString()
+                            val nation      = channel.attributes["tvg-country"].toString()
+                            LiveSearchResponse(
+                                channelname,
+                                LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                                this@CanliTV.name,
+                                TvType.Live,
+                                posterurl, lang = channel.attributes["tvg-country"]
+                            )
+                        }
+                    HomePageList(title, show, isHorizontalImages = true)
+                }
+        )
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        return data.items.filter { it.attributes["tvg-id"]?.contains(query) ?: false }.map { channel ->
-                val streamurl = channel.url.toString()
+        return data.items
+            .filter { it.attributes["tvg-id"]?.contains(query) ?: false }
+            .map { channel ->
+                val streamurl   = channel.url.toString()
                 val channelname = channel.attributes["tvg-id"].toString()
-                val posterurl = channel.attributes["tvg-logo"].toString()
-                val nation = channel.attributes["tvg-country"].toString()
+                val posterurl   = channel.attributes["tvg-logo"].toString()
+                val nation      = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
@@ -63,7 +63,7 @@ class CanliTV : MainAPI() {
                     TvType.Live,
                     posterurl,
                 )
-        }
+            }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -79,34 +79,31 @@ class CanliTV : MainAPI() {
             plot = data.nation
         )
     }
-    data class LoadData(
-        val url: String,
-        val title: String,
-        val poster: String,
-        val nation: String
 
-    )
+    data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
-    ): Boolean {
-        val loadData = parseJson<LoadData>(data)
-        callback.invoke(
-            ExtractorLink(
-                source  = this.name,
-                name    = loadData.title,
-                url     = loadData.url,
-                referer = "",
-                quality = Qualities.Unknown.value,
-                isM3u8  = true
+        ): Boolean {
+
+            val loadData = parseJson<LoadData>(data)
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = loadData.title,
+                    url     = loadData.url,
+                    referer = "",
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
             )
-        )
-        return true
+            return true
+
     }
 }
-
 
 data class Playlist(
     val items: List<PlaylistItem> = emptyList(),
@@ -120,9 +117,7 @@ data class PlaylistItem(
     val userAgent: String? = null,
 )
 
-
 class IptvPlaylistParser {
-
 
     /**
      * Parse M3U8 string into [Playlist]
@@ -163,26 +158,22 @@ class IptvPlaylistParser {
                     val item = playlistItems[currentIndex]
                     val userAgent = line.getTagValue("http-user-agent")
                     val referrer = line.getTagValue("http-referrer")
-                    val headers = if (referrer != null) {
-                        item.headers + mapOf("referrer" to referrer)
-                    } else item.headers
-                    playlistItems[currentIndex] =
-                        item.copy(userAgent = userAgent, headers = headers)
+                    val headers =
+                        if (referrer != null) {
+                            item.headers + mapOf("referrer" to referrer)
+                        } else item.headers
+                    playlistItems[currentIndex] = item.copy(userAgent = userAgent, headers = headers)
                 } else {
                     if (!line.startsWith("#")) {
                         val item = playlistItems[currentIndex]
                         val url = line.getUrl()
                         val userAgent = line.getUrlParameter("user-agent")
                         val referrer = line.getUrlParameter("referer")
-                        val urlHeaders = if (referrer != null) {
-                            item.headers + mapOf("referrer" to referrer)
-                        } else item.headers
-                        playlistItems[currentIndex] =
-                            item.copy(
-                                url = url,
-                                headers = item.headers + urlHeaders,
-                                userAgent = userAgent
-                            )
+                        val urlHeaders =
+                            if (referrer != null) {
+                                item.headers + mapOf("referrer" to referrer)
+                            } else item.headers
+                        playlistItems[currentIndex] = item.copy(url = url, headers = item.headers + urlHeaders, userAgent = userAgent)
                         currentIndex++
                     }
                 }
@@ -193,16 +184,12 @@ class IptvPlaylistParser {
         return Playlist(playlistItems)
     }
 
-    /**
-     * Replace "" (quotes) from given string.
-     */
+    /** Replace "" (quotes) from given string. */
     private fun String.replaceQuotesAndTrim(): String {
         return replace("\"", "").trim()
     }
 
-    /**
-     * Check if given content is valid M3U8 playlist.
-     */
+    /** Check if given content is valid M3U8 playlist. */
     private fun String.isExtendedM3u(): Boolean = startsWith(EXT_M3U)
 
     /**
@@ -214,6 +201,7 @@ class IptvPlaylistParser {
      * ```
      * #EXTINF:-1 tvg-id="1234" group-title="Kids" tvg-logo="url/to/logo", Title
      * ```
+     *
      * Result: Title
      */
     private fun String.getTitle(): String? {
@@ -229,6 +217,7 @@ class IptvPlaylistParser {
      * ```
      * https://example.com/sample.m3u8|user-agent="Custom"
      * ```
+     *
      * Result: https://example.com/sample.m3u8
      */
     private fun String.getUrl(): String? {
@@ -244,6 +233,7 @@ class IptvPlaylistParser {
      * ```
      * http://192.54.104.122:8080/d/abcdef/video.mp4|User-Agent=Mozilla&Referer=CustomReferrer
      * ```
+     *
      * Result will be equivalent to kotlin map:
      * ```Kotlin
      * mapOf(
@@ -255,10 +245,13 @@ class IptvPlaylistParser {
     private fun String.getUrlParameters(): Map<String, String> {
         val urlRegex = Regex("^(.*)\\|", RegexOption.IGNORE_CASE)
         val headersString = replace(urlRegex, "").replaceQuotesAndTrim()
-        return headersString.split("&").mapNotNull {
-            val pair = it.split("=")
-            if (pair.size == 2) pair.first() to pair.last() else null
-        }.toMap()
+        return headersString
+            .split("&")
+            .mapNotNull {
+                val pair = it.split("=")
+                if (pair.size == 2) pair.first() to pair.last() else null
+            }
+            .toMap()
     }
 
     /**
@@ -270,6 +263,7 @@ class IptvPlaylistParser {
      * ```
      * http://192.54.104.122:8080/d/abcdef/video.mp4|User-Agent=Mozilla&Referer=CustomReferrer
      * ```
+     *
      * If given key is `user-agent`, then
      *
      * Result: Mozilla
@@ -290,23 +284,26 @@ class IptvPlaylistParser {
      * ```
      * #EXTINF:-1 tvg-id="1234" group-title="Kids" tvg-logo="url/to/logo", Title
      * ```
+     *
      * Result will be equivalent to kotlin map:
      * ```Kotlin
      * mapOf(
      *   "tvg-id" to "1234",
      *   "group-title" to "Kids",
      *   "tvg-logo" to "url/to/logo"
-     *)
+     * )
      * ```
      */
     private fun String.getAttributes(): Map<String, String> {
         val extInfRegex = Regex("(#EXTINF:.?[0-9]+)", RegexOption.IGNORE_CASE)
         val attributesString = replace(extInfRegex, "").replaceQuotesAndTrim().split(",").first()
-        return attributesString.split(Regex("\\s")).mapNotNull {
-            val pair = it.split("=")
-            if (pair.size == 2) pair.first() to pair.last()
-                .replaceQuotesAndTrim() else null
-        }.toMap()
+        return attributesString
+            .split(Regex("\\s"))
+            .mapNotNull {
+                val pair = it.split("=")
+                if (pair.size == 2) pair.first() to pair.last().replaceQuotesAndTrim() else null
+            }
+            .toMap()
     }
 
     /**
@@ -318,6 +315,7 @@ class IptvPlaylistParser {
      * ```
      * #EXTVLCOPT:http-referrer=http://example.com/
      * ```
+     *
      * Result: http://example.com/
      */
     private fun String.getTagValue(key: String): String? {
@@ -330,18 +328,11 @@ class IptvPlaylistParser {
         const val EXT_INF = "#EXTINF"
         const val EXT_VLC_OPT = "#EXTVLCOPT"
     }
-
 }
 
-/**
- * Exception thrown when an error occurs while parsing playlist.
- */
+/** Exception thrown when an error occurs while parsing playlist. */
 sealed class PlaylistParserException(message: String) : Exception(message) {
 
-    /**
-     * Exception thrown if given file content is not valid.
-     */
-    class InvalidHeader :
-        PlaylistParserException("Invalid file header. Header doesn't start with #EXTM3U")
-
+    /** Exception thrown if given file content is not valid. */
+    class InvalidHeader : PlaylistParserException("Invalid file header. Header doesn't start with #EXTM3U")
 }
