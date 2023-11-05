@@ -21,7 +21,7 @@ class Turkish123 : MainAPI() {
     override val supportedTypes     = setOf(TvType.TvSeries)
 
     companion object {
-        private const val ${mainServer} = "https://tukipasti.com"
+        private const val mainServer = "https://tukipasti.com"
     }
 
     override val mainPage =
