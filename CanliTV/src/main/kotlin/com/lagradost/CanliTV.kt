@@ -22,6 +22,7 @@ class CanliTV : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
+
         return newHomePageResponse(
             data.items
                 .groupBy { it.attributes["group-title"] }
@@ -48,10 +49,9 @@ class CanliTV : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        Log.d("d_CanliTV", "search_data » ${data}")
 
         return data.items
-            .filter { it.attributes["tvg-name"]?.contains(query) ?: false }
+            .filter { it.attributes["tvg-name"]?.toLowerCase()?.contains(query.toLowerCase()) ?: false }
             .map { channel ->
                 val streamurl   = channel.url.toString()
                 val channelname = channel.title.toString()
@@ -71,7 +71,9 @@ class CanliTV : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse {
+        Log.d("d_CanliTV", "load » ${url}")
         val data = parseJson<LoadData>(url)
+
         return LiveStreamLoadResponse(
             data.title,
             data.url,
@@ -84,29 +86,22 @@ class CanliTV : MainAPI() {
 
     data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-        ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        val loadData = parseJson<LoadData>(data)
+        Log.d("d_CanliTV", "${loadData}")
 
-            val loadData = parseJson<LoadData>(data)
-            Log.d("d_CanliTV", "${loadData}")
-
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = loadData.title,
-                    url     = loadData.url,
-                    referer = "",
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
-                )
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = loadData.title,
+                url     = loadData.url,
+                referer = "",
+                quality = Qualities.Unknown.value,
+                isM3u8  = true
             )
+        )
 
-            return true
-
+        return true
     }
 }
 
