@@ -93,7 +93,7 @@ class CanliTV : MainAPI() {
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
-                name    = loadData.title,
+                name    = this.name,
                 url     = loadData.url,
                 referer = "",
                 quality = Qualities.Unknown.value,
