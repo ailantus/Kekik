@@ -90,6 +90,8 @@ class CanliTV : MainAPI() {
         ): Boolean {
 
             val loadData = parseJson<LoadData>(data)
+            Log.d("d_CanliTV", "${loadData}")
+
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
