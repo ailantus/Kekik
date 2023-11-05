@@ -25,38 +25,37 @@ class FullHDFilmizlesene : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
-    override val mainPage           =
-        mainPageOf(
-            "$mainUrl/en-cok-izlenen-filmler-izle-hd/"            to "En Çok izlenen Filmler",
-            "$mainUrl/filmizle/imdb-puani-yuksek-filmler-izle-1/" to "IMDB Puanı Yüksek Filmler",
-            "$mainUrl/filmizle/aile-filmleri-izle-2/"             to "Aile Filmleri",
-            "$mainUrl/filmizle/aksiyon-filmler-izle-1/"           to "Aksiyon Filmleri",
-            "$mainUrl/filmizle/animasyon-filmleri-izle-4/"        to "Animasyon Filmleri",
-            "$mainUrl/filmizle/belgesel-filmleri-izle-2/"         to "Belgeseller",
-            "$mainUrl/filmizle/bilim-kurgu-filmleri-izle-1/"      to "Bilim Kurgu Filmleri",
-            "$mainUrl/filmizle/bluray-filmler-izle-1/"            to "Blu Ray Filmler",
-            "$mainUrl/filmizle/cizgi-filmler-izle-1/"             to "Çizgi Filmler",
-            "$mainUrl/filmizle/dram-filmleri-izle/"               to "Dram Filmleri",
-            "$mainUrl/filmizle/fantastik-filmleri-izle-2/"        to "Fantastik Filmler",
-            "$mainUrl/filmizle/gerilim-filmleri-izle-3/"          to "Gerilim Filmleri",
-            "$mainUrl/filmizle/gizem-filmleri-izle/"              to "Gizem Filmleri",
-            "$mainUrl/filmizle/hint-filmler-fh-hd-izle/"          to "Hint Filmleri",
-            "$mainUrl/filmizle/komedi-filmleri-izle-2/"           to "Komedi Filmleri",
-            "$mainUrl/filmizle/korku-filmleri-izle-2/"            to "Korku Filmleri",
-            "$mainUrl/filmizle/macera-filmleri-izle-1/"           to "Macera Filmleri",
-            "$mainUrl/filmizle/muzikal-filmleri-izle/"            to "Müzikal Filmler",
-            "$mainUrl/filmizle/polisiye-filmleri-izle-1/"         to "Polisiye Filmleri",
-            "$mainUrl/filmizle/psikolojik-filmleri-izle/"         to "Psikolojik Filmler",
-            "$mainUrl/filmizle/romantik-filmler-izle-1/"          to "Romantik Filmler",
-            "$mainUrl/filmizle/savas-filmleri-izle-2/"            to "Savaş Filmleri",
-            "$mainUrl/filmizle/suc-filmleri-izle-3/"              to "Suç Filmleri",
-            "$mainUrl/filmizle/tarih-filmleri-izle/"              to "Tarih Filmleri",
-            "$mainUrl/filmizle/western-filmleri-izle/"            to "Western Filmler",
-            "$mainUrl/filmizle/yerli-filmler-izle-3/"             to "Yerli Filmler",
-        )
+    override val mainPage = mainPageOf(
+        "${mainUrl}/en-cok-izlenen-filmler-izle-hd/"            to "En Çok izlenen Filmler",
+        "${mainUrl}/filmizle/imdb-puani-yuksek-filmler-izle-1/" to "IMDB Puanı Yüksek Filmler",
+        "${mainUrl}/filmizle/aile-filmleri-izle-2/"             to "Aile Filmleri",
+        "${mainUrl}/filmizle/aksiyon-filmler-izle-1/"           to "Aksiyon Filmleri",
+        "${mainUrl}/filmizle/animasyon-filmleri-izle-4/"        to "Animasyon Filmleri",
+        "${mainUrl}/filmizle/belgesel-filmleri-izle-2/"         to "Belgeseller",
+        "${mainUrl}/filmizle/bilim-kurgu-filmleri-izle-1/"      to "Bilim Kurgu Filmleri",
+        "${mainUrl}/filmizle/bluray-filmler-izle-1/"            to "Blu Ray Filmler",
+        "${mainUrl}/filmizle/cizgi-filmler-izle-1/"             to "Çizgi Filmler",
+        "${mainUrl}/filmizle/dram-filmleri-izle/"               to "Dram Filmleri",
+        "${mainUrl}/filmizle/fantastik-filmleri-izle-2/"        to "Fantastik Filmler",
+        "${mainUrl}/filmizle/gerilim-filmleri-izle-3/"          to "Gerilim Filmleri",
+        "${mainUrl}/filmizle/gizem-filmleri-izle/"              to "Gizem Filmleri",
+        "${mainUrl}/filmizle/hint-filmler-fh-hd-izle/"          to "Hint Filmleri",
+        "${mainUrl}/filmizle/komedi-filmleri-izle-2/"           to "Komedi Filmleri",
+        "${mainUrl}/filmizle/korku-filmleri-izle-2/"            to "Korku Filmleri",
+        "${mainUrl}/filmizle/macera-filmleri-izle-1/"           to "Macera Filmleri",
+        "${mainUrl}/filmizle/muzikal-filmleri-izle/"            to "Müzikal Filmler",
+        "${mainUrl}/filmizle/polisiye-filmleri-izle-1/"         to "Polisiye Filmleri",
+        "${mainUrl}/filmizle/psikolojik-filmleri-izle/"         to "Psikolojik Filmler",
+        "${mainUrl}/filmizle/romantik-filmler-izle-1/"          to "Romantik Filmler",
+        "${mainUrl}/filmizle/savas-filmleri-izle-2/"            to "Savaş Filmleri",
+        "${mainUrl}/filmizle/suc-filmleri-izle-3/"              to "Suç Filmleri",
+        "${mainUrl}/filmizle/tarih-filmleri-izle/"              to "Tarih Filmleri",
+        "${mainUrl}/filmizle/western-filmleri-izle/"            to "Western Filmler",
+        "${mainUrl}/filmizle/yerli-filmler-izle-3/"             to "Yerli Filmler",
+    )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page).document
+        val document = app.get("${request.data}${page}").document
         val home     = document.select("li.film").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -70,13 +69,13 @@ class FullHDFilmizlesene : MainAPI() {
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("$mainUrl/arama/$query").document
+        val document = app.get("${mainUrl}/arama/${query}").document
 
         return document.select("li.film").mapNotNull { it.toSearchResult() }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
@@ -175,7 +174,7 @@ class FullHDFilmizlesene : MainAPI() {
 
         val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "decoded » $decoded")
+        Log.d("FHD", "decoded » ${decoded}")
 
         return decoded
     }
@@ -183,7 +182,7 @@ class FullHDFilmizlesene : MainAPI() {
     private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
         val file     = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: return emptyList()
         val postLink = "https://trstx.org/" + file.replace("\\", "")
-        val rawList  = app.post(postLink, referer="$mainUrl/").parsedSafe<List<Any>>() ?: return emptyList()
+        val rawList  = app.post(postLink, referer="${mainUrl}/").parsedSafe<List<Any>>() ?: return emptyList()
 
         val postJson: List<TrstxVideoData> = rawList.drop(1).map { item ->
             val mapItem = item as Map<*, *>
@@ -192,81 +191,75 @@ class FullHDFilmizlesene : MainAPI() {
                 file  = mapItem["file"]  as? String
             )
         }
-        Log.d("FHD", "postJson » $postJson")
+        Log.d("FHD", "postJson » ${postJson}")
 
         val vid_data = mutableListOf<Map<String, String>>()
         for (item in postJson) {
             if (item.file == null || item.title == null) continue
 
             val fileUrl   = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
-            val videoData = app.post(fileUrl, referer="$mainUrl/").text
+            val videoData = app.post(fileUrl, referer="${mainUrl}/").text
             vid_data.add(mapOf(
                 "title"     to item.title,
                 "videoData" to videoData
             ))
         }
 
-        Log.d("FHD", "vid_data » $vid_data")
+        Log.d("FHD", "vid_data » ${vid_data}")
         return vid_data
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-        ): Boolean {
-
-            Log.d("FHD", "data » $data")
-            val document    = app.get(data).document
-            val video_links = getVideoLinks(document)
-            Log.d("FHD", "video_links » $video_links")
-            if (video_links.isEmpty()) return false
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("FHD", "data » ${data}")
+        val document    = app.get(data).document
+        val video_links = getVideoLinks(document)
+        Log.d("FHD", "video_links » ${video_links}")
+        if (video_links.isEmpty()) return false
 
 
-            for (video_map in video_links) {
-                for ((key, value) in video_map) {
-                    val video_req = app.get(value, referer="$mainUrl/").text
+        for (video_map in video_links) {
+            for ((key, value) in video_map) {
+                val video_req = app.get(value, referer="${mainUrl}/").text
 
-                    if (value.contains("rapidvid.net")) {
-                        val m3u_link = rapid2M3u8(video_req) ?: continue
+                if (value.contains("rapidvid.net")) {
+                    val m3u_link = rapid2M3u8(video_req) ?: continue
 
-                        Log.d("FHD", "m3u_link » $m3u_link")
+                    Log.d("FHD", "m3u_link » ${m3u_link}")
+
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "${this.name} - ${key}",
+                            name    = "${this.name} - ${key}",
+                            url     = m3u_link,
+                            referer = "${mainUrl}/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = true
+                        )
+                    )
+                }
+
+                if (value.contains("trstx.org")) {
+                    val m3u_map = trstx2M3u8(video_req)
+                    for (mapEntry in m3u_map) {
+                        val title    = mapEntry["title"] ?: continue
+                        val m3u_link = mapEntry["videoData"] ?: continue
 
                         callback.invoke(
                             ExtractorLink(
-                                source  = "${this.name} - $key",
-                                name    = "${this.name} - $key",
+                                source  = "${this.name} - ${title}",
+                                name    = "${this.name} - ${title}",
                                 url     = m3u_link,
-                                referer = "$mainUrl/",
+                                referer = "${mainUrl}/",
                                 quality = Qualities.Unknown.value,
-                                isM3u8  = true
+                                isM3u8  = m3u_link.contains(".m3u8")
                             )
                         )
                     }
-
-                    if (value.contains("trstx.org")) {
-                        val m3u_map = trstx2M3u8(video_req)
-                        for (mapEntry in m3u_map) {
-                            val title    = mapEntry["title"] ?: continue
-                            val m3u_link = mapEntry["videoData"] ?: continue
-
-                            callback.invoke(
-                                ExtractorLink(
-                                    source  = "${this.name} - $title",
-                                    name    = "${this.name} - $title",
-                                    url     = m3u_link,
-                                    referer = "$mainUrl/",
-                                    quality = Qualities.Unknown.value,
-                                    isM3u8  = m3u_link.contains(".m3u8")
-                                )
-                            )
-                        }
-                    }
                 }
             }
+        }
 
-            return true
+        return true
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

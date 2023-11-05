@@ -29,8 +29,8 @@ class XVideos : MainAPI() {
 
     override val mainPage = mainPageOf(
         Pair(mainUrl, "Main Page"),
-        Pair("$mainUrl/new/", "New"),
-        Pair("$mainUrl/c/pornstar-57/", "Pornstar")
+        Pair("${mainUrl}/new/", "New"),
+        Pair("${mainUrl}/c/pornstar-57/", "Pornstar")
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -75,7 +75,7 @@ class XVideos : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val url = "$mainUrl?k=${query}"
+        val url = "${mainUrl}?k=${query}"
         val document = app.get(url).document
         return document.select("div.thumb-block").mapNotNull {
             val title = it.selectFirst("p.title a")?.text()

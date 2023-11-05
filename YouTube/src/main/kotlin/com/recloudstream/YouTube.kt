@@ -19,11 +19,11 @@ class YouTube : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val popular =
             tryParseJson<List<SearchEntry>>(
-                app.get("$mainUrl/api/v1/popular?fields=videoId,title").text
+                app.get("${mainUrl}/api/v1/popular?fields=videoId,title").text
             )
         val trending =
             tryParseJson<List<SearchEntry>>(
-                app.get("$mainUrl/api/v1/trending?fields=videoId,title").text
+                app.get("${mainUrl}/api/v1/trending?fields=videoId,title").text
             )
         return newHomePageResponse(
             listOf(
@@ -47,7 +47,7 @@ class YouTube : MainAPI() {
         val res =
             tryParseJson<List<SearchEntry>>(
                 app.get(
-                        "$mainUrl/api/v1/search?q=${query.encodeUri()}&page=1&type=video&fields=videoId,title"
+                        "${mainUrl}/api/v1/search?q=${query.encodeUri()}&page=1&type=video&fields=videoId,title"
                     )
                     .text
             )
@@ -59,7 +59,7 @@ class YouTube : MainAPI() {
         val res =
             tryParseJson<VideoEntry>(
                 app.get(
-                        "$mainUrl/api/v1/videos/$videoId?fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams"
+                        "${mainUrl}/api/v1/videos/${videoId}?fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams"
                     )
                     .text
             )
@@ -70,10 +70,10 @@ class YouTube : MainAPI() {
         fun toSearchResponse(provider: YouTube): SearchResponse {
             return provider.newMovieSearchResponse(
                 title,
-                "${provider.mainUrl}/watch?v=$videoId",
+                "${provider.mainUrl}/watch?v=${videoId}",
                 TvType.Movie
             ) {
-                this.posterUrl = "${provider.mainUrl}/vi/$videoId/mqdefault.jpg"
+                this.posterUrl = "${provider.mainUrl}/vi/${videoId}/mqdefault.jpg"
             }
         }
     }
@@ -89,12 +89,12 @@ class YouTube : MainAPI() {
         suspend fun toLoadResponse(provider: YouTube): LoadResponse {
             return provider.newMovieLoadResponse(
                 title,
-                "${provider.mainUrl}/watch?v=$videoId",
+                "${provider.mainUrl}/watch?v=${videoId}",
                 TvType.Movie,
-                "$videoId"
+                "${videoId}"
             ) {
                 plot = description
-                posterUrl = "${provider.mainUrl}/vi/$videoId/hqdefault.jpg"
+                posterUrl = "${provider.mainUrl}/vi/${videoId}/hqdefault.jpg"
                 recommendations = recommendedVideos.map { it.toSearchResponse(provider) }
                 actors =
                     listOf(
@@ -118,12 +118,12 @@ class YouTube : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        loadExtractor("https://youtube.com/watch?v=$data", subtitleCallback, callback)
+        loadExtractor("https://youtube.com/watch?v=${data}", subtitleCallback, callback)
         callback(
             ExtractorLink(
                 "YouTube",
                 "YouTube",
-                "$mainUrl/api/manifest/dash/id/$data",
+                "${mainUrl}/api/manifest/dash/id/${data}",
                 "",
                 Qualities.Unknown.value,
                 false,

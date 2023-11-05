@@ -21,13 +21,13 @@ class Turkish123 : MainAPI() {
     override val supportedTypes     = setOf(TvType.TvSeries)
 
     companion object {
-        private const val mainServer = "https://tukipasti.com"
+        private const val ${mainServer} = "https://tukipasti.com"
     }
 
     override val mainPage =
         mainPageOf(
-            "$mainUrl/series-list/page/"   to "Diziler",
-            "$mainUrl/episodes-list/page/" to "Bölümler",
+            "${mainUrl}/series-list/page/"   to "Diziler",
+            "${mainUrl}/episodes-list/page/" to "Bölümler",
         )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -65,7 +65,7 @@ class Turkish123 : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("$mainUrl/?s=$query").document
+        val document = app.get("${mainUrl}/?s=$query").document
 
         return document.select("div.movies-list div.ml-item").mapNotNull { it.toSearchResult() }
     }
@@ -97,11 +97,11 @@ class Turkish123 : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(url: String, callback: (ExtractorLink) -> Unit) {
-        val document = app.get(url, referer = "$mainUrl/").text
+        val document = app.get(url, referer = "${mainUrl}/").text
 
         Regex("var\\surlPlay\\s=\\s[\"|'](\\S+)[\"|'];").find(document)?.groupValues?.get(1)?.let {
             link ->
-            M3u8Helper.generateM3u8(this.name, link, referer = "$mainServer/").forEach(callback)
+            M3u8Helper.generateM3u8(this.name, link, referer = "$${mainServer}/").forEach(callback)
         }
     }
 
@@ -119,10 +119,10 @@ class Turkish123 : MainAPI() {
             .map { it.groupValues[1] }
             .toList()
             .apmap { link ->
-                if (link.startsWith(mainServer)) {
+                if (link.startsWith(${mainServer})) {
                     invokeLocalSource(link, callback)
                 } else {
-                    loadExtractor(link, "$mainUrl/", subtitleCallback, callback)
+                    loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
                 }
             }
 

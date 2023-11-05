@@ -20,14 +20,13 @@ class HDFilmCehennemi : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
-    override val mainPage =
-        mainPageOf(
-            "$mainUrl/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler Kategorisi",
-            "$mainUrl/yabancidiziizle-1/page/" to "Son Eklenen Yabancı Diziler",
-            "$mainUrl/imdb-7-puan-uzeri-filmler/page/" to "IMDB 7+ Filmler",
-            "$mainUrl/en-cok-yorumlananlar/page/" to "En Çok Yorumlananlar",
-            "$mainUrl/en-cok-begenilen-filmleri-izle/page/" to "En Çok Beğenilenler",
-        )
+    override val mainPage = mainPageOf(
+        "${mainUrl}/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler Kategorisi",
+        "${mainUrl}/yabancidiziizle-1/page/"              to "Son Eklenen Yabancı Diziler",
+        "${mainUrl}/imdb-7-puan-uzeri-filmler/page/"      to "IMDB 7+ Filmler",
+        "${mainUrl}/en-cok-yorumlananlar/page/"           to "En Çok Yorumlananlar",
+        "${mainUrl}/en-cok-begenilen-filmleri-izle/page/" to "En Çok Beğenilenler",
+    )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
@@ -48,10 +47,10 @@ class HDFilmCehennemi : MainAPI() {
     private fun Media.toSearchResponse(): SearchResponse? {
         return newMovieSearchResponse(
             title ?: return null,
-            "$mainUrl/$slugPrefix$slug",
+            "${mainUrl}/$slugPrefix$slug",
             TvType.TvSeries,
         ) {
-            this.posterUrl = "$mainUrl/uploads/poster/$poster"
+            this.posterUrl = "${mainUrl}/uploads/poster/$poster"
         }
     }
 
@@ -59,9 +58,9 @@ class HDFilmCehennemi : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         return app.post(
-                "$mainUrl/search/",
+                "${mainUrl}/search/",
                 data = mapOf("query" to query),
-                referer = "$mainUrl/",
+                referer = "${mainUrl}/",
                 headers =
                     mapOf(
                         "Accept" to "application/json, text/javascript, */*; q=0.01",
@@ -182,7 +181,7 @@ class HDFilmCehennemi : MainAPI() {
                 source,
                 source,
                 base64Decode(videoData),
-                "$mainUrl/",
+                "${mainUrl}/",
                 Qualities.Unknown.value,
                 true
             )
@@ -214,7 +213,7 @@ class HDFilmCehennemi : MainAPI() {
                         if (url.startsWith(mainUrl)) {
                             invokeLocalSource(source, url, subtitleCallback, callback)
                         } else {
-                            loadExtractor(url, "$mainUrl/", subtitleCallback) { link ->
+                            loadExtractor(url, "${mainUrl}/", subtitleCallback) { link ->
                                 callback.invoke(
                                     ExtractorLink(
                                         source,

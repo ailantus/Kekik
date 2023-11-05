@@ -21,14 +21,14 @@ class PornHub : MainAPI() {
     override val vpnStatus            = VPNStatus.MightBeNeeded
 
     override val mainPage = mainPageOf(
-        "$mainUrl/video?o=mr&hd=1&page="           to "Recently Featured",
-        "$mainUrl/video?o=tr&t=w&hd=1&page="       to "Top Rated",
-        "$mainUrl/video?o=mv&t=w&hd=1&page="       to "Most Viewed",
-        "$mainUrl/video?o=ht&t=w&hd=1&page="       to "Hottest",
-        "$mainUrl/video?p=professional&hd=1&page=" to "Professional",
-        "$mainUrl/video?o=lg&hd=1&page="           to "Longest",
-        "$mainUrl/video?p=homemade&hd=1&page="     to "Homemade",
-        "$mainUrl/video?o=cm&t=w&hd=1&page="       to "Newest",
+        "${mainUrl}/video?o=mr&hd=1&page="           to "Recently Featured",
+        "${mainUrl}/video?o=tr&t=w&hd=1&page="       to "Top Rated",
+        "${mainUrl}/video?o=mv&t=w&hd=1&page="       to "Most Viewed",
+        "${mainUrl}/video?o=ht&t=w&hd=1&page="       to "Hottest",
+        "${mainUrl}/video?p=professional&hd=1&page=" to "Professional",
+        "${mainUrl}/video?o=lg&hd=1&page="           to "Longest",
+        "${mainUrl}/video?p=homemade&hd=1&page="     to "Homemade",
+        "${mainUrl}/video?o=cm&t=w&hd=1&page="       to "Newest",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -46,13 +46,13 @@ class PornHub : MainAPI() {
         return newMovieSearchResponse(title, link, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("$mainUrl/video/search?search=${query}").document
+        val document = app.get("${mainUrl}/video/search?search=${query}").document
 
         return document.select("li.pcVideoListItem").mapNotNull { it.toSearchResult() }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
@@ -87,26 +87,20 @@ class PornHub : MainAPI() {
         }
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
-
-        Log.d("PHub", "url » $data")
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("PHub", "url » ${data}")
         val source          = app.get(data).text
         val extracted_value = Regex("""([^\"]*master.m3u8?.[^\"]*)""").find(source)?.groups?.last()?.value ?: return false
         val m3u_link        = extracted_value.replace("\\", "")
-        Log.d("PHub", "extracted_value » $extracted_value")
-        Log.d("PHub", "m3u_link » $m3u_link")
+        Log.d("PHub", "extracted_value » ${extracted_value}")
+        Log.d("PHub", "m3u_link » ${m3u_link}")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
                 url     = m3u_link,
-                referer = "$mainUrl/",
+                referer = "${mainUrl}/",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
             )

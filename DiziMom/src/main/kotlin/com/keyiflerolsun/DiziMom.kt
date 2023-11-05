@@ -21,16 +21,15 @@ class DiziMom : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 
-    override val mainPage =
-        mainPageOf(
-            "$mainUrl/turkce-dublaj-diziler/page/"      to "Dublajlı Diziler",
-            "$mainUrl/netflix-dizileri-izle/page/"      to "Netflix Dizileri",
-            "$mainUrl/yabanci-dizi-izle/page/"          to "Yabancı Diziler",
-            "$mainUrl/yerli-dizi-izle/page/"            to "Yerli Diziler",
-            "$mainUrl/kore-dizileri-izle/page/"         to "Kore Dizileri",
-            "$mainUrl/full-hd-hint-dizileri-izle/page/" to "Hint Dizileri",
-            "$mainUrl/tv-programlari-izle/page/"        to "TV Programları",
-        )
+    override val mainPage = mainPageOf(
+        "${mainUrl}/turkce-dublaj-diziler/page/"      to "Dublajlı Diziler",
+        "${mainUrl}/netflix-dizileri-izle/page/"      to "Netflix Dizileri",
+        "${mainUrl}/yabanci-dizi-izle/page/"          to "Yabancı Diziler",
+        "${mainUrl}/yerli-dizi-izle/page/"            to "Yerli Diziler",
+        "${mainUrl}/kore-dizileri-izle/page/"         to "Kore Dizileri",
+        "${mainUrl}/full-hd-hint-dizileri-izle/page/" to "Hint Dizileri",
+        "${mainUrl}/tv-programlari-izle/page/"        to "TV Programları",
+    )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}${page}/").document
@@ -47,13 +46,13 @@ class DiziMom : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("$mainUrl/?s=$query").document
+        val document = app.get("${mainUrl}/?s=${query}").document
 
         return document.select("div.single-item").mapNotNull { it.toSearchResult() }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
@@ -92,156 +91,150 @@ class DiziMom : MainAPI() {
         }
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-        ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("DZM", "data » ${data}")
+        val document = app.get(
+            data,
+            headers = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                "Cookie"     to "wordpress_logged_in_94427965a200eb7dd292509ed2c7c018=keyiflerolsun|1699737674|EvfGx8bnw88aTkvvmRNqWQUuIYsUzLOIlWa4nwixKFn|87a00e3a0d391fa1074e004d37a54a66e7bfc85bdc0191a8eec3cb9df741db8c"
+            )
+        ).document
+        val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
+        Log.d("DZM", "iframe » ${iframe}")
 
-            Log.d("DZM", "data » $data")
-            val document = app.get(
-                data,
+
+        var i_source: String? = null
+        var m3u_link: String? = null
+
+        if (iframe.contains("hdmomplayer")) {
+            i_source      = app.get("${iframe}", referer="${mainUrl}/").text
+            m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+
+            val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
+            if (track_str != null) {
+                val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
+
+                for (track in tracks) {
+                    if (track.file == null || track.label == null) continue
+                    if (track.label.contains("Forced")) continue
+
+                    subtitleCallback.invoke(
+                        SubtitleFile(
+                            lang = track.label,
+                            url  = fixUrl("https://hdmomplayer.com" + track.file)
+                        )
+                    )
+                }
+            }
+        }
+
+        if (iframe.contains("hdplayersystem")) {
+            val vid_id = if (iframe.contains("video/")) {
+                iframe.substringAfter("video/")
+            } else {
+                iframe.substringAfter("?data=")
+            }
+
+            val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
+            val response = app.post(
+                post_url,
+                data = mapOf(
+                    "hash" to vid_id,
+                    "r"    to "${mainUrl}/"
+                ),
+                referer = "${mainUrl}/",
                 headers = mapOf(
-                    "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                    "Cookie"     to "wordpress_logged_in_94427965a200eb7dd292509ed2c7c018=keyiflerolsun|1699737674|EvfGx8bnw88aTkvvmRNqWQUuIYsUzLOIlWa4nwixKFn|87a00e3a0d391fa1074e004d37a54a66e7bfc85bdc0191a8eec3cb9df741db8c"
-                )
-            ).document
-            val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
-            Log.d("DZM", "iframe » $iframe")
-
-
-            var i_source: String? = null
-            var m3u_link: String? = null
-
-            if (iframe.contains("hdmomplayer")) {
-                i_source      = app.get("$iframe", referer="$mainUrl/").text
-                m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-
-                val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
-                if (track_str != null) {
-                    val tracks:List<Track> = jacksonObjectMapper().readValue("[$track_str]")
-
-                    for (track in tracks) {
-                        if (track.file == null || track.label == null) continue
-                        if (track.label.contains("Forced")) continue
-
-                        subtitleCallback.invoke(
-                            SubtitleFile(
-                                lang = track.label,
-                                url  = fixUrl("https://hdmomplayer.com" + track.file)
-                            )
-                        )
-                    }
-                }
-            }
-
-            if (iframe.contains("hdplayersystem")) {
-                val vid_id = if (iframe.contains("video/")) {
-                    iframe.substringAfter("video/")
-                } else {
-                    iframe.substringAfter("?data=")
-                }
-
-                val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-                val response = app.post(
-                    post_url,
-                    data = mapOf(
-                        "hash" to vid_id,
-                        "r"    to "$mainUrl/"
-                    ),
-                    referer = "$mainUrl/",
-                    headers = mapOf(
-                        "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With" to "XMLHttpRequest"
-                    )
-                )
-                val video_response = response.parsedSafe<SystemResponse>() ?: return false
-                m3u_link           = video_response.securedLink
-            }
-
-            if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
-                val post_url = "${iframe}?do=getVideo"
-                val response = app.post(
-                    post_url,
-                    data = mapOf(
-                        "hash" to iframe.substringAfter("video/"),
-                        "r"    to "$mainUrl/",
-                        "s"    to ""
-                    ),
-                    referer = "$mainUrl/",
-                    headers = mapOf(
-                        "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With" to "XMLHttpRequest"
-                    )
-                )
-                if (response.text.contains("teve2.com.tr\\/embed\\/")) {
-                    val teve2_id       = response.text.substringAfter("teve2.com.tr\\/embed\\/").substringBefore("\"")
-                    val teve2_response = app.get(
-                        "https://www.teve2.com.tr/action/media/${teve2_id}",
-                        referer = "https://www.teve2.com.tr/embed/${teve2_id}"
-                    ).parsedSafe<Teve2ApiResponse>() ?: return false
-
-                    m3u_link           = teve2_response.media.link.serviceUrl + "//" + teve2_response.media.link.securePath
-                } else {
-                    val video_response = response.parsedSafe<PeaceResponse>() ?: return false
-                    val video_sources  = video_response.videoSources
-                    if (video_sources.isNotEmpty()) {
-                        m3u_link = video_sources.last().file
-                    }
-                }
-            }
-
-            if (iframe.contains("videoseyred.in")) {
-                val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
-                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
-                val response = response_list[0]
-
-                for (track in response.tracks) {
-                    if (track.label != null && track.kind == "captions") {
-                        subtitleCallback.invoke(
-                            SubtitleFile(
-                                lang = track.label,
-                                url  = fixUrl(track.file)
-                            )
-                        )
-                    }
-                }
-
-                for (source in response.sources) {
-                    callback.invoke(
-                        ExtractorLink(
-                            source  = this.name,
-                            name    = this.name,
-                            url     = source.file,
-                            referer = "https://videoseyred.in/",
-                            quality = Qualities.Unknown.value,
-                            isM3u8  = source.file.contains(".m3u8")
-                        )
-                    )
-                }
-
-                return true
-            }
-
-            Log.d("DZM", "m3u_link » $m3u_link")
-            if (m3u_link == null) {
-                Log.d("DZM", "i_source » $i_source")
-                return false
-            }
-
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = iframe,
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8")
+                    "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
+                    "X-Requested-With" to "XMLHttpRequest"
                 )
             )
+            val video_response = response.parsedSafe<SystemResponse>() ?: return false
+            m3u_link           = video_response.securedLink
+        }
+
+        if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
+            val post_url = "${iframe}?do=getVideo"
+            val response = app.post(
+                post_url,
+                data = mapOf(
+                    "hash" to iframe.substringAfter("video/"),
+                    "r"    to "${mainUrl}/",
+                    "s"    to ""
+                ),
+                referer = "${mainUrl}/",
+                headers = mapOf(
+                    "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
+                    "X-Requested-With" to "XMLHttpRequest"
+                )
+            )
+            if (response.text.contains("teve2.com.tr\\/embed\\/")) {
+                val teve2_id       = response.text.substringAfter("teve2.com.tr\\/embed\\/").substringBefore("\"")
+                val teve2_response = app.get(
+                    "https://www.teve2.com.tr/action/media/${teve2_id}",
+                    referer = "https://www.teve2.com.tr/embed/${teve2_id}"
+                ).parsedSafe<Teve2ApiResponse>() ?: return false
+
+                m3u_link           = teve2_response.media.link.serviceUrl + "//" + teve2_response.media.link.securePath
+            } else {
+                val video_response = response.parsedSafe<PeaceResponse>() ?: return false
+                val video_sources  = video_response.videoSources
+                if (video_sources.isNotEmpty()) {
+                    m3u_link = video_sources.last().file
+                }
+            }
+        }
+
+        if (iframe.contains("videoseyred.in")) {
+            val video_id = iframe.substringAfter("embed/").substringBefore("?")
+            val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
+            val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
+            val response = response_list[0]
+
+            for (track in response.tracks) {
+                if (track.label != null && track.kind == "captions") {
+                    subtitleCallback.invoke(
+                        SubtitleFile(
+                            lang = track.label,
+                            url  = fixUrl(track.file)
+                        )
+                    )
+                }
+            }
+
+            for (source in response.sources) {
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = source.file,
+                        referer = "https://videoseyred.in/",
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = source.file.contains(".m3u8")
+                    )
+                )
+            }
 
             return true
+        }
+
+        Log.d("DZM", "m3u_link » ${m3u_link}")
+        if (m3u_link == null) {
+            Log.d("DZM", "i_source » ${i_source}")
+            return false
+        }
+
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = m3u_link,
+                referer = iframe,
+                quality = Qualities.Unknown.value,
+                isM3u8  = m3u_link.contains(".m3u8")
+            )
+        )
+
+        return true
     }
 }
