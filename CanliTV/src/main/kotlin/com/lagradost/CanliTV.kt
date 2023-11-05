@@ -1,4 +1,4 @@
-// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/CanliTV/src/main/kotlin/com/lagradost/CanliTV.kt
+// ! https://codeberg.org/cloudstream/cloudstream-extensions-multilingual/src/branch/master/FreeTVProvider/src/main/kotlin/com/lagradost/FreeTVProvider.kt
 
 package com.lagradost
 
