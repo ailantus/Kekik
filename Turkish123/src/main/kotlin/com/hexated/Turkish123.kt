@@ -119,7 +119,7 @@ class Turkish123 : MainAPI() {
             .map { it.groupValues[1] }
             .toList()
             .apmap { link ->
-                if (link.startsWith(${mainServer})) {
+                if (link.startsWith(mainServer)) {
                     invokeLocalSource(link, callback)
                 } else {
                     loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
