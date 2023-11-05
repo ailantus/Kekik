@@ -22,7 +22,7 @@ class CanliTV : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        return HomePageResponse(
+        return newHomePageResponse(
             data.items
                 .groupBy { it.attributes["group-title"] }
                 .map { group ->
@@ -42,7 +42,7 @@ class CanliTV : MainAPI() {
                         )
                     }
                     HomePageList(title, show)
-                }
+                }, hasNext = false
         )
     }
 
