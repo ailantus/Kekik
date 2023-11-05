@@ -106,20 +106,19 @@ class CanliTV : MainAPI() {
 
     data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
 
-    private fun fetchDataFromUrlOrJson(data: String): LoadData {
+    private suspend fun fetchDataFromUrlOrJson(data: String): LoadData {
         if (data.startsWith("{")) {
             return parseJson<LoadData>(data)
         } else {
             val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-            val kanal    = kanallar.items.firstOrNull { it.url == data }
+            val kanal    = kanallar.items.first { it.url == data }
 
-            return if (kanal != null) {
-                val streamurl = kanal.url.toString()
-                val channelname = kanal.title.toString()
-                val posterurl = kanal.attributes["tvg-logo"].toString()
-                val nation = kanal.attributes["tvg-country"].toString()
-                LoadData(streamurl, channelname, posterurl, nation)
-            } 
+            val streamurl   = kanal.url.toString()
+            val channelname = kanal.title.toString()
+            val posterurl   = kanal.attributes["tvg-logo"].toString()
+            val nation      = kanal.attributes["tvg-country"].toString()
+
+            return LoadData(streamurl, channelname, posterurl, nation)
         }
     }
 }
