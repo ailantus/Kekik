@@ -44,7 +44,7 @@ class CanliTV : MainAPI() {
                         )
                     }
 
-                    HomePageList(title, show, isHorizontalImages=true)
+                    HomePageList(title, show, isHorizontalImages = true)
                 },
             hasNext = false
         )
