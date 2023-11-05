@@ -18,15 +18,14 @@ class AnimeciX : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Anime)
 
-    override val mainPage =
-        mainPageOf(
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
-            "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
-        )
+    override val mainPage = mainPageOf(
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
+        "$mainUrl/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
+    )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val response = app.get(request.data + "&page=${page}&perPage=12").parsedSafe<Category>()
@@ -44,8 +43,6 @@ class AnimeciX : MainAPI() {
         return newHomePageResponse(request.name, home)
     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
     override suspend fun search(query: String): List<SearchResponse> {
         val response = app.get("$mainUrl/secure/search/$query?limit=20").parsedSafe<Search>() ?: return emptyList()
 
@@ -59,6 +56,8 @@ class AnimeciX : MainAPI() {
             }
         }
     }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val response = app.get(url).parsedSafe<Title>() ?: return null
@@ -105,33 +104,27 @@ class AnimeciX : MainAPI() {
         }
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-        ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        if (data.contains("tau-video.xyz")) {
+            val key = data.split("/").last()
+            val api = app.get("https://tau-video.xyz/api/video/${key}").parsedSafe<TauVideo>() ?: return false
 
-            if (data.contains("tau-video.xyz")) {
-                val key = data.split("/").last()
-                val api = app.get("https://tau-video.xyz/api/video/${key}").parsedSafe<TauVideo>() ?: return false
-
-                for (video in api.urls) {
-                    callback.invoke(
-                        ExtractorLink(
-                            source  = this.name,
-                            name    = "${this.name} - ${video.label}",
-                            url     = video.url,
-                            referer = "$mainUrl/",
-                            quality = Qualities.Unknown.value,
-                            isM3u8  = video.url.contains(".m3u8")
-                        )
+            for (video in api.urls) {
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = "${this.name} - ${video.label}",
+                        url     = video.url,
+                        referer = "$mainUrl/",
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = video.url.contains(".m3u8")
                     )
-                }
-
-                return true
+                )
             }
-
+        } else {
             return false
+        }
+
+        return true
     }
 }
