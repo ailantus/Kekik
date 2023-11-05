@@ -27,13 +27,17 @@ class CanliTV : MainAPI() {
         return HomePageResponse(data.items.groupBy{it.attributes["group-title"]}.map { group ->
             val title = group.key ?: ""
             val show = group.value.map { channel ->
+                val streamurl = channel.url.toString()
+                val channelname = channel.title.toString()
+                val posterurl = channel.attributes["tvg-logo"].toString()
+                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
-                    name      = channel.attributes["tvg-id"].toString(),
-                    url       = channel.url.toString(),
-                    apiName   = this@CanliTV.name,
-                    type      = TvType.Live,
-                    posterUrl = channel.attributes["tvg-logo"].toString(),
-                    lang      = channel.attributes["tvg-country"].toString()
+                    channelname,
+                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    this@CanliTV.name,
+                    TvType.Live,
+                    posterurl,
+                    lang = channel.attributes["tvg-country"]
                 )
             }
             HomePageList(
@@ -48,13 +52,16 @@ class CanliTV : MainAPI() {
         val data = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return data.items.filter { it.attributes["tvg-id"]?.contains(query) ?: false }.map { channel ->
+                val streamurl = channel.url.toString()
+                val channelname = channel.attributes["tvg-id"].toString()
+                val posterurl = channel.attributes["tvg-logo"].toString()
+                val nation = channel.attributes["tvg-country"].toString()
                 LiveSearchResponse(
-                    name      = channel.attributes["tvg-id"].toString(),
-                    url       = channel.url.toString(),
-                    apiName   = this@CanliTV.name,
-                    type      = TvType.Live,
-                    posterUrl = channel.attributes["tvg-logo"].toString(),
-                    lang      = channel.attributes["tvg-country"].toString()
+                    channelname,
+                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    this@CanliTV.name,
+                    TvType.Live,
+                    posterurl,
                 )
         }
     }
@@ -88,12 +95,12 @@ class CanliTV : MainAPI() {
         val loadData = parseJson<LoadData>(data)
         callback.invoke(
             ExtractorLink(
-                this.name,
-                loadData.title,
-                loadData.url,
-                "",
-                Qualities.Unknown.value,
-                isM3u8 = true
+                source  = this.name,
+                name    = loadData.title,
+                url     = loadData.url,
+                referer = "https://$iframe",
+                quality = Qualities.Unknown.value,
+                isM3u8  = true
             )
         )
         return true
