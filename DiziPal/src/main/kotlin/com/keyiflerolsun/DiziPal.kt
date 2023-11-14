@@ -91,7 +91,7 @@ class DiziPal : MainAPI() {
 
         if (url.contains("/bolum-")) {
             val name        = document.selectFirst("div.episode-head h2")?.text()?.trim() ?: return null
-            val episode     = this.selectFirst("div.episode-head h6")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
+            val episode     = document.selectFirst("div.episode-head h6")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
             val title       = name + " " + episode ?: return null
 
             val serie_page  = app.get(url.split("/").dropLast(2).joinToString("/")).document
