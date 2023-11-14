@@ -1,7 +1,7 @@
-version = 8
+version = 9
 
 cloudstream {
-    authors     = listOf("keyiflerolsun")
+    authors     = listOf("keyiflerolsun", "muratcesmecioglu")
     language    = "tr"
     description = "en yeni dizileri güvenli ve hızlı şekilde sunar."
 
