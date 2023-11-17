@@ -86,10 +86,10 @@ class DiziKorea : MainAPI() {
         val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
         val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
         val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p").text().trim().split(" ").first().toIntOrNull()
+        val trailer     = document.selectFirst("div.series-profile-trailer")?.attr("data-yt")
         val actors      = document.select("div.series-profile-cast li").map {
             Actor(it.selectFirst("h5")!!.text(), it.selectFirst("img")!!.attr("data-src"))
         }
-        val trailer     = document.selectFirst("div.series-profile-trailer")?.attr("data-yt")
 
         if (url.contains("/dizi/")) {
             val episodes    = mutableListOf<Episode>()
