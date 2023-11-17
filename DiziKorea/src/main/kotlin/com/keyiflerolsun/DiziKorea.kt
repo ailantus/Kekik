@@ -54,6 +54,7 @@ class DiziKorea : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val response = app.post(
             "${mainUrl}/search",
+            headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
             referer = "${mainUrl}/",
             data    = mapOf("query" to query)
         ).parsedSafe<KoreaSearch>()!!.theme
