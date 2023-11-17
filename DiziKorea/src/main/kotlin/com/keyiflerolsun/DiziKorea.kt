@@ -20,7 +20,11 @@ class DiziKorea : MainAPI() {
 
     override val mainPage = mainPageOf(
         "${mainUrl}/tum-kore-dizileri/"   to "Kore Dizileri",
-        "${mainUrl}/kore-filmleri-izle1/" to "Kore Filmleri"
+        "${mainUrl}/kore-filmleri-izle1/" to "Kore Filmleri",
+        "${mainUrl}/tayland-dizileri/"    to "Tayland Dizileri",
+        "${mainUrl}/tayland-filmleri/"    to "Tayland Filmleri",
+        "${mainUrl}/cin-dizileri/"        to "Çin Dizileri",
+        "${mainUrl}/cin-filmleri/"        to "Çin Filmleri",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -33,10 +37,7 @@ class DiziKorea : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("h2")?.text()?.trim() ?: return null
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
-
-        Log.d("DZK", "title » ${title}")
-        Log.d("DZK", "posterUrl » ${posterUrl}")
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
     }

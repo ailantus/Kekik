@@ -232,8 +232,6 @@ class DiziMom : MainAPI() {
             loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
 
-
-
         return true
     }
 }
