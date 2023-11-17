@@ -64,8 +64,8 @@ class DiziKorea : MainAPI() {
         document.select("ul li").forEach { listItem ->
             val href = listItem.selectFirst("a")?.attr("href")
             if (href != null && (href.contains("/dizi/") || href.contains("/film/"))) {
-                val searchResult = listItem.toPostSearchResult()
-                searchResult?.let { results.add(it) }
+                val result = listItem.toPostSearchResult()
+                result?.let { results.add(it) }
             }
         }
         return results
