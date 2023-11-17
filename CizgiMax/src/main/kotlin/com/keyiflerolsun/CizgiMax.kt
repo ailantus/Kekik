@@ -120,9 +120,9 @@ class CizgiMax : MainAPI() {
                     isM3u8  = m3u_link.contains(".m3u8")
                 )
             )
+        } else {
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
-
-        loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
 
         return true
     }

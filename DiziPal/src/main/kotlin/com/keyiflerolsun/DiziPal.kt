@@ -158,7 +158,8 @@ class DiziPal : MainAPI() {
         val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
         if (m3u_link == null) {
             Log.d("DZP", "i_source » ${i_source}")
-            return false
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            return true
         }
 
         val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)

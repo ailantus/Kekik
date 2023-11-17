@@ -118,9 +118,9 @@ class DiziKorea : MainAPI() {
         Log.d("DZK", "iframe » ${iframe}")
 
         if (iframe.startsWith("//")) {
-            loadExtractor("https:${iframe}", "$mainUrl/", subtitleCallback, callback)
+            loadExtractor("https:${iframe}", "${mainUrl}/", subtitleCallback, callback)
         } else {
-            loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
