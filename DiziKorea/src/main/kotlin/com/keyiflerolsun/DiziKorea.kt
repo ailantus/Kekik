@@ -110,12 +110,11 @@ class DiziKorea : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZK", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.series-watch-player iframe")?.attr("src") ?: return false
-        Log.d("DZK", "iframe » ${iframe}")
 
-        if (iframe.startsWith("//")) {
-            loadExtractor("https:${iframe}", "$mainUrl/", subtitleCallback, callback)
-        } else {
+        document.select("div.series-watch-alternatives button").forEach {
+            val iframe = "https:" + it.attr("data-frame")
+            Log.d("DZK", "iframe » ${iframe}")
+
             loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
 
