@@ -61,10 +61,10 @@ class DiziKorea : MainAPI() {
         val document = Jsoup.parse(response)
 
         val results = mutableListOf<SearchResponse>()
-        document.select("ul li").forEach {
-            val href = it.selectFirst("a")?.attr("href")
+        document.select("ul li").forEach { listItem ->
+            val href = listItem.selectFirst("a")?.attr("href")
             if (href != null && (href.contains("/dizi/") || href.contains("/film/"))) {
-                val searchResult = it.toSearchResult()
+                val searchResult = listItem.toSearchResult()
                 searchResult?.let { results.add(it) }
             }
         }
