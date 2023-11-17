@@ -60,9 +60,9 @@ class DiziKorea : MainAPI() {
         val description = document.selectFirst("div.series-profile-summary p")?.text()?.trim()
         val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
         val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
-        val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p")?.text()?.trim()?.split().first()?.toIntOrNull()
+        val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p")?.text()?.trim()?.split(" ")?.first().toIntOrNull()
         val actors      = document.select("div.series-profile-cast li").map {
-            Actor(it.selectFirst("h5")?.text(), it.selectFirst("img")?.attr("src"))
+            Actor(it.selectFirst("h5")!!.text(), it.selectFirst("img")!!.attr("src"))
         }
         val trailer     = document.selectFirst("div.series-profile-trailer")?.attr("data-yt")
 
@@ -72,9 +72,8 @@ class DiziKorea : MainAPI() {
                 val ep_season = it.parent()!!.id().split("-").last().toIntOrNull()
 
                 it.select("li").forEach ep@ { episodeElement ->
-                    val ep_href        = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
-                    val ep_description = ep_name
-                    val ep_episode     = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
+                    val ep_href    = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
+                    val ep_episode = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
 
                     episodes.add(Episode(
                         data    = ep_href,
