@@ -8,13 +8,14 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+import org.jsoup.Jsoup
 
 class DiziKorea : MainAPI() {
     override var mainUrl            = "https://dizikorea.tv"
     override var name               = "DiziKorea"
     override val hasMainPage        = true
     override var lang               = "tr"
-    // override val hasQuickSearch     = false
+    override val hasQuickSearch     = false
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.AsianDrama)
 
@@ -42,17 +43,32 @@ class DiziKorea : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
     }
 
-    // override suspend fun search(query: String): List<SearchResponse> {
-    //     val response = app.post(
-    //         "${mainUrl}/search",
-    //         referer = "${mainUrl}/",
-    //         data    = mapOf("query" to query)
-    //     )
+    override suspend fun search(query: String): List<SearchResponse> {
+        val response = app.post(
+            "${mainUrl}/search",
+            referer = "${mainUrl}/",
+            data    = mapOf("query" to query)
+        ).parsedSafe<KoreaSearch>()!!.theme
 
-    //     return document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
-    // }
+        val document = Jsoup.parse(response)
 
-    // override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
+        val results = mutableListOf<SearchResponse>()
+        document.select("ul li").forEach {
+            val href = it.selectFirst("a")?.attr("href")
+            if (href != null && (href.contains("/dizi/") || href.contains("/film/"))) {
+                val title  = it.selectFirst("span")!!.text().trim()
+                val poster = it.selectFirst("img")?.attr("data-src")
+
+                results.add(
+                    newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = poster }
+                )
+            }
+        }
+
+        return results
+    }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
