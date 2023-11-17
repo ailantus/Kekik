@@ -12,7 +12,7 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 
 
 class Turkish123 : MainAPI() {
-    override var mainUrl            = "https://turkish123.com"
+    override var mainUrl            = "https://turkish123.pro"
     override var name               = "Turkish123"
     override val hasMainPage        = true
     override var lang               = "tr"
@@ -99,32 +99,25 @@ class Turkish123 : MainAPI() {
     private suspend fun invokeLocalSource(url: String, callback: (ExtractorLink) -> Unit) {
         val document = app.get(url, referer = "${mainUrl}/").text
 
-        Regex("var\\surlPlay\\s=\\s[\"|'](\\S+)[\"|'];").find(document)?.groupValues?.get(1)?.let {
-            link ->
-            M3u8Helper.generateM3u8(this.name, link, referer = "$${mainServer}/").forEach(callback)
+        Regex("var\\surlPlay\\s=\\s[\"|'](\\S+)[\"|'];").find(document)?.groupValues?.get(1)?.let { link ->
+            M3u8Helper.generateM3u8(
+                this.name,
+                link,
+                referer = "${mainServer}/"
+            ).forEach(callback)
         }
     }
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
-
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
         val document = app.get(data).text
 
-        Regex("<iframe.*src=[\"|'](\\S+)[\"|']\\s")
-            .findAll(document)
-            .map { it.groupValues[1] }
-            .toList()
-            .apmap { link ->
-                if (link.startsWith(mainServer)) {
-                    invokeLocalSource(link, callback)
-                } else {
-                    loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
-                }
+        Regex("<iframe.*src=[\"|'](\\S+)[\"|']\\s").findAll(document).map { it.groupValues[1] }.toList().apmap { link ->
+            if (link.startsWith(mainServer)) {
+                invokeLocalSource(link, callback)
+            } else {
+                loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
             }
+        }
 
         return true
     }
