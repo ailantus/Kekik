@@ -114,33 +114,11 @@ class DiziKorea : MainAPI() {
         val iframe   = document.selectFirst("div.series-watch-player iframe")?.attr("src") ?: return false
         Log.d("DZK", "iframe » ${iframe}")
 
-        var i_source          = app.get("${iframe}", referer="${mainUrl}/").text
-        var m3u_link: String? = null
-
-        if (iframe.contains("sibnet.ru")) {
-            m3u_link = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-
-            if (m3u_link != null) {
-                m3u_link = "https://video.sibnet.ru${m3u_link}"
-            }
+        if (iframe.startsWith("//")) {
+            return loadLinks("https:$iframe", isCasting, subtitleCallback, callback)
+        } else {
+            loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
-
-        Log.d("DZK", "m3u_link » ${m3u_link}")
-        if (m3u_link == null) {
-            Log.d("DZK", "i_source » ${i_source}")
-            return false
-        }
-
-        callback.invoke(
-            ExtractorLink(
-                source  = this.name,
-                name    = this.name,
-                url     = m3u_link,
-                referer = iframe,
-                quality = Qualities.Unknown.value,
-                isM3u8  = m3u_link.contains(".m3u8")
-            )
-        )
 
         return true
     }
