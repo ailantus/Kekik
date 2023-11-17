@@ -106,7 +106,10 @@ class CizgiMax : MainAPI() {
             if (m3u_link != null) {
                 m3u_link = "https://video.sibnet.ru${m3u_link}"
             }
+        }
 
+        Log.d("CZGM", "m3u_link » ${m3u_link}")
+        if (m3u_link != null) {
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
@@ -117,9 +120,9 @@ class CizgiMax : MainAPI() {
                     isM3u8  = m3u_link.contains(".m3u8")
                 )
             )
-        } else {
-            loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
+
+        loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
 
         return true
     }
