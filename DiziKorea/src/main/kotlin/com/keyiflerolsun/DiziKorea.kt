@@ -60,7 +60,7 @@ class DiziKorea : MainAPI() {
         val description = document.selectFirst("div.series-profile-summary p")?.text()?.trim()
         val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
         val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
-        val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p")?.text()?.trim()?.split(" ")?.first().toIntOrNull()
+        val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p")?.text()?.trim()?.split(" ")?.first()?.toIntOrNull()
         val actors      = document.select("div.series-profile-cast li").map {
             Actor(it.selectFirst("h5")!!.text(), it.selectFirst("img")!!.attr("src"))
         }
@@ -96,12 +96,12 @@ class DiziKorea : MainAPI() {
             }
         } else {
             return newMovieLoadResponse(title, url, TvType.AsianDrama, url) {
-                this.posterUrl       = poster
-                this.year            = year
-                this.plot            = description
-                this.tags            = tags
-                this.rating          = rating
-                this.duration        = duration
+                this.posterUrl = poster
+                this.year      = year
+                this.plot      = description
+                this.tags      = tags
+                this.rating    = rating
+                this.duration  = duration
                 addActors(actors)
                 addTrailer("https://www.youtube.com/embed/${trailer}")
             }
@@ -118,7 +118,8 @@ class DiziKorea : MainAPI() {
         var m3u_link: String? = null
 
         if (iframe.contains("sibnet.ru")) {
-            m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            m3u_link = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+
             if (m3u_link != null) {
                 m3u_link = "https://video.sibnet.ru${m3u_link}"
             }
