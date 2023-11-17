@@ -35,6 +35,9 @@ class DiziKorea : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
+        Log.d("DZK", "title » ${title}")
+        Log.d("DZK", "posterUrl » ${posterUrl}")
+
         return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
     }
 
@@ -110,11 +113,12 @@ class DiziKorea : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZK", "data » ${data}")
         val document = app.get(data).document
+        val iframe   = document.selectFirst("div.series-watch-player iframe")?.attr("src") ?: return false
+        Log.d("DZK", "iframe » ${iframe}")
 
-        document.select("div.series-watch-alternatives button").forEach {
-            val iframe = "https:" + it.attr("data-frame")
-            Log.d("DZK", "iframe » ${iframe}")
-
+        if (iframe.startsWith("//")) {
+            loadExtractor("https:${iframe}", "$mainUrl/", subtitleCallback, callback)
+        } else {
             loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
 

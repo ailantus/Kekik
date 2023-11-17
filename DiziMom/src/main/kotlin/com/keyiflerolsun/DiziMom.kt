@@ -7,10 +7,8 @@ import org.jsoup.nodes.Element
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.M3u8Helper
-import com.lagradost.cloudstream3.utils.Qualities
 
 class DiziMom : MainAPI() {
     override var mainUrl            = "https://www.dizimom.pro"
@@ -219,21 +217,22 @@ class DiziMom : MainAPI() {
         }
 
         Log.d("DZM", "m3u_link » ${m3u_link}")
-        if (m3u_link == null) {
-            Log.d("DZM", "i_source » ${i_source}")
-            return false
+        if (m3u_link != null) {
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = iframe,
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = m3u_link.contains(".m3u8")
+                )
+            )
+        } else {
+            loadExtractor(iframe, "$mainUrl/", subtitleCallback, callback)
         }
 
-        callback.invoke(
-            ExtractorLink(
-                source  = this.name,
-                name    = this.name,
-                url     = m3u_link,
-                referer = iframe,
-                quality = Qualities.Unknown.value,
-                isM3u8  = m3u_link.contains(".m3u8")
-            )
-        )
+
 
         return true
     }
