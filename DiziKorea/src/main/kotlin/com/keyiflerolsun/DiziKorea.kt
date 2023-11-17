@@ -43,6 +43,14 @@ class DiziKorea : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
     }
 
+    private fun Element.toPostSearchResult(): SearchResponse? {
+        val title     = this.selectFirst("span")?.text()?.trim() ?: return null
+        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
+
+        return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
+    }
+
     override suspend fun search(query: String): List<SearchResponse> {
         val response = app.post(
             "${mainUrl}/search",
@@ -56,15 +64,10 @@ class DiziKorea : MainAPI() {
         document.select("ul li").forEach {
             val href = it.selectFirst("a")?.attr("href")
             if (href != null && (href.contains("/dizi/") || href.contains("/film/"))) {
-                val title  = it.selectFirst("span")!!.text().trim()
-                val poster = it.selectFirst("img")?.attr("data-src")
-
-                results.add(
-                    newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = poster }
-                )
+                val searchResult = it.toSearchResult()
+                searchResult?.let { results.add(it) }
             }
         }
-
         return results
     }
 
