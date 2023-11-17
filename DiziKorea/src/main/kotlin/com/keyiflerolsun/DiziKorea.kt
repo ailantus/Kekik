@@ -1,0 +1,128 @@
+// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+
+package com.keyiflerolsun
+
+import android.util.Log
+import org.jsoup.nodes.Element
+import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.Qualities
+
+class DiziKorea : MainAPI() {
+    override var mainUrl            = "https://dizikorea.tv"
+    override var name               = "DiziKorea"
+    override val hasMainPage        = true
+    override var lang               = "tr"
+    // override val hasQuickSearch     = false
+    override val hasDownloadSupport = true
+    override val supportedTypes     = setOf(TvType.AsianDrama)
+
+    override val mainPage = mainPageOf(
+        "${mainUrl}/tum-kore-dizileri/"   to "Kore Dizileri",
+        "${mainUrl}/kore-filmleri-izle1/" to "Kore Filmleri"
+    )
+
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        val document = app.get("${request.data}${page}").document
+        val home     = document.select("div.poster-long").mapNotNull { it.toSearchResult() }
+
+        return newHomePageResponse(request.name, home)
+    }
+
+    private fun Element.toSearchResult(): SearchResponse? {
+        val title     = this.selectFirst("h2")?.text()?.trim() ?: return null
+        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
+
+        return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
+    }
+
+    // override suspend fun search(query: String): List<SearchResponse> {
+    //     val response = app.post(
+    //         "${mainUrl}/search",
+    //         referer = "${mainUrl}/",
+    //         data    = mapOf("query" to query)
+    //     )
+
+    //     return document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
+    // }
+
+    // override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
+
+    override suspend fun load(url: String): LoadResponse? {
+        val document = app.get(url).document
+
+        if (url.contains("/dizi/")) {
+            val title       = document.selectFirst("h1 a")?.text()?.trim() ?: return null
+            val poster      = fixUrlNull(document.selectFirst("div.series-profile-image img")?.attr("src")) ?: return null
+            val description = document.selectFirst("div.series-profile-summary p")?.text()?.trim()
+            val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
+            val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
+
+            val episodes    = mutableListOf<Episode>()
+            document.select("div.series-profile-episode-list").forEach {
+                val ep_season = it.parent()!!.id().split("-").last().toIntOrNull()
+
+                it.select("li").forEach ep@ { episodeElement ->
+                    val ep_name        = episodeElement.selectFirst("h6 a")?.text()?.trim() ?: return@ep
+                    val ep_href        = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
+                    val ep_description = ep_name
+                    val ep_episode     = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
+
+                    episodes.add(Episode(
+                        data        = ep_href,
+                        name        = ep_name,
+                        season      = ep_season,
+                        episode     = ep_episode,
+                        description = ep_description
+                    ))
+                }
+            }
+
+            return newTvSeriesLoadResponse(title, url, TvType.AsianDrama, episodes) {
+                this.posterUrl = poster
+                this.plot      = description
+                this.tags      = tags
+                this.rating    = rating
+            }
+        } else {
+            return null
+        }
+    }
+
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("DZK", "data » ${data}")
+        val document = app.get(data).document
+        val iframe   = document.selectFirst("div.series-watch-player iframe")?.attr("src") ?: return false
+        Log.d("DZK", "iframe » ${iframe}")
+
+        var i_source          = app.get("${iframe}", referer="${mainUrl}/").text
+        var m3u_link: String? = null
+
+        if (iframe.contains("sibnet.ru")) {
+            m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            if (m3u_link != null) {
+                m3u_link = "https://video.sibnet.ru${m3u_link}"
+            }
+        }
+
+        Log.d("DZK", "m3u_link » ${m3u_link}")
+        if (m3u_link == null) {
+            Log.d("DZK", "i_source » ${i_source}")
+            return false
+        }
+
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = m3u_link,
+                referer = iframe,
+                quality = Qualities.Unknown.value,
+                isM3u8  = m3u_link.contains(".m3u8")
+            )
+        )
+
+        return true
+    }
+}
