@@ -7,6 +7,8 @@ import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class DiziKorea : MainAPI() {
     override var mainUrl            = "https://dizikorea.tv"
@@ -52,41 +54,58 @@ class DiziKorea : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        if (url.contains("/dizi/")) {
-            val title       = document.selectFirst("h1 a")?.text()?.trim() ?: return null
-            val poster      = fixUrlNull(document.selectFirst("div.series-profile-image img")?.attr("src")) ?: return null
-            val description = document.selectFirst("div.series-profile-summary p")?.text()?.trim()
-            val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
-            val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
+        val title       = document.selectFirst("h1 a")?.text()?.trim() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.series-profile-image img")?.attr("src")) ?: return null
+        val year        = document.selectFirst("h1 span")?.text()?.substringAfter("(")?.substringBefore(")")?.toIntOrNull()
+        val description = document.selectFirst("div.series-profile-summary p")?.text()?.trim()
+        val tags        = document.select("div.series-profile-type a").mapNotNull { it?.text()?.trim() }
+        val rating      = document.selectFirst("span.color-imdb")?.text()?.trim()?.toRatingInt()
+        val duration    = document.selectXpath("//span[text()='Süre']//following-sibling::p")?.text()?.trim()?.split().first()?.toIntOrNull()
+        val actors      = document.select("div.series-profile-cast li").map {
+            Actor(it.selectFirst("h5")?.text(), it.selectFirst("img")?.attr("src"))
+        }
+        val trailer     = document.selectFirst("div.series-profile-trailer")?.attr("data-yt")
 
+        if (url.contains("/dizi/")) {
             val episodes    = mutableListOf<Episode>()
             document.select("div.series-profile-episode-list").forEach {
                 val ep_season = it.parent()!!.id().split("-").last().toIntOrNull()
 
                 it.select("li").forEach ep@ { episodeElement ->
-                    val ep_name        = episodeElement.selectFirst("h6 a")?.text()?.trim() ?: return@ep
                     val ep_href        = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
                     val ep_description = ep_name
                     val ep_episode     = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
 
                     episodes.add(Episode(
-                        data        = ep_href,
-                        name        = ep_name,
-                        season      = ep_season,
-                        episode     = ep_episode,
-                        description = ep_description
+                        data    = ep_href,
+                        name    = "${ep_season}. Sezon ${ep_episode}. Bölüm",
+                        season  = ep_season,
+                        episode = ep_episode
                     ))
                 }
             }
 
             return newTvSeriesLoadResponse(title, url, TvType.AsianDrama, episodes) {
                 this.posterUrl = poster
+                this.year      = year
                 this.plot      = description
                 this.tags      = tags
                 this.rating    = rating
+                this.duration  = duration
+                addActors(actors)
+                addTrailer("https://www.youtube.com/embed/${trailer}")
             }
         } else {
-            return null
+            return newMovieLoadResponse(title, url, TvType.AsianDrama, url) {
+                this.posterUrl       = poster
+                this.year            = year
+                this.plot            = description
+                this.tags            = tags
+                this.rating          = rating
+                this.duration        = duration
+                addActors(actors)
+                addTrailer("https://www.youtube.com/embed/${trailer}")
+            }
         }
     }
 
