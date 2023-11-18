@@ -153,7 +153,7 @@ class DiziKorea : MainAPI() {
 
                 var response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
                 if (response != null && response.isNotEmpty()) {
-                    response = response.firstOrNull()
+                    response = response.first()
                     Log.d("DZK", "__response » ${response}")
 
                     if (response.tracks.isNotEmpty()) {
