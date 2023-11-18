@@ -36,10 +36,10 @@ class DiziPal : MainAPI() {
         "${mainUrl}/diziler?kelime=&durum=&tur=14&type=&siralama=" to "Müzik",
         "${mainUrl}/diziler?kelime=&durum=&tur=16&type=&siralama=" to "Romantik",
         "${mainUrl}/diziler?kelime=&durum=&tur=17&type=&siralama=" to "Savaş",
-        "${mainUrl}/diziler?kelime=&durum=&tur=18&type=&siralama=" to "Spor",
-        "${mainUrl}/diziler?kelime=&durum=&tur=19&type=&siralama=" to "Suç",
-        "${mainUrl}/diziler?kelime=&durum=&tur=20&type=&siralama=" to "Tarih",
-        "${mainUrl}/diziler?kelime=&durum=&tur=21&type=&siralama=" to "Western",
+        // "${mainUrl}/diziler?kelime=&durum=&tur=18&type=&siralama=" to "Spor",    // ! Fazla kategori olduğu için geç yükleniyor..
+        // "${mainUrl}/diziler?kelime=&durum=&tur=19&type=&siralama=" to "Suç",
+        // "${mainUrl}/diziler?kelime=&durum=&tur=20&type=&siralama=" to "Tarih",
+        // "${mainUrl}/diziler?kelime=&durum=&tur=21&type=&siralama=" to "Western",
         "${mainUrl}/diziler?kelime=&durum=&tur=24&type=&siralama=" to "Yerli",
     )
 
