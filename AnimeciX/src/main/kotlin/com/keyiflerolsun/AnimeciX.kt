@@ -122,7 +122,7 @@ class AnimeciX : MainAPI() {
                 )
             }
         } else {
-            return false
+            loadExtractor(data, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
