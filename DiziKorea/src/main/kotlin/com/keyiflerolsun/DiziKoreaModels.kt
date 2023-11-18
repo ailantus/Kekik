@@ -19,15 +19,11 @@ data class VideoSeyred(
 )
 
 data class SeyredSource(
-    @JsonProperty("file")    val file: String,
-    @JsonProperty("type")    val type: String,
-    @JsonProperty("default") val default: Boolean? = null
+    @JsonProperty("file") val file: String,
 )
 
 data class SeyredTrack(
-    @JsonProperty("file")     val file: String,
-    @JsonProperty("kind")     val kind: String,
-    @JsonProperty("language") val language: String? = null,
-    @JsonProperty("label")    val label: String?    = null,
-    @JsonProperty("default")  val default: Boolean? = null
+    @JsonProperty("file")  val file: String,
+    @JsonProperty("kind")  val kind: String,
+    @JsonProperty("label") val label: String? = null,
 )

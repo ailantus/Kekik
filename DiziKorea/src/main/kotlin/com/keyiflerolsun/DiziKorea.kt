@@ -151,38 +151,37 @@ class DiziKorea : MainAPI() {
                 val video_id = iframe.substringAfter("embed/")
                 Log.d("DZK", "video_id » ${video_id}")
 
-                val responseList = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
-                Log.d("DZK", "responseList » ${responseList}")
-                if (responseList != null && responseList.isNotEmpty()) {
-                    responseList.forEach { response ->
-                        Log.d("DZK", "response » ${response}")
+                val response_list = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
+                Log.d("DZK", "response_list » ${response_list}")
+                val response = response_list?.firstOrNull()
+                Log.d("DZK", "response » ${response}")
 
-                        if (response.tracks.isNotEmpty()) {
-                            response.tracks.forEach { track ->
-                                if (track.kind == "captions") {
-                                    subtitleCallback.invoke(
-                                        SubtitleFile(
-                                            lang = track.label ?: "",
-                                            url  = fixUrl(track.file)
-                                        )
-                                    )
-                                }
-                            }
-                        }
-
-                        if (response.sources.isNotEmpty()) {
-                            response.sources.forEach { source ->
-                                callback.invoke(
-                                    ExtractorLink(
-                                        source  = "VideoSeyred",
-                                        name    = "VideoSeyred",
-                                        url     = source.file,
-                                        referer = "${mainUrl}/",
-                                        quality = Qualities.Unknown.value,
-                                        isM3u8  = source.file.contains(".m3u8")
+                if (response != null) {
+                    if (response.tracks.isNotEmpty()) {
+                        response.tracks.forEach { track ->
+                            if (track.kind == "captions") {
+                                subtitleCallback.invoke(
+                                    SubtitleFile(
+                                        lang = track.label ?: "",
+                                        url  = fixUrl(track.file)
                                     )
                                 )
                             }
+                        }
+                    }
+
+                    if (response.sources.isNotEmpty()) {
+                        response.sources.forEach { source ->
+                            callback.invoke(
+                                ExtractorLink(
+                                    source  = "VideoSeyred",
+                                    name    = "VideoSeyred",
+                                    url     = source.file,
+                                    referer = "${mainUrl}/",
+                                    quality = Qualities.Unknown.value,
+                                    isM3u8  = source.file.contains(".m3u8")
+                                )
+                            )
                         }
                     }
                 }
