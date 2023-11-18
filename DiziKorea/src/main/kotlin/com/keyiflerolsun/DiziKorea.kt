@@ -134,7 +134,7 @@ class DiziKorea : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        Log.d("DZK", "data » ${data}")
+        Log.d("DZK", "__data » ${data}")
         val document = app.get(data).document
 
 
@@ -143,42 +143,45 @@ class DiziKorea : MainAPI() {
             if (iframe.startsWith("//")) {
                 iframe = "https:${iframe}"
             }
-            Log.d("DZK", "iframe » ${iframe}")
+            Log.d("DZK", "__iframe » ${iframe}")
 
             if (iframe.contains("vidmoly")) {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             } else if (iframe.contains("videoseyred")) {
                 val video_id = iframe.substringAfter("embed/")
-                Log.d("DZK", "video_id » ${video_id}")
+                Log.d("DZK", "__video_id » ${video_id}")
 
-                var response = app.get("https://videoseyred.in/playlist/${video_id}.json", referer="${mainUrl}/").parsedSafe<List<VideoSeyred>>()!!.first()
-                Log.d("DZK", "response » ${response}")
+                var response = app.get("https://videoseyred.in/playlist/${video_id}.json", referer="${mainUrl}/").parsedSafe<List<VideoSeyred>>()
+                if (response != null && response.isNotEmpty()) {
+                    response = response.firstOrNull()
+                    Log.d("DZK", "__response » ${response}")
 
-                if (response.tracks.isNotEmpty()) {
-                    response.tracks.forEach { track ->
-                        if (track.kind == "captions") {
-                            subtitleCallback.invoke(
-                                SubtitleFile(
-                                    lang = track.label ?: "",
-                                    url  = fixUrl(track.file)
+                    if (response.tracks.isNotEmpty()) {
+                        response.tracks.forEach { track ->
+                            if (track.kind == "captions") {
+                                subtitleCallback.invoke(
+                                    SubtitleFile(
+                                        lang = track.label ?: "",
+                                        url  = fixUrl(track.file)
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    if (response.sources.isNotEmpty()) {
+                        response.sources.forEach { source ->
+                            callback.invoke(
+                                ExtractorLink(
+                                    source  = "VideoSeyred",
+                                    name    = "VideoSeyred",
+                                    url     = source.file,
+                                    referer = "${mainUrl}/",
+                                    quality = Qualities.Unknown.value,
+                                    isM3u8  = source.file.contains(".m3u8")
                                 )
                             )
                         }
-                    }
-                }
-
-                if (response.sources.isNotEmpty()) {
-                    response.sources.forEach { source ->
-                        callback.invoke(
-                            ExtractorLink(
-                                source  = "VideoSeyred",
-                                name    = "VideoSeyred",
-                                url     = source.file,
-                                referer = "${mainUrl}/",
-                                quality = Qualities.Unknown.value,
-                                isM3u8  = source.file.contains(".m3u8")
-                            )
-                        )
                     }
                 }
             }
