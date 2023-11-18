@@ -159,7 +159,7 @@ class DiziKorea : MainAPI() {
                         if (track.kind == "captions") {
                             subtitleCallback.invoke(
                                 SubtitleFile(
-                                    lang = track.label,
+                                    lang = track.label ?: "",
                                     url  = fixUrl(track.file)
                                 )
                             )
