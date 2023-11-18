@@ -11,16 +11,22 @@ data class KoreaSearch(
 )
 
 data class VideoSeyred(
-    @JsonProperty("sources") val sources: List<SeyredSource>,
-    @JsonProperty("tracks")  val tracks: List<SeyredTrack>
+    @JsonProperty("image") val image: String,
+    @JsonProperty("title") val title: String,
+    @JsonProperty("sources") val sources: List<VSSource>,
+    @JsonProperty("tracks") val tracks: List<VSTrack>
 )
 
-data class SeyredSource(
-    @JsonProperty("file") val file: String
+data class VSSource(
+    @JsonProperty("file") val file: String,
+    @JsonProperty("type") val type: String,
+    @JsonProperty("default") val default: String
 )
 
-data class SeyredTrack(
-    @JsonProperty("file")  val file: String,
-    @JsonProperty("kind")  val kind: String,
-    @JsonProperty("label") val label: String? = null
+data class VSTrack(
+    @JsonProperty("file") val file: String,
+    @JsonProperty("kind") val kind: String,
+    @JsonProperty("language") val language: String? = null,
+    @JsonProperty("label") val label: String? = null,
+    @JsonProperty("default") val default: String? = null
 )

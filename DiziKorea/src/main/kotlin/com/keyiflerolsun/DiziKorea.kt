@@ -136,7 +136,7 @@ class DiziKorea : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        Log.d("DZK", "__data » ${data}")
+        Log.d("DZK", "data » ${data}")
         val document = app.get(data).document
 
 
@@ -145,7 +145,7 @@ class DiziKorea : MainAPI() {
             if (iframe.startsWith("//")) {
                 iframe = "https:${iframe}"
             }
-            Log.d("DZK", "__iframe » ${iframe}")
+            Log.d("DZK", "iframe » ${iframe}")
 
             if (iframe.contains("vidmoly")) {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
@@ -153,15 +153,10 @@ class DiziKorea : MainAPI() {
 
             if (iframe.contains("videoseyred")) {
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                Log.d("DZK", "__video_id » ${video_id}")
-
-                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json").text
-                Log.d("DZK", "__response_raw » ${response_raw}")
-
-                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw)
+                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
+                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
                 val response = response_list[0]
-                Log.d("DZK", "__response » ${response}")
-
+                Log.d("DZK", "response » ${response}")
 
                 for (track in response.tracks) {
                     if (track.label != null && track.kind == "captions") {
