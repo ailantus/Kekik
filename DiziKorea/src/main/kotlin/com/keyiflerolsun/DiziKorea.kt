@@ -136,13 +136,49 @@ class DiziKorea : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZK", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.series-watch-player iframe")?.attr("src") ?: return false
-        Log.d("DZK", "iframe » ${iframe}")
 
-        if (iframe.startsWith("//")) {
-            loadExtractor("https:${iframe}", "${mainUrl}/", subtitleCallback, callback)
-        } else {
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+
+        document.select("div.series-watch-alternatives button").forEach {
+            var iframe = it.attr("data-frame")
+            if (iframe.startsWith("//")) {
+                iframe = "https:${iframe}"
+            }
+            Log.d("DZK", "iframe » ${iframe}")
+
+            if (iframe.contains("vidmoly")) {
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            } else if (iframe.contains("videoseyred")) {
+                val video_id = iframe.substringAfter("embed/")
+                var response = app.get("https://videoseyred.in/playlist/${video_id}.json", referer="${mainUrl}/").parsedSafe<List<VideoSeyred>>()!!.first()
+
+                if (response.tracks.isNotEmpty()) {
+                    response.tracks.forEach { track ->
+                        if (track.kind == "captions") {
+                            subtitleCallback.invoke(
+                                SubtitleFile(
+                                    lang = track.label,
+                                    url  = fixUrl(track.file)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                if (response.sources.isNotEmpty()) {
+                    response.sources.forEach { source ->
+                        callback.invoke(
+                            ExtractorLink(
+                                source  = "VideoSeyred",
+                                name    = "VideoSeyred",
+                                url     = source.file,
+                                referer = "${mainUrl}/",
+                                quality = Qualities.Unknown.value,
+                                isM3u8  = source.file.contains(".m3u8")
+                            )
+                        )
+                    }
+                }
+            }
         }
 
         return true
