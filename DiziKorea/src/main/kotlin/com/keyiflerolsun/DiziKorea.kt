@@ -151,7 +151,7 @@ class DiziKorea : MainAPI() {
                 val video_id = iframe.substringAfter("embed/")
                 Log.d("DZK", "__video_id » ${video_id}")
 
-                var response = app.get("https://videoseyred.in/playlist/${video_id}.json", referer="${mainUrl}/").parsedSafe<List<VideoSeyred>>()
+                var response = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
                 if (response != null && response.isNotEmpty()) {
                     response = response.firstOrNull()
                     Log.d("DZK", "__response » ${response}")
