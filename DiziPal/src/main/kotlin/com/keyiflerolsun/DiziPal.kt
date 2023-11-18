@@ -8,7 +8,7 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 
 class DiziPal : MainAPI() {
-    override var mainUrl            = "https://dizipal671.com"
+    override var mainUrl            = "https://dizipal672.com"
     override var name               = "DiziPal"
     override val hasMainPage        = true
     override var lang               = "tr"
