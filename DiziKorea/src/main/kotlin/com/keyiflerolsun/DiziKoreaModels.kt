@@ -10,6 +10,7 @@ data class KoreaSearch(
     @JsonProperty("theme") val theme: String
 )
 
+
 data class VideoSeyred(
     @JsonProperty("image")   val image: String?              = null,
     @JsonProperty("title")   val title: String?              = null,
