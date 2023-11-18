@@ -26,6 +26,7 @@ class DiziKorea : MainAPI() {
         "${mainUrl}/tayland-filmleri/"    to "Tayland Filmleri",
         "${mainUrl}/cin-dizileri/"        to "Çin Dizileri",
         "${mainUrl}/cin-filmleri/"        to "Çin Filmleri",
+        "${mainUrl}/yabanci-dizi/"        to "Yabancı Dizi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -66,7 +67,6 @@ class DiziKorea : MainAPI() {
             val href = listItem.selectFirst("a")?.attr("href")
             if (href != null && (href.contains("/dizi/") || href.contains("/film/"))) {
                 val result = listItem.toPostSearchResult()
-                Log.d("DZK", "result » ${result}")
                 result?.let { results.add(it) }
             }
         }
@@ -149,7 +149,10 @@ class DiziKorea : MainAPI() {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             } else if (iframe.contains("videoseyred")) {
                 val video_id = iframe.substringAfter("embed/")
+                Log.d("DZK", "video_id » ${video_id}")
+
                 var response = app.get("https://videoseyred.in/playlist/${video_id}.json", referer="${mainUrl}/").parsedSafe<List<VideoSeyred>>()!!.first()
+                Log.d("DZK", "response » ${response}")
 
                 if (response.tracks.isNotEmpty()) {
                     response.tracks.forEach { track ->
