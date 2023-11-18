@@ -153,34 +153,36 @@ class DiziKorea : MainAPI() {
 
                 val responseList = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
                 Log.d("DZK", "responseList » ${responseList}")
-                responseList.forEach { response ->
-                    Log.d("DZK", "response » ${response}")
+                if (responseList != null && responseList.isNotEmpty()) {
+                    responseList.forEach { response ->
+                        Log.d("DZK", "response » ${response}")
 
-                    if (response.tracks.isNotEmpty()) {
-                        response.tracks.forEach { track ->
-                            if (track.kind == "captions") {
-                                subtitleCallback.invoke(
-                                    SubtitleFile(
-                                        lang = track.label ?: "",
-                                        url  = fixUrl(track.file)
+                        if (response.tracks.isNotEmpty()) {
+                            response.tracks.forEach { track ->
+                                if (track.kind == "captions") {
+                                    subtitleCallback.invoke(
+                                        SubtitleFile(
+                                            lang = track.label ?: "",
+                                            url  = fixUrl(track.file)
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        if (response.sources.isNotEmpty()) {
+                            response.sources.forEach { source ->
+                                callback.invoke(
+                                    ExtractorLink(
+                                        source  = "VideoSeyred",
+                                        name    = "VideoSeyred",
+                                        url     = source.file,
+                                        referer = "${mainUrl}/",
+                                        quality = Qualities.Unknown.value,
+                                        isM3u8  = source.file.contains(".m3u8")
                                     )
                                 )
                             }
-                        }
-                    }
-
-                    if (response.sources.isNotEmpty()) {
-                        response.sources.forEach { source ->
-                            callback.invoke(
-                                ExtractorLink(
-                                    source  = "VideoSeyred",
-                                    name    = "VideoSeyred",
-                                    url     = source.file,
-                                    referer = "${mainUrl}/",
-                                    quality = Qualities.Unknown.value,
-                                    isM3u8  = source.file.contains(".m3u8")
-                                )
-                            )
                         }
                     }
                 }
