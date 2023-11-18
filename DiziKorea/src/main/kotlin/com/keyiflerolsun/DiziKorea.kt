@@ -9,6 +9,8 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import org.jsoup.Jsoup
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 
 class DiziKorea : MainAPI() {
     override var mainUrl            = "https://dizikorea.tv"
@@ -147,43 +149,42 @@ class DiziKorea : MainAPI() {
 
             if (iframe.contains("vidmoly")) {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
-            } else if (iframe.contains("videoseyred")) {
-                val video_id = iframe.substringAfter("embed/")
+            }
+
+            if (iframe.contains("videoseyred")) {
+                val video_id = iframe.substringAfter("embed/").substringBefore("?")
                 Log.d("DZK", "video_id » ${video_id}")
 
-                val response_list = app.get("https://videoseyred.in/playlist/${video_id}.json").parsedSafe<List<VideoSeyred>>()
-                Log.d("DZK", "response_list » ${response_list}")
-                val response = response_list?.firstOrNull()
+                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json").text
+                Log.d("DZK", "response_raw » ${response_raw}")
+
+                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw)
+                val response = response_list[0]
                 Log.d("DZK", "response » ${response}")
 
-                if (response != null) {
-                    if (response.tracks.isNotEmpty()) {
-                        response.tracks.forEach { track ->
-                            if (track.kind == "captions") {
-                                subtitleCallback.invoke(
-                                    SubtitleFile(
-                                        lang = track.label ?: "",
-                                        url  = fixUrl(track.file)
-                                    )
-                                )
-                            }
-                        }
-                    }
 
-                    if (response.sources.isNotEmpty()) {
-                        response.sources.forEach { source ->
-                            callback.invoke(
-                                ExtractorLink(
-                                    source  = "VideoSeyred",
-                                    name    = "VideoSeyred",
-                                    url     = source.file,
-                                    referer = "${mainUrl}/",
-                                    quality = Qualities.Unknown.value,
-                                    isM3u8  = source.file.contains(".m3u8")
-                                )
+                for (track in response.tracks) {
+                    if (track.label != null && track.kind == "captions") {
+                        subtitleCallback.invoke(
+                            SubtitleFile(
+                                lang = track.label,
+                                url  = fixUrl(track.file)
                             )
-                        }
+                        )
                     }
+                }
+
+                for (source in response.sources) {
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "VideoSeyred",
+                            name    = "VideoSeyred",
+                            url     = source.file,
+                            referer = "https://videoseyred.in/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = source.file.contains(".m3u8")
+                        )
+                    )
                 }
             }
         }
