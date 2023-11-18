@@ -6,9 +6,8 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.Qualities
 
 class Dizilla : MainAPI() {
     override var mainUrl            = "https://dizilla.club"
@@ -217,8 +216,7 @@ class Dizilla : MainAPI() {
 
             return true
         } else {
-            Log.d("DZL", "iframe » ${iframe}")
-            return false
+            return loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
     }
 }
