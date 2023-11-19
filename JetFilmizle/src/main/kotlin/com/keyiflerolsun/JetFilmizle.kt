@@ -31,11 +31,8 @@ class JetFilmizle : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        var title = this.selectFirst("h4 a")?.text()?.substringBefore(" izle")
-        if (title == null) {
-            title = this.selectFirst("h2 a")?.text()?.substringBefore(" izle")
-        }
-        if (title == null) return null
+        var title = this.selectFirst("h2 a")?.text() ?: this.selectFirst("h3 a")?.text() ?: this.selectFirst("h4 a")?.text() ?: this.selectFirst("h5 a")?.text() ?: this.selectFirst("h6 a")?.text() ?: return null
+        title = title.substringBefore(" izle")
 
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
@@ -106,20 +103,25 @@ class JetFilmizle : MainAPI() {
 
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             } else {
-                val downloadLink = movDoc.selectFirst("div#movie p a")?.attr("href") ?: return@forEach
-                Log.d("JTF", "downloadLink » ${downloadLink}")
+                movDoc.select("div#movie p a").forEach { link ->
+                    var downloadLink = link.attr("href")
+                    Log.d("JTF", "downloadLink » ${downloadLink}")
 
-                if (downloadLink.contains("pixeldrain")) {
-                    callback.invoke(
-                        ExtractorLink(
-                            source  = "pixeldrain",
-                            name    = "pixeldrain",
-                            url     = downloadLink,
-                            referer = data,
-                            quality = Qualities.Unknown.value,
-                            isM3u8  = downloadLink.contains(".m3u8")
+                    if (downloadLink.contains("pixeldrain")) {
+                        var pixel_id = downloadLink.substringAfter("/").substringBefore("?")
+                        downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
+
+                        callback.invoke(
+                            ExtractorLink(
+                                source  = "pixeldrain - ${pixel_id}",
+                                name    = "pixeldrain - ${pixel_id}",
+                                url     = downloadLink,
+                                referer = data,
+                                quality = Qualities.Unknown.value,
+                                isM3u8  = downloadLink.contains(".m3u8")
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
