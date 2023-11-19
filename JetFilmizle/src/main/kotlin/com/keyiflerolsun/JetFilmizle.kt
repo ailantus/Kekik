@@ -31,7 +31,12 @@ class JetFilmizle : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("h4 a")?.text()?.substringBefore(" izle") ?: return null
+        var title = this.selectFirst("h4 a")?.text()?.substringBefore(" izle")
+        if (title == null) {
+            title = this.selectFirst("h2 a")?.text()?.substringBefore(" izle")
+        }
+        if (title == null) return null
+
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
