@@ -17,20 +17,20 @@ class JetFilmizle : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
-    // ! CloudFlare bypass
-    override var sequentialMainPage = true
-    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
-    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
-
     override val mainPage = mainPageOf(
         "${mainUrl}/page/"                 to "Son Filmler",
         "${mainUrl}/netflix/page/"         to "Netflix",
-        "${mainUrl}/boxset/page/"          to "BoxSet",
         "${mainUrl}/editorun-secimi/page/" to "Editörün Seçimi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val url: String = if (page == 1) {
+            request.data.substringBefore("/page/")
+        } else {
+            "${request.data}${page}"
+        }
+
+        val document = app.get(url).document
         val home     = document.select("article.movie").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -95,7 +95,7 @@ class JetFilmizle : MainAPI() {
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
-            if (source.toLowerCase().contains("okru") || source.toLowerCase().contains("fragman")) return@forEach
+            if (source.lowercase().contains("okru") || source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
             var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
