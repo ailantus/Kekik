@@ -18,7 +18,10 @@ class JetFilmizle : MainAPI() {
     override val supportedTypes     = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/page/" to "Son Filmler"
+        "${mainUrl}/page/"                 to "Son Filmler",
+        "${mainUrl}/netflix/page/"         to "Netflix",
+        "${mainUrl}/boxset/page/"          to "BoxSet",
+        "${mainUrl}/editorun-secimi/page/" to "Editörün Seçimi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -52,13 +55,13 @@ class JetFilmizle : MainAPI() {
         Log.d("JTF", "url » ${url}")
         val document = app.get(url).document
 
-        val title           = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.trim() ?: return null
-        val poster          = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
-        val year            = Regex("""\b(\d{4})\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
-        val description     = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
-        val tags            = document.select("section.movie-exp div.catss a").map { it.text() }
-        val rating          = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
-        val actors          = document.select("section.movie-exp div.oyuncu").map {
+        val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.trim() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
+        val year        = Regex("""\b(\d{4})\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
+        val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
+        val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
+        val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
+        val actors      = document.select("section.movie-exp div.oyuncu").map {
             Actor(it.selectFirst("div.name")!!.text(), it.selectFirst("div.img img")!!.attr("src"))
         }
 
