@@ -114,7 +114,7 @@ class DiziPal : MainAPI() {
                 this.duration  = duration
             }
         } else if (!url.contains("/dizi/")) {
-            val title = document.selectXpath("//div[@class='g-title'][2]/div")?.text()?.trim()
+            val title = document.selectXpath("//div[@class='g-title'][2]/div")?.text()?.trim() ?: return null
 
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
                 this.posterUrl = poster
