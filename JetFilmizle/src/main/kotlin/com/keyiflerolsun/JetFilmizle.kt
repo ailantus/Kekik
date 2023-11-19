@@ -111,8 +111,9 @@ class JetFilmizle : MainAPI() {
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
                     if (downloadLink.contains("pixeldrain")) {
-                        var pixel_id = Regex("""[^\/]+(?=\?download)""").find(downloadLink)?.groupValues?.get(1)
+                        var pixel_id = Regex("""[^\\/]+(?=\\?download)""").find(downloadLink)?.groupValues?.get(1)
                         downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
+                        Log.d("JTF", "downloadLink » ${downloadLink}")
 
                         callback.invoke(
                             ExtractorLink(
