@@ -66,7 +66,7 @@ class JetFilmizle : MainAPI() {
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
         val actors      = document.select("section.movie-exp div.oyuncu").map {
-            Actor(it.selectFirst("div.name")!!.text(), "${mainUrl}" + it.selectFirst("div.img img")!!.attr("src"))
+            Actor(it.selectFirst("div.name")!!.text(), fixUrlNull(it.selectFirst("img")!!.attr("src")))
         }
 
         val recommendations = document.select("div#benzers article").mapNotNull {
@@ -95,7 +95,7 @@ class JetFilmizle : MainAPI() {
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
-            if (source.toLowerCase().contains("okru") || source.toLowerCase().contains("youtube")) return@forEach
+            if (source.toLowerCase().contains("okru") || source.toLowerCase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
             var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
