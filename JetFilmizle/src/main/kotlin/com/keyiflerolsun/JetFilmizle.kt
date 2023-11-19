@@ -17,6 +17,11 @@ class JetFilmizle : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
+    // ! CloudFlare bypass
+    override var sequentialMainPage = true
+    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
+    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+
     override val mainPage = mainPageOf(
         "${mainUrl}/page/"                 to "Son Filmler",
         "${mainUrl}/netflix/page/"         to "Netflix",
@@ -61,7 +66,7 @@ class JetFilmizle : MainAPI() {
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
         val actors      = document.select("section.movie-exp div.oyuncu").map {
-            Actor(it.selectFirst("div.name")!!.text(), it.selectFirst("div.img img")!!.attr("src"))
+            Actor(it.selectFirst("div.name")!!.text(), "${mainUrl}" + it.selectFirst("div.img img")!!.attr("src"))
         }
 
         val recommendations = document.select("div#benzers article").mapNotNull {
@@ -90,6 +95,8 @@ class JetFilmizle : MainAPI() {
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
+            if (source.lowerCase() == "okru" || source.lowerCase() == "youtube") return@forEach
+
             val movDoc = app.get(it.attr("href")).document
             var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
 
