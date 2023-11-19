@@ -24,13 +24,7 @@ class JetFilmizle : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url: String = if (page == 1) {
-            request.data.substringBefore("/page/")
-        } else {
-            "${request.data}${page}"
-        }
-
-        val document = app.get(url).document
+        val document = app.get("${request.data}${page}").document
         val home     = document.select("article.movie").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -59,9 +53,9 @@ class JetFilmizle : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.trim() ?: return null
+        val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
-        val year        = Regex("""\b(\d{4})\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
+        val year        = Regex("""\\b(\\d{4})\\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
         val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
@@ -98,12 +92,30 @@ class JetFilmizle : MainAPI() {
             if (source.lowercase().contains("okru") || source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
-            var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
+            var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src")
 
-            if (iframe.startsWith("//")) iframe = "https:$iframe"
-            Log.d("JTF", "iframe » ${iframe}")
+            if (iframe != null) {
+                if (iframe.startsWith("//")) iframe = "https:$iframe"
+                Log.d("JTF", "iframe » ${iframe}")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            } else {
+                val downloadLink = movDoc.selectFirst("div#movie p a")?.attr("href") ?: return@forEach
+                Log.d("JTF", "downloadLink » ${downloadLink}")
+
+                if (downloadLink.contains("pixeldrain")) {
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "Download",
+                            name    = "Download",
+                            url     = downloadLink,
+                            referer = data,
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = downloadLink.contains(".m3u8")
+                        )
+                    )
+                }
+            }
         }
 
         return true
