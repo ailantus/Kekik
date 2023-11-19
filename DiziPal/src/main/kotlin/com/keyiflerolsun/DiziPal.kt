@@ -63,11 +63,12 @@ class DiziPal : MainAPI() {
     }
 
     private suspend fun Element.sonBolumler(): SearchResponse? {
-        val name            = this.selectFirst("div.name")?.text() ?: return null
-        val episode         = this.selectFirst("div.episode")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
-        val title           = name + " " + episode ?: return null
-        val href            = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val posterUrl       = fixUrlNull(this.selectFirst("[property='og:image']")?.attr("content"))
+        val name      = this.selectFirst("div.name")?.text() ?: return null
+        val episode   = this.selectFirst("div.episode")?.text()?.trim()?.toString()?.replace(". Sezon ","x")?.replace(". Bölüm","") ?: return null
+        val title     = "${name} ${episode}"
+
+        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("[property='og:image']")?.attr("content"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
@@ -101,9 +102,9 @@ class DiziPal : MainAPI() {
         val duration    = Regex("(\\d+)").find(document.selectXpath("//div[text()='Ortalama Süre']//following-sibling::div").text() ?: "")?.value?.toIntOrNull()
 
         if (url.contains("/bolum-")) {
-            val name        = document.selectFirst("div.episode-head h2")?.text()?.trim() ?: return null
-            val episode     = document.selectFirst("div.episode-head h6")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
-            val title       = name + " " + episode ?: return null
+            val name      = document.selectFirst("div.name")?.text() ?: return null
+            val episode   = document.selectFirst("div.episode")?.text()?.trim()?.toString()?.replace(". Sezon ","x")?.replace(". Bölüm","") ?: return null
+            val title     = "${name} ${episode}"
 
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
                 this.posterUrl = poster
@@ -114,7 +115,7 @@ class DiziPal : MainAPI() {
                 this.duration  = duration
             }
         } else if (!url.contains("/dizi/")) {
-            val title = document.selectXpath("//div[@class='g-title'][2]/div")?.text()?.trim() ?: return null
+            val title = document.selectXpath("//div[@class='g-title'][2]/div").text().trim()
 
             return newMovieLoadResponse(title, url, TvType.Movie, url) {
                 this.posterUrl = poster
