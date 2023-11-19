@@ -59,9 +59,7 @@ class DiziPal : MainAPI() {
         val episode         = this.selectFirst("div.episode")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
         val title           = name + " " + episode ?: return null
         val href            = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-
-        val poster_document = app.get("${mainUrl}/diziler?kelime=${name}&durum=&tur=&type=&siralama=").document
-        val posterUrl       = fixUrlNull(poster_document.selectFirst("article.type2 ul li")?.selectFirst("img")?.attr("src"))
+        val posterUrl       = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
