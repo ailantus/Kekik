@@ -64,7 +64,7 @@ class JetFilmizle : MainAPI() {
         }
 
         val recommendations = document.select("div#benzers article").mapNotNull {
-            val recName      = it.selectFirst("h2 a")?.text() ?: return@mapNotNull null
+            val recName      = it.selectFirst("h2 a")?.text()?.substringBefore(" izle")?.trim() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
 
