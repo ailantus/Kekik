@@ -52,7 +52,6 @@ class JetFilmizle : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        Log.d("JTF", "url » ${url}")
         val document = app.get(url).document
 
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.trim() ?: return null
@@ -86,6 +85,7 @@ class JetFilmizle : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("JTF", "data » ${data}")
         val document = app.get(data).document
 
         document.select("div.film_part a").forEach {
