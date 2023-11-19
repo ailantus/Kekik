@@ -155,7 +155,7 @@ class DiziPal : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZP", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: return false
+        val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: document.selectFirst("div#vast_new iframe")?.attr("src") ?: return false
         Log.d("DZP", "iframe » ${iframe}")
 
         val i_source = app.get("${iframe}", referer="${mainUrl}/").text
