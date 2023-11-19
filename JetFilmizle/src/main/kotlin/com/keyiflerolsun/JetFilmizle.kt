@@ -52,13 +52,13 @@ class JetFilmizle : MainAPI() {
         Log.d("JTF", "url » ${url}")
         val document = app.get(url).document
 
-        val title           = document.selectFirst("section#film-100 div.movie-exp-title")?.text()?.trim() ?: return null
-        val poster          = fixUrlNull(document.selectFirst("section#film-100 img")?.attr("src"))
+        val title           = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.trim() ?: return null
+        val poster          = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
         val year            = Regex("""\b(\d{4})\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
-        val description     = document.selectFirst("section#film-100 p.aciklama")?.text()?.trim()
-        val tags            = document.select("section#film-100 div.catss a").map { it.text() }
-        val rating          = document.selectFirst("section#film-100 div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
-        val actors          = document.select("section#film-100 div.oyuncu").map {
+        val description     = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
+        val tags            = document.select("section.movie-exp div.catss a").map { it.text() }
+        val rating          = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
+        val actors          = document.select("section.movie-exp div.oyuncu").map {
             Actor(it.selectFirst("div.name")!!.text(), it.selectFirst("div.img img")!!.attr("src"))
         }
 
