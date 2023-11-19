@@ -65,7 +65,7 @@ class JetFilmizle : MainAPI() {
             Actor(it.selectFirst("div.name")!!.text(), it.selectFirst("div.img img")!!.attr("src"))
         }
 
-        val recommendations = document.selectXpath("div#benzers article").mapNotNull {
+        val recommendations = document.selectFirst("div#benzers article").mapNotNull {
             val recName      = it.selectFirst("h2 a")?.text() ?: return@mapNotNull null
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
@@ -86,7 +86,6 @@ class JetFilmizle : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        Log.d("JTF", "data » ${data}")
         val document = app.get(data).document
 
         document.select("div.film_part a").forEach {
