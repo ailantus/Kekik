@@ -10,18 +10,24 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 [Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **━** [gitHub | ReCloudStream](https://github.com/recloudstream)
 
-> **[» Bizim Repo'yu Yüklemek için Tıkla «](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)**
-
-[![Video](https://img.youtube.com/vi/39x9FDTG9QA/hqdefault.jpg)](https://www.youtube.com/embed/39x9FDTG9QA)
-
 [![ForTheBadge made-with-kotlin](http://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
 
----
+## 💾 Kurulum
+
+1. **[cloudstream/releases](https://github.com/recloudstream/cloudstream/releases)** _Adresinden güncel APK dosyasını indirip kurun._
+2. **Uygulamanın yüklü olduğu cihazda** _[depoyu otomatik yüklemek için tıklayın](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)_
+   - **veya**
+   - `Depo ekle` _butonuyla **manuel** ekleme yapmak isteyen arkadaşlar için_ `KekikAkademi` _**kısa kod**u mevcuttur._ `Depo ismi` _kısmını boş bırakarak_ `Depo URL'si` _kısmına_ `KekikAkademi` yazarak `Depo ekle` _demeniz yeterli.._
+> [![KisaKod](./.github/icons/KisaKod.png)](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
+
+## 📼 Uzun Video Anlatım
+
+[![Video](https://img.youtube.com/vi/39x9FDTG9QA/hqdefault.jpg)](https://www.youtube.com/embed/39x9FDTG9QA)
 
 ## 📱 Repo İçeriği
 
-[![Repo](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/.github/icons/Repo.jpg)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
+[![Repo](./.github/icons/Repo.jpg)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ---
 
