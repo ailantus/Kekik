@@ -60,7 +60,7 @@ class JetFilmizle : MainAPI() {
 
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
-        val year        = Regex("""\\b(\\d{4})\\b""").find(document.selectXpath("//div[@class='yap' and strong[contains(text(), 'Yapım')]]").text() ?: document.selectXpath("//div[@class='yap' and strong[contains(text(), 'Vizyon')]]").text())?.groupValues?.get(1)?.toIntOrNull()
+        val year        = Regex("""(\\d{4})""").find(document.selectXpath("//div[@class='yap' and contains(strong, 'Vizyon') or contains(strong, 'Yapım')]").text())?.groupValues?.get(1)?.toIntOrNull()
         val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
