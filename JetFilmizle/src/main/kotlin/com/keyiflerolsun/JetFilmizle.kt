@@ -66,6 +66,7 @@ class JetFilmizle : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
+        Log.d("JTF", "url » ${url}")
         val document = app.get(url, interceptor=interceptor).document
 
         val title           = document.selectFirst("section#film-100 div.movie-exp-title")?.text()?.trim() ?: return null
