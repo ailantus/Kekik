@@ -95,7 +95,7 @@ class JetFilmizle : MainAPI() {
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
-            if (source.lowerCase() == "okru" || source.lowerCase() == "youtube") return@forEach
+            if (source.toLowerCase().contains("okru") || source.toLowerCase().contains("youtube")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
             var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
