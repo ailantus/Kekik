@@ -18,9 +18,12 @@ class JetFilmizle : MainAPI() {
     override val supportedTypes     = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/page/"                 to "Son Filmler",
-        "${mainUrl}/netflix/page/"         to "Netflix",
-        "${mainUrl}/editorun-secimi/page/" to "Editörün Seçimi"
+        "${mainUrl}/page/"                                     to "Son Filmler",
+        "${mainUrl}/netflix/page/"                             to "Netflix",
+        "${mainUrl}/editorun-secimi/page/"                     to "Editörün Seçimi",
+        "${mainUrl}/turk-film-izle/page/"                      to "Türk Filmleri",
+        "${mainUrl}/cizgi-filmler-izle/page/"                  to "Çizgi Filmler",
+        "${mainUrl}/kategoriler/yesilcam-filmleri-izlee/page/" to "Yeşilçam Filmleri"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -57,7 +60,7 @@ class JetFilmizle : MainAPI() {
 
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
-        val year        = Regex("""\\b(\\d{4})\\b""").find(document.selectXpath("//div[@class='yap']/strong[contains(text(), 'Vizyon')]").text())?.groupValues?.get(1)?.toIntOrNull()
+        val year        = Regex("""\\b(\\d{4})\\b""").find(document.selectXpath("//div[@class='yap' and strong[contains(text(), 'Yapım')]]").text() ?: document.selectXpath("//div[@class='yap' and strong[contains(text(), 'Vizyon')]]").text())?.groupValues?.get(1)?.toIntOrNull()
         val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
@@ -108,7 +111,7 @@ class JetFilmizle : MainAPI() {
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
                     if (downloadLink.contains("pixeldrain")) {
-                        var pixel_id = downloadLink.substringAfter("\/").substringBefore("?")
+                        var pixel_id = Regex("""[^\/]+(?=\?download)""").find(downloadLink)?.groupValues?.get(1)
                         downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
 
                         callback.invoke(
