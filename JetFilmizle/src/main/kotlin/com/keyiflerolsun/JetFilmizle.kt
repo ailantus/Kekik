@@ -6,6 +6,7 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class JetFilmizle : MainAPI() {
@@ -17,12 +18,27 @@ class JetFilmizle : MainAPI() {
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor by lazy { CloudflareInterceptor(cloudflareKiller) }
+
     override val mainPage = mainPageOf(
         "${mainUrl}/page/" to "Son Filmler"
     )
 
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val request = chain.request()
+            val response = chain.proceed(request)
+            val doc = Jsoup.parse(response.peekBody(1024 * 1024).string())
+            if (doc.select("title").text() == "Just a moment...") {
+                return cloudflareKiller.intercept(chain)
+            }
+            return response
+        }
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val document = app.get("${request.data}${page}", interceptor=interceptor).document
         val home     = document.select("article.movie").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -30,7 +46,7 @@ class JetFilmizle : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("h4 a")?.text()?.substringBefore(" izle") ?: return null
-        val href      = fixUrlNull("${mainUrl}/" + this.selectFirst("a")?.attr("href")) ?: return null
+        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
@@ -39,8 +55,9 @@ class JetFilmizle : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.post(
             "${mainUrl}/filmara.php",
-            referer = "${mainUrl}/",
-            data    = mapOf("s" to query)
+            referer     = "${mainUrl}/",
+            data        = mapOf("s" to query),
+            interceptor = interceptor
         ).document
 
         return document.select("article.movie").mapNotNull { it.toSearchResult() }
@@ -49,7 +66,7 @@ class JetFilmizle : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor=interceptor).document
 
         val title           = document.selectFirst("section#film-100 div.movie-exp-title")?.text()?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("section#film-100 img")?.attr("src"))
@@ -83,11 +100,11 @@ class JetFilmizle : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("JTF", "data » ${data}")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor=interceptor).document
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
-            val movDoc = app.get(it.attr("href")).document
+            val movDoc = app.get(it.attr("href"), interceptor=interceptor).document
             var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src") ?: return@forEach
 
             if (iframe.startsWith("//")) iframe = "https:$iframe"
