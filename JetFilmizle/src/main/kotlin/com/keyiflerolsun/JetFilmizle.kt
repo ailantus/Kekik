@@ -13,7 +13,7 @@ class JetFilmizle : MainAPI() {
     override var name               = "JetFilmizle"
     override val hasMainPage        = true
     override var lang               = "tr"
-    override val hasQuickSearch     = true
+    override val hasQuickSearch     = false
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.Movie)
 
@@ -107,8 +107,8 @@ class JetFilmizle : MainAPI() {
                 if (downloadLink.contains("pixeldrain")) {
                     callback.invoke(
                         ExtractorLink(
-                            source  = "Download",
-                            name    = "Download",
+                            source  = "pixeldrain",
+                            name    = "pixeldrain",
                             url     = downloadLink,
                             referer = data,
                             quality = Qualities.Unknown.value,
