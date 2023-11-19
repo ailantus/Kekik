@@ -12,7 +12,7 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 
 
 class Turkish123 : MainAPI() {
-    override var mainUrl            = "https://turkish123.pro"
+    override var mainUrl            = "https://turkish123.com"
     override var name               = "Turkish123"
     override val hasMainPage        = true
     override var lang               = "tr"
@@ -21,8 +21,7 @@ class Turkish123 : MainAPI() {
     override val supportedTypes     = setOf(TvType.TvSeries)
 
     companion object {
-        private const val mainServer  = "https://tukipasti.com"
-        private const val originalUrl = "https://turkish123.com"
+        private const val mainServer = "https://tukipasti.com"
     }
 
     override val mainPage =
@@ -98,7 +97,7 @@ class Turkish123 : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(url: String, callback: (ExtractorLink) -> Unit) {
-        val document = app.get(url, referer = "${originalUrl}/").text
+        val document = app.get(url, referer = "${mainUrl}/").text
 
         Regex("var\\surlPlay\\s=\\s[\"|'](\\S+)[\"|'];").find(document)?.groupValues?.get(1)?.let { link ->
             val m3u8List = M3u8Helper.generateM3u8(
@@ -120,7 +119,7 @@ class Turkish123 : MainAPI() {
             if (link.startsWith(mainServer)) {
                 invokeLocalSource(link, callback)
             } else {
-                loadExtractor(link, "${originalUrl}/", subtitleCallback, callback)
+                loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
             }
         }
 
