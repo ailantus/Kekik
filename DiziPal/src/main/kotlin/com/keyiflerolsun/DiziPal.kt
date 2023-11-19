@@ -68,7 +68,7 @@ class DiziPal : MainAPI() {
         val title     = "${name} ${episode}"
 
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("[property='og:image']")?.attr("content"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
