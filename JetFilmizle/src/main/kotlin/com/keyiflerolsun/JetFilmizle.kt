@@ -113,7 +113,7 @@ class JetFilmizle : MainAPI() {
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
                     if (downloadLink.contains("pixeldrain")) {
-                        var pixel_id = Regex("""[^\\/]+(?=\\?download)""").find(downloadLink)?.groupValues?.get(1)
+                        var pixel_id = Regex("""([^\\/]+)(?=\\?download)""").find(downloadLink)?.groupValues?.get(1)
                         downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
                         Log.d("JTF", "downloadLink » ${downloadLink}")
 
@@ -122,7 +122,7 @@ class JetFilmizle : MainAPI() {
                                 source  = "pixeldrain - ${pixel_id}",
                                 name    = "pixeldrain - ${pixel_id}",
                                 url     = downloadLink,
-                                referer = data,
+                                referer = "https://pixeldrain.com/u/${pixel_id}?download",
                                 quality = Qualities.Unknown.value,
                                 isM3u8  = downloadLink.contains(".m3u8")
                             )
