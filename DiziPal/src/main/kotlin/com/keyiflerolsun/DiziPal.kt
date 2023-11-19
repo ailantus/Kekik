@@ -70,7 +70,7 @@ class DiziPal : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) {
+        return newTvSeriesSearchResponse(title, href.substringBefore("/sezon"), TvType.TvSeries) {
             this.posterUrl = posterUrl
         }
     }
@@ -101,31 +101,7 @@ class DiziPal : MainAPI() {
         val rating      = document.selectXpath("//div[text()='IMDB Puanı']//following-sibling::div").text().trim().toRatingInt()
         val duration    = Regex("(\\d+)").find(document.selectXpath("//div[text()='Ortalama Süre']//following-sibling::div").text() ?: "")?.value?.toIntOrNull()
 
-        if (url.contains("/bolum-")) {
-            val name    = document.selectFirst("div.episode-head h2")?.text()?.trim() ?: return null
-            val episode = document.selectFirst("div.episode-head h6")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
-            val title   = "${name} ${episode}"
-
-            return newMovieLoadResponse(title, url, TvType.Movie, url) {
-                this.posterUrl = poster
-                this.year      = year
-                this.plot      = description
-                this.tags      = tags
-                this.rating    = rating
-                this.duration  = duration
-            }
-        } else if (!url.contains("/dizi/")) {
-            val title = document.selectXpath("//div[@class='g-title'][2]/div").text().trim()
-
-            return newMovieLoadResponse(title, url, TvType.Movie, url) {
-                this.posterUrl = poster
-                this.year      = year
-                this.plot      = description
-                this.tags      = tags
-                this.rating    = rating
-                this.duration  = duration
-            }
-        } else { 
+        if (url.contains("/dizi/")) {
             val title       = document.selectFirst("div.cover h5")?.text() ?: return null
 
             val episodes    = document.select("div.episode-item").mapNotNull {
@@ -143,6 +119,17 @@ class DiziPal : MainAPI() {
             }
 
             return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+                this.posterUrl = poster
+                this.year      = year
+                this.plot      = description
+                this.tags      = tags
+                this.rating    = rating
+                this.duration  = duration
+            }
+        } else { 
+            val title = document.selectXpath("//div[@class='g-title'][2]/div").text().trim()
+
+            return newMovieLoadResponse(title, url, TvType.Movie, url) {
                 this.posterUrl = poster
                 this.year      = year
                 this.plot      = description

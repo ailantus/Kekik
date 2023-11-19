@@ -21,7 +21,8 @@ class Turkish123 : MainAPI() {
     override val supportedTypes     = setOf(TvType.TvSeries)
 
     companion object {
-        private const val mainServer = "https://tukipasti.com"
+        private const val mainServer  = "https://tukipasti.com"
+        private const val originalUrl = "https://turkish123.com"
     }
 
     override val mainPage =
@@ -45,8 +46,8 @@ class Turkish123 : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val href      = getProperLink(this.selectFirst("a")!!.attr("href"))
-        val title     = this.selectFirst("h2")?.text()?.trim() ?: return null
+        val href  = getProperLink(this.selectFirst("a")!!.attr("href"))
+        val title = this.selectFirst("h2")?.text()?.trim() ?: return null
         if (title == "Terms of Service" || title == "Privacy Policy") {
             return null
         }
@@ -55,7 +56,7 @@ class Turkish123 : MainAPI() {
         val quality   = getQualityFromString(this.selectFirst("span.mli-quality")?.text())
         val episode   = this.selectFirst("span.mli-eps i")?.text()?.toIntOrNull()
 
-        return newAnimeSearchResponse(title, href, TvType.AsianDrama) {
+        return newAnimeSearchResponse(title, href, TvType.TvSeries) {
             this.posterUrl = posterUrl
             this.quality   = quality
             addSub(episode)
@@ -97,14 +98,18 @@ class Turkish123 : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(url: String, callback: (ExtractorLink) -> Unit) {
-        val document = app.get(url, referer = "${mainUrl}/").text
+        val document = app.get(url, referer = "${originalUrl}/").text
 
         Regex("var\\surlPlay\\s=\\s[\"|'](\\S+)[\"|'];").find(document)?.groupValues?.get(1)?.let { link ->
-            M3u8Helper.generateM3u8(
+            val m3u8List = M3u8Helper.generateM3u8(
                 this.name,
                 link,
                 referer = "${mainServer}/"
-            ).forEach(callback)
+            )
+
+            for (item in m3u8List) {
+                callback(item)
+            }
         }
     }
 
@@ -115,7 +120,7 @@ class Turkish123 : MainAPI() {
             if (link.startsWith(mainServer)) {
                 invokeLocalSource(link, callback)
             } else {
-                loadExtractor(link, "${mainUrl}/", subtitleCallback, callback)
+                loadExtractor(link, "${originalUrl}/", subtitleCallback, callback)
             }
         }
 
