@@ -61,8 +61,7 @@ class JetFilmizle : MainAPI() {
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
         val yearDiv     = document.selectXpath("//div[@class='yap' and contains(strong, 'Vizyon') or contains(strong, 'Yapım')]").text().trim()
-        Log.d("JTF", "yearDiv » ${yearDiv}")
-        val year        = Regex("""(\\d{4})""").find(yearDiv)?.groupValues?.get(1)?.toIntOrNull()
+        val year        = Regex("""(\d{4})""").find(yearDiv)?.groupValues?.get(1)?.toIntOrNull()
         val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
@@ -113,7 +112,7 @@ class JetFilmizle : MainAPI() {
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
                     if (downloadLink.contains("pixeldrain")) {
-                        var pixel_id = Regex("""([^\\/]+)(?=\\?download)""").find(downloadLink)?.groupValues?.get(1)
+                        var pixel_id = Regex("""([^\/]+)(?=\?download)""").find(downloadLink)?.groupValues?.get(1)
                         downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
                         Log.d("JTF", "downloadLink » ${downloadLink}")
 
