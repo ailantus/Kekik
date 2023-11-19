@@ -93,7 +93,7 @@ class DiziPal : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        if (url.contains("/bolum-")) {
+        if (url.contains("/bolum-") || !url.contains("/dizi/")) {
             val name        = document.selectFirst("div.episode-head h2")?.text()?.trim() ?: return null
             val episode     = document.selectFirst("div.episode-head h6")?.text()?.trim().toString().replace(". Sezon ","x").replace(". Bölüm","") ?: return null
             val title       = name + " " + episode ?: return null
