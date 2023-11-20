@@ -6,6 +6,8 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 
 class DiziPal : MainAPI() {
     override var mainUrl            = "https://dizipal672.com"
@@ -90,10 +92,40 @@ class DiziPal : MainAPI() {
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
 
-    override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("${mainUrl}/diziler?kelime=${query}&durum=&tur=&type=&siralama=").document
+    private fun SearchItem.toPostSearchResult(): SearchResponse {
+        val title     = this.title
+        val href      = "${mainUrl}${this.url}"
+        val posterUrl = this.poster
 
-        return document.select("article.type2 ul li").mapNotNull { it.diziler() }
+        if (this.type == "series") {
+            return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        } else {
+            return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        }
+    }
+
+    override suspend fun search(query: String): List<SearchResponse> {
+        val response_raw = app.post(
+            "${mainUrl}/api/search-autocomplete",
+            headers = mapOf(
+                "Accept"           to "application/json, text/javascript, */*; q=0.01",
+                "X-Requested-With" to "XMLHttpRequest"
+            ),
+            referer = "${mainUrl}/",
+            data    = mapOf(
+                "query" to query
+            )
+        )
+
+        val searchItemsMap = jacksonObjectMapper().readValue<Map<String, SearchItem>>(response_raw.text)
+
+        val searchResponses = mutableListOf<SearchResponse>()
+
+        for ((key, searchItem) in searchItemsMap) {
+            searchResponses.add(searchItem.toPostSearchResult())
+        }
+
+        return searchResponses
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
