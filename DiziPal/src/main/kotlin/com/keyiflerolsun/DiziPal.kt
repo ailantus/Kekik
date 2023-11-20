@@ -194,9 +194,22 @@ class DiziPal : MainAPI() {
 
         val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
         if (subtitles != null) {
-            subtitles.split(",").forEach {
-                val sub_lang = it.substringAfter("[").substringBefore("]")
-                val sub_url  = it.replace("[${sub_lang}]", "")
+            if (subtitles.contains(",")) {
+                subtitles.split(",").forEach {
+                    val sub_lang = it.substringAfter("[").substringBefore("]")
+                    val sub_url  = it.replace("[${sub_lang}]", "")
+
+                    subtitleCallback.invoke(
+                        SubtitleFile(
+                            lang = sub_lang,
+                            url  = fixUrl(sub_url)
+                        )
+                    )
+                }
+            } else {
+                val sub_lang = subtitles.substringAfter("[").substringBefore("]")
+                val sub_url  = subtitles.replace("[${sub_lang}]", "")
+
                 subtitleCallback.invoke(
                     SubtitleFile(
                         lang = sub_lang,
