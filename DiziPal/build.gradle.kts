@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("TvSeries")
+    tvTypes = listOf("TvSeries", "Movie")
     iconUrl = "https://www.google.com/s2/favicons?domain=dizipal625.com&sz=%size%"
 }

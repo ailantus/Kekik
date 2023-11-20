@@ -16,7 +16,7 @@ class DiziPal : MainAPI() {
     override var lang               = "tr"
     override val hasQuickSearch     = true
     override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.TvSeries)
+    override val supportedTypes     = setOf(TvType.TvSeries, TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/diziler/son-bolumler"                          to "Son Bölümler",
