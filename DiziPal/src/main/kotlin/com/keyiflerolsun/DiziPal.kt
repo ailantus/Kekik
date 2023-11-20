@@ -14,7 +14,7 @@ class DiziPal : MainAPI() {
     override var name               = "DiziPal"
     override val hasMainPage        = true
     override var lang               = "tr"
-    override val hasQuickSearch     = false
+    override val hasQuickSearch     = true
     override val hasDownloadSupport = true
     override val supportedTypes     = setOf(TvType.TvSeries)
 
