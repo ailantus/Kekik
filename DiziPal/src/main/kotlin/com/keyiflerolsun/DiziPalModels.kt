@@ -15,6 +15,6 @@ data class SearchItem(
     @JsonProperty("duration") val duration: String,
     @JsonProperty("year") val year: String,
     @JsonProperty("view") val view: Int,
-    @JsonProperty("type") val type: String = "defaultType"
+    @JsonProperty("type") val type: String = "defaultType",
     @JsonProperty("url") val url: String
 )

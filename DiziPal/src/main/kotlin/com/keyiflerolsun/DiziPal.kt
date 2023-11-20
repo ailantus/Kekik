@@ -20,6 +20,8 @@ class DiziPal : MainAPI() {
 
     override val mainPage = mainPageOf(
         "${mainUrl}/diziler/son-bolumler"                          to "Son Bölümler",
+        "${mainUrl}/diziler"                                       to "Yeni Diziler",
+        "${mainUrl}/filmler"                                       to "Yeni Filmler",
         "${mainUrl}/koleksiyon/netflix"                            to "Netflix",
         "${mainUrl}/koleksiyon/exxen"                              to "Exxen",
         "${mainUrl}/koleksiyon/blutv"                              to "BluTV",
@@ -36,8 +38,6 @@ class DiziPal : MainAPI() {
         "${mainUrl}/tur/belgesel"                                  to "Belgesel Filmleri",
         "${mainUrl}/diziler?kelime=&durum=&tur=25&type=&siralama=" to "Erotik Diziler",
         "${mainUrl}/tur/erotik"                                    to "Erotik Filmler",
-
-
         // "${mainUrl}/diziler?kelime=&durum=&tur=1&type=&siralama="  to "Aile",            // ! Fazla kategori olduğu için geç yükleniyor..
         // "${mainUrl}/diziler?kelime=&durum=&tur=2&type=&siralama="  to "Aksiyon",
         // "${mainUrl}/diziler?kelime=&durum=&tur=3&type=&siralama="  to "Animasyon",
