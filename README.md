@@ -19,11 +19,10 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 2. **Uygulamanın yüklü olduğu cihazda** _[depoyu otomatik yüklemek için tıklayın](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)_
    - **veya**
    - `Depo ekle` _butonuyla **manuel** ekleme yapmak isteyen arkadaşlar için_ `KekikAkademi` _**kısa kod**u mevcuttur._ `Depo ismi` _kısmını boş bırakarak_ `Depo URL'si` _kısmına_ `KekikAkademi` yazarak `Depo ekle` _demeniz yeterli.._
-> [![KisaKod](./.github/icons/KisaKod.png)](https://keyiflerolsun.me/http-protocol-redirector?r=cloudstreamrepo://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ## 📼 Uzun Video Anlatım
 
-[![Video](https://img.youtube.com/vi/39x9FDTG9QA/hqdefault.jpg)](https://www.youtube.com/embed/39x9FDTG9QA)
+[![Video](./.github/icons/KisaKod.png)](https://www.youtube.com/embed/39x9FDTG9QA)
 
 ## 📱 Repo İçeriği
 
