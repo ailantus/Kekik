@@ -20,7 +20,7 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
    - **veya**
    - `Depo ekle` _butonuyla **manuel** ekleme yapmak isteyen arkadaşlar için_ `KekikAkademi` _**kısa kod**u mevcuttur._ `Depo ismi` _kısmını boş bırakarak_ `Depo URL'si` _kısmına_ `KekikAkademi` yazarak `Depo ekle` _demeniz yeterli.._
 
-## 📼 Uzun Video Anlatım
+## 📼 Video Anlatım
 
 [![Video](./.github/icons/KisaKod.png)](https://www.youtube.com/embed/39x9FDTG9QA)
 
