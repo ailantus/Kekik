@@ -8,13 +8,14 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 
 class CizgiMax : MainAPI() {
-    override var mainUrl            = "https://cizgimax.online"
-    override var name               = "CizgiMax"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.Cartoon)
+    override var mainUrl              = "https://cizgimax.online"
+    override var name                 = "CizgiMax"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Cartoon)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/category/genel/aile/page/"        to "Aile",

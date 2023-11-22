@@ -10,13 +10,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 class DiziPal : MainAPI() {
-    override var mainUrl            = "https://dizipal672.com"
-    override var name               = "DiziPal"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = true
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.TvSeries, TvType.Movie)
+    override var mainUrl              = "https://dizipal672.com"
+    override var name                 = "DiziPal"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = true
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.TvSeries, TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/diziler/son-bolumler"                          to "Son Bölümler",

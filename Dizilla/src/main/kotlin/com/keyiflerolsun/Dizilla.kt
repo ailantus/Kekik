@@ -10,13 +10,14 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class Dizilla : MainAPI() {
-    override var mainUrl            = "https://dizilla.club"
-    override var name               = "Dizilla"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.TvSeries)
+    override var mainUrl              = "https://dizilla.club"
+    override var name                 = "Dizilla"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.TvSeries)
 
     // ! CloudFlare bypass
     override var sequentialMainPage = true

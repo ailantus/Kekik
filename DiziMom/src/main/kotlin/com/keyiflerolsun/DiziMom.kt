@@ -11,13 +11,14 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class DiziMom : MainAPI() {
-    override var mainUrl            = "https://www.dizimom.pro"
-    override var name               = "DiziMom"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.TvSeries)
+    override var mainUrl              = "https://www.dizimom.pro"
+    override var name                 = "DiziMom"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/turkce-dublaj-diziler/page/"      to "Dublajlı Diziler",

@@ -9,13 +9,14 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class JetFilmizle : MainAPI() {
-    override var mainUrl            = "https://jetfilmizle.cx"
-    override var name               = "JetFilmizle"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.Movie)
+    override var mainUrl              = "https://jetfilmizle.cx"
+    override var name                 = "JetFilmizle"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/page/"                                     to "Son Filmler",

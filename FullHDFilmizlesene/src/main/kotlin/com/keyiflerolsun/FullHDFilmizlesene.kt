@@ -17,13 +17,14 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.Qualities
 
 class FullHDFilmizlesene : MainAPI() {
-    override var mainUrl            = "https://www.fullhdfilmizlesene.pw"
-    override var name               = "FullHDFilmizlesene"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.Movie)
+    override var mainUrl              = "https://www.fullhdfilmizlesene.pw"
+    override var name                 = "FullHDFilmizlesene"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/en-cok-izlenen-filmler-izle-hd/"            to "En Çok izlenen Filmler",

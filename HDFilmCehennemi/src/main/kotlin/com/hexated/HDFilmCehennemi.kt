@@ -12,13 +12,14 @@ import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
 import org.jsoup.nodes.Element
 
 class HDFilmCehennemi : MainAPI() {
-    override var mainUrl            = "https://www.hdfilmcehennemi.de"
-    override var name               = "HDFilmCehennemi"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = true
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.Movie)
+    override var mainUrl              = "https://www.hdfilmcehennemi.de"
+    override var name                 = "HDFilmCehennemi"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = true
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler Kategorisi",

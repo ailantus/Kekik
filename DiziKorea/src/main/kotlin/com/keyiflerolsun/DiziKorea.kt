@@ -13,13 +13,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 class DiziKorea : MainAPI() {
-    override var mainUrl            = "https://dizikorea.tv"
-    override var name               = "DiziKorea"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = true
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.AsianDrama)
+    override var mainUrl              = "https://dizikorea.tv"
+    override var name                 = "DiziKorea"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = true
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.AsianDrama)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/tum-kore-dizileri/"   to "Kore Dizileri",

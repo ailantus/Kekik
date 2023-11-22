@@ -9,13 +9,14 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class AnimeciX : MainAPI() {
-    override var mainUrl            = "https://animecix.net"
-    override var name               = "AnimeciX"
-    override val hasMainPage        = true
-    override var lang               = "tr"
-    override val hasQuickSearch     = false
-    override val hasDownloadSupport = true
-    override val supportedTypes     = setOf(TvType.Anime)
+    override var mainUrl              = "https://animecix.net"
+    override var name                 = "AnimeciX"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasQuickSearch       = false
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Anime)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",

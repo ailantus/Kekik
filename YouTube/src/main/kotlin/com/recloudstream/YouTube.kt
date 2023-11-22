@@ -10,11 +10,13 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 import java.net.URLEncoder
 
 class YouTube : MainAPI() {
-    override var mainUrl        = "https://y.com.sb"
-    override var name           = "YouTube"
-    override val hasMainPage    = true
-    override var lang           = "tr"
-    override val supportedTypes = setOf(TvType.Others)
+    override var mainUrl              = "https://y.com.sb"
+    override var name                 = "YouTube"
+    override val hasMainPage          = true
+    override var lang                 = "tr"
+    override val hasChromecastSupport = true
+    override val hasDownloadSupport   = true
+    override val supportedTypes       = setOf(TvType.Others)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val popular =
