@@ -53,6 +53,10 @@ class CanliTV : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
+        for (kanal in kanallar.items) {
+            Log.d("CTV", kanal.attributes["tvg-name"]?.lowercase())
+        }
+
         return kanallar.items
             .filter { it.attributes["tvg-name"]?.lowercase()?.contains(query.lowercase()) ?: false }
             .map { kanal ->
