@@ -54,7 +54,7 @@ class CanliTV : MainAPI() {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         for (kanal in kanallar.items) {
-            Log.d("CTV", kanal.attributes["tvg-name"]?.lowercase())
+            Log.d("CTV", "tvg-name » ${kanal.attributes["tvg-name"]?.lowercase()}")
         }
 
         return kanallar.items
