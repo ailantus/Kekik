@@ -8,7 +8,7 @@
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
-[Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **━** [gitHub | ReCloudStream](https://github.com/recloudstream)
+[Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **|** [gitHub | ReCloudStream](https://github.com/recloudstream)
 
 [![ForTheBadge made-with-kotlin](http://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
@@ -22,11 +22,11 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ## 📼 Video Anlatım
 
-[![Video](./.github/icons/KisaKod.png)](https://www.youtube.com/embed/39x9FDTG9QA)
+[![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/embed/39x9FDTG9QA)
 
 ## 📱 Repo İçeriği
 
-[![Repo](./.github/icons/Repo.jpg)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
+[![Repo](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/Repo.jpg?raw=True)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ---
 
