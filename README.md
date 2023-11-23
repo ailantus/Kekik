@@ -8,7 +8,7 @@
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
-[Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **|** [gitHub | ReCloudStream](https://github.com/recloudstream)
+[Resmi Site](https://cloudflare-ipfs.com/ipns/cloudstream.on.fleek.co) **━** [recloudstream/cloudstream](https://github.com/recloudstream)
 
 [![ForTheBadge made-with-kotlin](http://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
