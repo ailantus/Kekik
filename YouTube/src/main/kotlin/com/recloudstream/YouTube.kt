@@ -21,11 +21,11 @@ class YouTube : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val popular =
             tryParseJson<List<SearchEntry>>(
-                app.get("${mainUrl}/api/v1/popular?fields=videoId,title").text
+                app.get("${mainUrl}/api/v1/popular?region=${lang}&fields=videoId,title").text
             )
         val trending =
             tryParseJson<List<SearchEntry>>(
-                app.get("${mainUrl}/api/v1/trending?fields=videoId,title").text
+                app.get("${mainUrl}/api/v1/trending?region=${lang}&fields=videoId,title").text
             )
         return newHomePageResponse(
             listOf(
@@ -49,7 +49,7 @@ class YouTube : MainAPI() {
         val res =
             tryParseJson<List<SearchEntry>>(
                 app.get(
-                        "${mainUrl}/api/v1/search?q=${query.encodeUri()}&page=1&type=video&fields=videoId,title"
+                        "${mainUrl}/api/v1/search?q=${query.encodeUri()}&region=${lang}&page=1&type=video&fields=videoId,title"
                     )
                     .text
             )
@@ -61,7 +61,7 @@ class YouTube : MainAPI() {
         val res =
             tryParseJson<VideoEntry>(
                 app.get(
-                        "${mainUrl}/api/v1/videos/${videoId}?fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams"
+                        "${mainUrl}/api/v1/videos/${videoId}?region=${lang}&fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams"
                     )
                     .text
             )
