@@ -19,24 +19,38 @@ class YouTube : MainAPI() {
     override val supportedTypes       = setOf(TvType.Others)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val popular =
-            tryParseJson<List<SearchEntry>>(
-                app.get("${mainUrl}/api/v1/popular?region=${lang}&fields=videoId,title").text
-            )
-        val trending =
-            tryParseJson<List<SearchEntry>>(
-                app.get("${mainUrl}/api/v1/trending?region=${lang}&fields=videoId,title").text
-            )
+        val trending = tryParseJson<List<SearchEntry>>(
+            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=news&fields=videoId,title").text
+        )
+        val music = tryParseJson<List<SearchEntry>>(
+            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=music&fields=videoId,title").text
+        )
+        val movies = tryParseJson<List<SearchEntry>>(
+            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=movies&fields=videoId,title").text
+        )
+        val gaming = tryParseJson<List<SearchEntry>>(
+            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=gaming&fields=videoId,title").text
+        )
         return newHomePageResponse(
             listOf(
                 HomePageList(
-                    "Popüler",
-                    popular?.map { it.toSearchResponse(this) } ?: emptyList(),
+                    "Trend",
+                    trending?.map { it.toSearchResponse(this) } ?: emptyList(),
                     true
                 ),
                 HomePageList(
-                    "Trend",
-                    trending?.map { it.toSearchResponse(this) } ?: emptyList(),
+                    "Müzik",
+                    music?.map { it.toSearchResponse(this) } ?: emptyList(),
+                    true
+                ),
+                HomePageList(
+                    "Film",
+                    movies?.map { it.toSearchResponse(this) } ?: emptyList(),
+                    true
+                ),
+                HomePageList(
+                    "Oyun",
+                    gaming?.map { it.toSearchResponse(this) } ?: emptyList(),
                     true
                 )
             ),
