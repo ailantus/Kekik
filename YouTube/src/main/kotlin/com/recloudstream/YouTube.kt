@@ -20,16 +20,16 @@ class YouTube : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val trending = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=news&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=news&fields=videoId,title").text
         )
         val music = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=music&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=music&fields=videoId,title").text
         )
         val movies = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=movies&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=movies&fields=videoId,title").text
         )
         val gaming = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang}&type=gaming&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=gaming&fields=videoId,title").text
         )
         return newHomePageResponse(
             listOf(
@@ -60,25 +60,17 @@ class YouTube : MainAPI() {
 
     // this function gets called when you search for something
     override suspend fun search(query: String): List<SearchResponse> {
-        val res =
-            tryParseJson<List<SearchEntry>>(
-                app.get(
-                        "${mainUrl}/api/v1/search?q=${query.encodeUri()}&region=${lang}&page=1&type=video&fields=videoId,title"
-                    )
-                    .text
-            )
+        val res = tryParseJson<List<SearchEntry>>(
+            app.get("${mainUrl}/api/v1/search?q=${query.encodeUri()}&region=${lang.uppercase()}&page=1&type=video&fields=videoId,title").text
+        )
         return res?.map { it.toSearchResponse(this) } ?: emptyList()
     }
 
     override suspend fun load(url: String): LoadResponse? {
         val videoId = Regex("watch\\?v=([a-zA-Z0-9_-]+)").find(url)?.groupValues?.get(1)
-        val res =
-            tryParseJson<VideoEntry>(
-                app.get(
-                        "${mainUrl}/api/v1/videos/${videoId}?region=${lang}&fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams"
-                    )
-                    .text
-            )
+        val res     = tryParseJson<VideoEntry>(
+            app.get("${mainUrl}/api/v1/videos/${videoId}?region=${lang.uppercase()}&fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams").text
+        )
         return res?.toLoadResponse(this)
     }
 
@@ -119,7 +111,7 @@ class YouTube : MainAPI() {
                                 author,
                                 if (authorThumbnails.isNotEmpty()) authorThumbnails.last().url else ""
                             ),
-                            roleString = "Author"
+                            roleString = "Kanal"
                         )
                     )
             }
