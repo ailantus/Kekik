@@ -22,6 +22,7 @@ class HDFilmCehennemi : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
+        "${mainUrl}/page/"                                to "Yeni Eklenenler",
         "${mainUrl}/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler Kategorisi",
         "${mainUrl}/yabancidiziizle-1/page/"              to "Son Eklenen Yabancı Diziler",
         "${mainUrl}/imdb-7-puan-uzeri-filmler/page/"      to "IMDB 7+ Filmler",
@@ -31,7 +32,12 @@ class HDFilmCehennemi : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home     = document.select("div.card-body div.row div.col-6.col-sm-3.poster-container").mapNotNull { it.toSearchResult() }
+
+        if (request.data == "${mainUrl}/page/") {
+            val home = document.select("div.tab-content div.poster").mapNotNull { it.toSearchResult() }
+        } else {
+            val home = document.select("div.card-body div.poster").mapNotNull { it.toSearchResult() }
+        }
 
         return newHomePageResponse(request.name, home)
     }
