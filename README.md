@@ -30,7 +30,9 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ---
 
-### 📄 » **[Döküman](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)**
+### 📺 » [Google TV Temel Kurulum Adımları](https://keyiflerolsun.me/Kekik-cloudstream/MiBox)
+
+### 📄 » [Döküman](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)
 
 ---
 
