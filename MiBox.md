@@ -5,37 +5,22 @@
 ---
 
 ## 1. **Geliştirici seçenekleri**ni aktif edin.
-
 > [![Gelistirici](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/Gelistirici.jpg)](#)
 
 
 ## 2. **Animasyon ölçekleri**ni 0.5'e düşürün.
-
 > [![Animasyon](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/Animasyon.jpg)](#)
 
 
 ## 3. **USB Hata Ayıklaması**nı aktif edin.
-
 > [![ADB](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/ADB.jpg)](#)
 
 
 ## 4. **Hesap Ayarları**ndan fragman otomatik oynatmayı kapatın, yalnızca uygulama modunu açın.
-
 > [![Uygulama](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/Uygulama.jpg)](#)
 
 
 ## 5. Bilgisayarınıza _[ADB AppControl](https://adbappcontrol.com/en/#download)_ programını kurun ve TV'deki gereksiz uygulamaları kaldırın.
-> - *Google Play Filmler*
-> - *YouTube*
-> - *YouTube Music*
-> - *Prime Video*
-> - *Netflix*
-> - *Mubi*
-> - *Exxen*
-> - *Disney+*
-> - *BluTV*
-> - *TV+*
-
 > [![AppControl](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/AppControl.jpg)](#)
 
 
@@ -55,5 +40,4 @@
 
 
 ## 8. **CloudStream**'e _[KekikAkademi deposunu ekleyin](https://github.com/keyiflerolsun/Kekik-cloudstream#-kurulum)_
-
 > [![KisaKod](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png)](#)
