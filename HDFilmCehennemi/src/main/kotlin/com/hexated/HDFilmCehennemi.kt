@@ -33,10 +33,12 @@ class HDFilmCehennemi : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
 
+        val home: List<SearchResponse>?
+
         if (request.data == "${mainUrl}/page/") {
-            val home = document.select("div.tab-content div.poster").mapNotNull { it.toSearchResult() }
+            home = document.select("div.tab-content div.poster").mapNotNull { it.toSearchResult() }
         } else {
-            val home = document.select("div.card-body div.poster").mapNotNull { it.toSearchResult() }
+            home = document.select("div.card-body div.poster").mapNotNull { it.toSearchResult() }
         }
 
         return newHomePageResponse(request.name, home)
