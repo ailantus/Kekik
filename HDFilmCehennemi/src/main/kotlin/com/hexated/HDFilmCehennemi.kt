@@ -69,11 +69,10 @@ class HDFilmCehennemi : MainAPI() {
             "${mainUrl}/search/",
             data    = mapOf("query" to query),
             referer = "${mainUrl}/",
-            headers =
-                mapOf(
-                    "Accept" to "application/json, text/javascript, */*; q=0.01",
-                    "X-Requested-With" to "XMLHttpRequest"
-                )
+            headers = mapOf(
+                "Accept" to "application/json, text/javascript, */*; q=0.01",
+                "X-Requested-With" to "XMLHttpRequest"
+            )
         ).parsedSafe<Result>()?.result?.mapNotNull {
             media -> media.toSearchResponse()
         } ?: throw ErrorLoadingException("Invalid Json reponse")
@@ -112,6 +111,7 @@ class HDFilmCehennemi : MainAPI() {
                     Regex("Sezon\\s?([0-9]+).").find(num)?.groupValues?.getOrNull(1)?.toIntOrNull()
                 }
                 val season = it.parents()[1].attr("id").substringAfter("-").toIntOrNull()
+
                 Episode(
                     href,
                     name,
