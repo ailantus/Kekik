@@ -36,6 +36,8 @@
 > - *BluTV*
 > - *TV+*
 
+> [![AppControl](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/MiBox/AppControl.jpg)](#)
+
 
 ## 6. **PlayStore**'dan gerekli uygulamaları kurun;
 > - _[Cx Dosya Gezgini](https://play.google.com/store/apps/details?id=com.cxinventor.file.explorer)_
