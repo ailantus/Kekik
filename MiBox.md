@@ -1,6 +1,6 @@
 # 📺 Google TV Temel Kurulum Adımları
 
-> `MiBox`, `FireStick`, `Google TV`, `Android TV` temiz kurulum adımları..
+`Mi Box`, `Mi Stick`, `Fire Stick`, `Google TV`, `Android TV` vb. cihazların daha az yük altında çalışması için temiz kurulum adımları..
 
 ---
 
