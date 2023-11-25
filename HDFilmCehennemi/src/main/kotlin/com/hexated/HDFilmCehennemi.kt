@@ -22,8 +22,8 @@ class HDFilmCehennemi : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/page/"                                to "Yeni Eklenenler Filmler",
-        "${mainUrl}/yabancidiziizle-1/page/"              to "Yeni Eklenenler Diziler",
+        "${mainUrl}/page/"                                to "Yeni Eklenen Filmler",
+        "${mainUrl}/yabancidiziizle-1/page/"              to "Yeni Eklenen Diziler",
         "${mainUrl}/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler",
         "${mainUrl}/imdb-7-puan-uzeri-filmler/page/"      to "IMDB 7+ Filmler",
         "${mainUrl}/en-cok-yorumlananlar/page/"           to "En Çok Yorumlananlar",
