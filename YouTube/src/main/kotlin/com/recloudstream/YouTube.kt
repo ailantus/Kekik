@@ -3,10 +3,8 @@
 package com.recloudstream
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.Qualities
-import com.lagradost.cloudstream3.utils.loadExtractor
 import java.net.URLEncoder
 
 class YouTube : MainAPI() {
@@ -31,6 +29,7 @@ class YouTube : MainAPI() {
         val gaming = tryParseJson<List<SearchEntry>>(
             app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=gaming&fields=videoId,title").text
         )
+
         return newHomePageResponse(
             listOf(
                 HomePageList(
@@ -101,31 +100,20 @@ class YouTube : MainAPI() {
                 TvType.Movie,
                 "${videoId}"
             ) {
-                plot = description
-                posterUrl = "${provider.mainUrl}/vi/${videoId}/hqdefault.jpg"
+                plot            = description
+                posterUrl       = "${provider.mainUrl}/vi/${videoId}/hqdefault.jpg"
                 recommendations = recommendedVideos.map { it.toSearchResponse(provider) }
-                actors =
-                    listOf(
-                        ActorData(
-                            Actor(
-                                author,
-                                if (authorThumbnails.isNotEmpty()) authorThumbnails.last().url else ""
-                            ),
-                            roleString = "Kanal"
-                        )
-                    )
+                actors          = listOf(ActorData(Actor(
+                    author,
+                    if (authorThumbnails.isNotEmpty()) authorThumbnails.last().url else ""
+                )))
             }
         }
     }
 
     private data class Thumbnail(val url: String)
 
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         loadExtractor("https://youtube.com/watch?v=${data}", subtitleCallback, callback)
         callback(
             ExtractorLink(
