@@ -2,6 +2,8 @@
 
 > `MiBox`, `FireStick`, `Google TV`, `Android TV` temiz kurulum adımları..
 
+---
+
 1. **Geliştirici seçenekleri**ni aktif edin.
 2. **Animasyon ölçekleri**ni 0.5'e düşürün.
 3. **USB Hata Ayıklaması**nı aktif edin.
