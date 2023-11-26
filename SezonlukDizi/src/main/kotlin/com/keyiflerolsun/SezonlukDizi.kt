@@ -136,8 +136,8 @@ class SezonlukDizi : MainAPI() {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
                 callback.invoke(
                     ExtractorLink(
-                        source        = "AltYazı - ${source}",
-                        name          = "AltYazı - ${source}",
+                        source        = "AltYazı - ${veri.baslik}",
+                        name          = "AltYazı - ${veri.baslik}",
                         url           = link.url,
                         referer       = link.referer,
                         quality       = link.quality,
@@ -176,8 +176,8 @@ class SezonlukDizi : MainAPI() {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
                 callback.invoke(
                     ExtractorLink(
-                        source        = "Dublaj - ${source}",
-                        name          = "Dublaj - ${source}",
+                        source        = "Dublaj - ${veri.baslik}",
+                        name          = "Dublaj - ${veri.baslik}",
                         url           = link.url,
                         referer       = link.referer,
                         quality       = link.quality,
