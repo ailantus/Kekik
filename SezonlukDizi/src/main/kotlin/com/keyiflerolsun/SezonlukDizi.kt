@@ -133,7 +133,20 @@ class SezonlukDizi : MainAPI() {
             }
             Log.d("SZD", "dil»1 | iframe » ${iframe}")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
+                callback.invoke(
+                    ExtractorLink(
+                        source        = "AltYazı - ${source}",
+                        name          = "AltYazı - ${source}",
+                        url           = link.url,
+                        referer       = link.referer,
+                        quality       = link.quality,
+                        headers       = link.type,
+                        extractorData = link.headers,
+                        type          = link.extractorData
+                    )
+                )
+            }
         }
 
         val dublaj_response = app.post(
@@ -160,7 +173,20 @@ class SezonlukDizi : MainAPI() {
             }
             Log.d("SZD", "dil»0 | iframe » ${iframe}")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
+                callback.invoke(
+                    ExtractorLink(
+                        source        = "Dublaj - ${source}",
+                        name          = "Dublaj - ${source}",
+                        url           = link.url,
+                        referer       = link.referer,
+                        quality       = link.quality,
+                        headers       = link.type,
+                        extractorData = link.headers,
+                        type          = link.extractorData
+                    )
+                )
+            }
         }
 
         return true
