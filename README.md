@@ -24,13 +24,17 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 [![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/embed/39x9FDTG9QA)
 
+---
+
+### 📺 » [Google TV Temel Kurulum Adımları](https://keyiflerolsun.me/Kekik-cloudstream/MiBox)
+
+---
+
 ## 📱 Repo İçeriği
 
 [![Repo](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/Repo.jpg?raw=True)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
 
 ---
-
-### 📺 » [Google TV Temel Kurulum Adımları](https://keyiflerolsun.me/Kekik-cloudstream/MiBox)
 
 ### 📄 » [Döküman](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)
 
