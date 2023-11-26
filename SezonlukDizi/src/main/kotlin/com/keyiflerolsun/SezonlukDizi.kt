@@ -136,6 +136,33 @@ class SezonlukDizi : MainAPI() {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
+        val dublaj_response = app.post(
+            "${mainUrl}/ajax/dataAlternatif2.asp",
+            headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+            data    = mapOf(
+                "bid" to bid,
+                "dil" to "0"
+            )
+        ).parsedSafe<Kaynak>()
+        dublaj_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
+            Log.d("SZD", "dil»0 | veri.baslik » ${veri.baslik}")
+            if (veri.baslik.lowercase().contains("okru")) return@forEach
+
+            val veri_response = app.post(
+                "${mainUrl}/ajax/dataEmbed.asp",
+                headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+                data    = mapOf("id" to "${veri.id}")
+            ).document
+
+            var iframe = veri_response.selectFirst("iframe")?.attr("src") ?: return@forEach
+            if (iframe.startsWith("//")) {
+                iframe = "https:$iframe"
+            }
+            Log.d("SZD", "dil»0 | iframe » ${iframe}")
+
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        }
+
         return true
     }
 }
