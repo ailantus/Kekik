@@ -23,29 +23,27 @@ class CanliTV : MainAPI() {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return newHomePageResponse(
-            kanallar.items
-                .groupBy { it.attributes["group-title"] }
-                .map { group ->
-                    val title = group.key ?: ""
-                    val show  = group.value.map { kanal ->
-                        val streamurl   = kanal.url.toString()
-                        val channelname = kanal.title.toString()
-                        val posterurl   = kanal.attributes["tvg-logo"].toString()
-                        val chGroup     = kanal.attributes["group-title"].toString()
-                        val nation      = kanal.attributes["tvg-country"].toString()
+            kanallar.items.groupBy { it.attributes["group-title"] }.map { group ->
+                val title = group.key ?: ""
+                val show  = group.value.map { kanal ->
+                    val streamurl   = kanal.url.toString()
+                    val channelname = kanal.title.toString()
+                    val posterurl   = kanal.attributes["tvg-logo"].toString()
+                    val chGroup     = kanal.attributes["group-title"].toString()
+                    val nation      = kanal.attributes["tvg-country"].toString()
 
-                        LiveSearchResponse(
-                            channelname,
-                            LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
-                            this@CanliTV.name,
-                            TvType.Live,
-                            posterurl,
-                            lang = nation
-                        )
-                    }
+                    LiveSearchResponse(
+                        name      = channelname,
+                        url       = LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
+                        apiName   = this@CanliTV.name,
+                        type      = TvType.Live,
+                        posterUrl = posterurl,
+                        lang      = nation
+                    )
+                }
 
-                    HomePageList(title, show, isHorizontalImages = true)
-                },
+                HomePageList(title, show, isHorizontalImages = true)
+            },
             hasNext = false
         )
     }
@@ -53,24 +51,22 @@ class CanliTV : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        return kanallar.items
-            .filter { it.title.toString().lowercase().contains(query.lowercase()) }
-            .map { kanal ->
-                val streamurl   = kanal.url.toString()
-                val channelname = kanal.title.toString()
-                val posterurl   = kanal.attributes["tvg-logo"].toString()
-                val chGroup     = kanal.attributes["group-title"].toString()
-                val nation      = kanal.attributes["tvg-country"].toString()
+        return kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
+            val streamurl   = kanal.url.toString()
+            val channelname = kanal.title.toString()
+            val posterurl   = kanal.attributes["tvg-logo"].toString()
+            val chGroup     = kanal.attributes["group-title"].toString()
+            val nation      = kanal.attributes["tvg-country"].toString()
 
-                LiveSearchResponse(
-                    channelname,
-                    LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
-                    this@CanliTV.name,
-                    TvType.Live,
-                    posterurl,
-                    lang = nation
-                )
-            }
+            LiveSearchResponse(
+                name      = channelname,
+                url       = LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
+                apiName   = this@CanliTV.name,
+                type      = TvType.Live,
+                posterUrl = posterurl,
+                lang      = nation
+            )
+        }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -85,14 +81,35 @@ class CanliTV : MainAPI() {
             nation = "» ${loadData.group} | ${loadData.nation} «"
         }
 
+        val recommendations = mutableListOf<SearchResponse>()
+        val kanallar        = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
+
+        kanallar.items.filter { it.attributes["group-title"].toString() == loadData.group }.map { kanal ->
+            val rc_streamurl   = kanal.url.toString()
+            val rc_channelname = kanal.title.toString()
+            val rc_posterurl   = kanal.attributes["tvg-logo"].toString()
+            val rc_chGroup     = kanal.attributes["group-title"].toString()
+            val rc_nation      = kanal.attributes["tvg-country"].toString()
+
+            recommendations.add(LiveSearchResponse(
+                name      = rc_channelname,
+                url       = LoadData(rc_streamurl, rc_channelname, rc_posterurl, rc_chGroup, rc_nation).toJson(),
+                apiName   = this@CanliTV.name,
+                type      = TvType.Live,
+                posterUrl = rc_posterurl,
+                lang      = rc_nation,
+            ))
+        }
+
         return LiveStreamLoadResponse(
-            loadData.title,
-            loadData.url,
-            this.name,
-            url,
-            loadData.poster,
-            plot = nation,
-            tags = listOf(loadData.group, loadData.nation),
+            name            = loadData.title,
+            url             = loadData.url,
+            apiName         = this.name,
+            dataUrl         = url,
+            posterUrl       = loadData.poster,
+            plot            = nation,
+            tags            = listOf(loadData.group, loadData.nation),
+            recommendations = recommendations
         )
     }
 
