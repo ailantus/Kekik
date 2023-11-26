@@ -38,7 +38,7 @@ class CanliTV : MainAPI() {
                             channelname,
                             LoadData(streamurl, channelname, posterurl, nation).toJson(),
                             this@CanliTV.name,
-                            TvType.Live,
+                            if (kanal.attributes["group-title"].toString() != "NSFW") TvType.Live else TvType.NSFW,
                             posterurl,
                             lang = nation
                         )
@@ -65,7 +65,7 @@ class CanliTV : MainAPI() {
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
                     this@CanliTV.name,
-                    TvType.Live,
+                    if (kanal.attributes["group-title"].toString() != "NSFW") TvType.Live else TvType.NSFW,
                     posterurl,
                     lang = nation
                 )

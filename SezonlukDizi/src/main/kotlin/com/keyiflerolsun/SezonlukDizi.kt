@@ -19,14 +19,14 @@ class SezonlukDizi : MainAPI() {
     override val supportedTypes       = setOf(TvType.TvSeries)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/diziler.asp?siralama_tipi=id&s="       to "Son Eklenenler",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&tur=mini" to "Mini Diziler",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=2&s=" to "Yerli Diziler",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=1&s=" to "Yabancı Diziler",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=3&s=" to "Asya Dizileri",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=4&s=" to "Animasyonlar",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=5&s=" to "Animeler",
-        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=6&s=" to "Belgeseller",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&s="          to "Son Eklenenler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&tur=mini&s=" to "Mini Diziler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=2&s="    to "Yerli Diziler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=1&s="    to "Yabancı Diziler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=3&s="    to "Asya Dizileri",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=4&s="    to "Animasyonlar",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=5&s="    to "Animeler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&kat=6&s="    to "Belgeseller",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
