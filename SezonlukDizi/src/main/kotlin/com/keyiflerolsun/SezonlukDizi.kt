@@ -118,7 +118,8 @@ class SezonlukDizi : MainAPI() {
 
         val altyazi_response = app.post(
             "${mainUrl}/ajax/dataAlternatif2.asp",
-            data = mapOf(
+            headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+            data    = mapOf(
                 "bid" to bid,
                 "dil" to "1"
             )
@@ -130,7 +131,8 @@ class SezonlukDizi : MainAPI() {
 
                     val veri_response = app.post(
                         "${mainUrl}/ajax/dataEmbed.asp",
-                        data = mapOf("id" to "${veri.id}")
+                        headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+                        data    = mapOf("id" to "${veri.id}")
                     ).document
                     var iframe = veri_response.selectFirst("iframe")?.attr("src") ?: continue
                     if (iframe.startsWith("//")) {
