@@ -78,7 +78,7 @@ class CanliTV : MainAPI() {
 
         val nation:String
         if (loadData.nation == "USA") {
-            nation = "!! +18 !!"
+            nation = "!! +18 !! » ${loadData.nation}"
         } else {
             nation = loadData.nation
         }
