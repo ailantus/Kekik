@@ -58,7 +58,7 @@ class SezonlukDizi : MainAPI() {
         val title:String
         val orj_title    = document.selectFirst("div.header")?.text()?.trim() ?: return null
         val tr_title     = document.selectFirst("div.meta")?.text()?.trim() ?: ""
-        if (tr_title == "" || orj_title != tr_title) {
+        if (tr_title == "" && orj_title != tr_title) {
             title = "${orj_title} (${tr_title})"
         } else {
             title = orj_title
@@ -68,7 +68,8 @@ class SezonlukDizi : MainAPI() {
         val year        = document.selectFirst("div.extra span")?.text()?.trim()?.split("-")?.first()?.toIntOrNull()
         val description = document.selectFirst("span#tartismayorum-konu")?.text()?.trim()
         val tags        = document.select("div.labels a[href*='tur']").mapNotNull { it?.text()?.trim() }
-        val rating      = document.selectFirst("div.dizipuani a div")?.text()?.trim().toRatingInt()
+        val rating      = document.selectFirst("div.dizipuani a div")?.text()?.trim()?.replace(",", ".").toRatingInt()
+        val duration    = document.selectXpath("//span[contains(text(), 'Dk.')]").text().trim().toRatingInt()
 
         val actors_req  = app.get("${mainUrl}/oyuncular/${endpoint}").document
         val actors      = actors_req.select("div.doubling div.ui").map {
@@ -104,6 +105,7 @@ class SezonlukDizi : MainAPI() {
             this.plot      = description
             this.tags      = tags
             this.rating    = rating
+            this.duration  = duration
             addActors(actors)
         }
     }
@@ -114,6 +116,28 @@ class SezonlukDizi : MainAPI() {
         val bid      = document.selectFirst("div#dilsec")?.attr("data-id") ?: return false
         Log.d("SZD", "bid » ${bid}")
 
+        val altyazi_response = app.post(
+            "${mainUrl}/ajax/dataAlternatif2.asp",
+            data = mapOf(
+                "bid" to bid,
+                "dil" to "1"
+            ).parsedSafe<Kaynak>()
+        )
+        if (altyazi_response.status == "success") {
+            for (veri in altyazi_response.data) {
+                Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
+
+                val veri_response = app.post(
+                    "${mainUrl}/ajax/dataEmbed.asp",
+                    data = mapOf("id" to veri.id)
+                ).document
+                val iframe = veri_response.selectFirst("iframe") ?: continue
+                if (iframe.startsWith("//")) iframe = "https:$iframe"
+                Log.d("SZD", "dil»1 | iframe » ${iframe}")
+
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            }
+        }
 
         return true
     }
