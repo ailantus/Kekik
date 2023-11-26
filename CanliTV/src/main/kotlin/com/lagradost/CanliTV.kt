@@ -17,7 +17,7 @@ class CanliTV : MainAPI() {
     override val hasQuickSearch       = true
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = false
-    override val supportedTypes       = setOf(TvType.Live, TvType.NSFW)
+    override val supportedTypes       = setOf(TvType.Live)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
@@ -37,7 +37,7 @@ class CanliTV : MainAPI() {
                             channelname,
                             LoadData(streamurl, channelname, posterurl, nation).toJson(),
                             this@CanliTV.name,
-                            if (kanal.attributes["group-title"].toString() != "NSFW") TvType.Live else TvType.NSFW,
+                            TvType.Live,
                             posterurl,
                             lang = nation
                         )
@@ -55,9 +55,6 @@ class CanliTV : MainAPI() {
         return kanallar.items
             .filter { it.title.toString().lowercase().contains(query.lowercase()) }
             .map { kanal ->
-                Log.d("CTV", "${kanal.attributes["group-title"]}")
-                Log.d("CTV", "${kanal.attributes["group-title"].toString()}")
-
                 val streamurl   = kanal.url.toString()
                 val channelname = kanal.title.toString()
                 val posterurl   = kanal.attributes["tvg-logo"].toString()
@@ -67,7 +64,7 @@ class CanliTV : MainAPI() {
                     channelname,
                     LoadData(streamurl, channelname, posterurl, nation).toJson(),
                     this@CanliTV.name,
-                    if (kanal.attributes["group-title"].toString() != "NSFW") TvType.Live else TvType.NSFW,
+                    TvType.Live,
                     posterurl,
                     lang = nation
                 )
@@ -79,13 +76,20 @@ class CanliTV : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val loadData = fetchDataFromUrlOrJson(url)
 
+        val nation:String
+        if (loadData.nation == "RU") {
+            nation = "!! +18 !!"
+        } else {
+            nation = loadData.nation
+        }
+
         return LiveStreamLoadResponse(
             loadData.title,
             loadData.url,
             this.name,
             url,
             loadData.poster,
-            plot = loadData.nation
+            plot = nation
         )
     }
 
