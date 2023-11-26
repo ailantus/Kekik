@@ -11,7 +11,7 @@ data class Kaynak(
 )
 
 data class Veri(
-    @JsonProperty("baslik") val baslik: Int,
+    @JsonProperty("baslik") val baslik: String,
     @JsonProperty("id") val id: Int,
     @JsonProperty("kalite") val kalite: Int,
 )
