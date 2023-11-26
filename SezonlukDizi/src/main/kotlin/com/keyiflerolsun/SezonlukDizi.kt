@@ -141,9 +141,9 @@ class SezonlukDizi : MainAPI() {
                         url           = link.url,
                         referer       = link.referer,
                         quality       = link.quality,
-                        headers       = link.type,
-                        extractorData = link.headers,
-                        type          = link.extractorData
+                        headers       = link.headers,
+                        extractorData = link.extractorData,
+                        type          = link.type
                     )
                 )
             }
@@ -181,9 +181,9 @@ class SezonlukDizi : MainAPI() {
                         url           = link.url,
                         referer       = link.referer,
                         quality       = link.quality,
-                        headers       = link.type,
-                        extractorData = link.headers,
-                        type          = link.extractorData
+                        headers       = link.headers,
+                        extractorData = link.extractorData,
+                        type          = link.type
                     )
                 )
             }
