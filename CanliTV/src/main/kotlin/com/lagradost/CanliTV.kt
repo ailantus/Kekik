@@ -4,10 +4,9 @@ package com.lagradost
 
 import android.util.Log
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.Qualities
 import java.io.InputStream
 
 class CanliTV : MainAPI() {
@@ -18,7 +17,7 @@ class CanliTV : MainAPI() {
     override val hasQuickSearch       = true
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = false
-    override val supportedTypes       = setOf(TvType.Live)
+    override val supportedTypes       = setOf(TvType.Live, TvType.NSFW)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
@@ -56,6 +55,8 @@ class CanliTV : MainAPI() {
         return kanallar.items
             .filter { it.title.toString().lowercase().contains(query.lowercase()) }
             .map { kanal ->
+                Log.d("CTV", "${kanal.attributes["group-title"].toString()}")
+
                 val streamurl   = kanal.url.toString()
                 val channelname = kanal.title.toString()
                 val posterurl   = kanal.attributes["tvg-logo"].toString()
