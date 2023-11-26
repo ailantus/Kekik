@@ -116,7 +116,8 @@ class SezonlukDizi : MainAPI() {
                 "bid" to bid,
                 "dil" to "1"
             )
-        ).parsedSafe<Kaynak>()?.takeIf { it.status == "success" }?.data?.forEach { veri ->
+        ).parsedSafe<Kaynak>()
+        altyazi_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
             Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
             if (veri.baslik.lowercase().contains("okru")) return@forEach
 
