@@ -121,6 +121,7 @@ class SezonlukDizi : MainAPI() {
             if (altyazi_response.status == "success") {
                 for (veri in altyazi_response.data) {
                     Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
+                    if ("${veri.baslik}".lowercase().contains("okru")) continue
 
                     val veri_response = app.post(
                         "${mainUrl}/ajax/dataEmbed.asp",
@@ -132,7 +133,6 @@ class SezonlukDizi : MainAPI() {
                         iframe = "https:$iframe"
                     }
                     Log.d("SZD", "dil»1 | iframe » ${iframe}")
-                    if (iframe.contains("okru")) continue
 
                     loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
                 }
