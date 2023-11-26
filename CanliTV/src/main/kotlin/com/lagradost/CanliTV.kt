@@ -31,11 +31,12 @@ class CanliTV : MainAPI() {
                         val streamurl   = kanal.url.toString()
                         val channelname = kanal.title.toString()
                         val posterurl   = kanal.attributes["tvg-logo"].toString()
+                        val chGroup     = kanal.attributes["group-title"].toString()
                         val nation      = kanal.attributes["tvg-country"].toString()
 
                         LiveSearchResponse(
                             channelname,
-                            LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                            LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
                             this@CanliTV.name,
                             TvType.Live,
                             posterurl,
@@ -58,11 +59,12 @@ class CanliTV : MainAPI() {
                 val streamurl   = kanal.url.toString()
                 val channelname = kanal.title.toString()
                 val posterurl   = kanal.attributes["tvg-logo"].toString()
+                val chGroup     = kanal.attributes["group-title"].toString()
                 val nation      = kanal.attributes["tvg-country"].toString()
 
                 LiveSearchResponse(
                     channelname,
-                    LoadData(streamurl, channelname, posterurl, nation).toJson(),
+                    LoadData(streamurl, channelname, posterurl, chGroup, nation).toJson(),
                     this@CanliTV.name,
                     TvType.Live,
                     posterurl,
@@ -77,10 +79,10 @@ class CanliTV : MainAPI() {
         val loadData = fetchDataFromUrlOrJson(url)
 
         val nation:String
-        if (loadData.nation == "USA") {
-            nation = "⚠️🔞🔞🔞 » ${loadData.nation} « 🔞🔞🔞⚠️"
+        if (loadData.group == "NSFW") {
+            nation = "⚠️🔞🔞🔞 » ${loadData.group} | ${loadData.nation} « 🔞🔞🔞⚠️"
         } else {
-            nation = loadData.nation
+            nation = "» ${loadData.group} | ${loadData.nation} «"
         }
 
         return LiveStreamLoadResponse(
@@ -89,7 +91,8 @@ class CanliTV : MainAPI() {
             this.name,
             url,
             loadData.poster,
-            plot = nation
+            plot = nation,
+            tags = listOf(loadData.group, loadData.nation),
         )
     }
 
@@ -110,7 +113,7 @@ class CanliTV : MainAPI() {
         return true
     }
 
-    data class LoadData(val url: String, val title: String, val poster: String, val nation: String)
+    data class LoadData(val url: String, val title: String, val poster: String, val group: String, val nation: String)
 
     private suspend fun fetchDataFromUrlOrJson(data: String): LoadData {
         if (data.startsWith("{")) {
@@ -122,9 +125,10 @@ class CanliTV : MainAPI() {
             val streamurl   = kanal.url.toString()
             val channelname = kanal.title.toString()
             val posterurl   = kanal.attributes["tvg-logo"].toString()
+            val chGroup     = kanal.attributes["group-title"].toString()
             val nation      = kanal.attributes["tvg-country"].toString()
 
-            return LoadData(streamurl, channelname, posterurl, nation)
+            return LoadData(streamurl, channelname, posterurl, chGroup, nation)
         }
     }
 }
