@@ -88,6 +88,8 @@ class CanliTV : MainAPI() {
             if (kanal.attributes["group-title"].toString() == loadData.group) {
                 val rc_streamurl   = kanal.url.toString()
                 val rc_channelname = kanal.title.toString()
+                if (rc_channelname == loadData.title) continue
+
                 val rc_posterurl   = kanal.attributes["tvg-logo"].toString()
                 val rc_chGroup     = kanal.attributes["group-title"].toString()
                 val rc_nation      = kanal.attributes["tvg-country"].toString()
