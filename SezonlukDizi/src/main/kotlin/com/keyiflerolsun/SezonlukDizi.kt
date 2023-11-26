@@ -20,6 +20,7 @@ class SezonlukDizi : MainAPI() {
 
     override val mainPage = mainPageOf(
         "${mainUrl}/diziler.asp?siralama_tipi=id&s="       to "Son Eklenenler",
+        "${mainUrl}/diziler.asp?siralama_tipi=id&tur=mini" to "Mini Diziler",
         "${mainUrl}/diziler.asp?siralama_tipi=id&kat=2&s=" to "Yerli Diziler",
         "${mainUrl}/diziler.asp?siralama_tipi=id&kat=1&s=" to "Yabancı Diziler",
         "${mainUrl}/diziler.asp?siralama_tipi=id&kat=3&s=" to "Asya Dizileri",
