@@ -121,21 +121,25 @@ class SezonlukDizi : MainAPI() {
             data = mapOf(
                 "bid" to bid,
                 "dil" to "1"
-            ).parsedSafe<Kaynak>()
-        )
-        if (altyazi_response.status == "success") {
-            for (veri in altyazi_response.data) {
-                Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
+            )
+        ).parsedSafe<Kaynak>()
+        if (altyazi_response != null) {
+            if (altyazi_response.status == "success") {
+                for (veri in altyazi_response.data) {
+                    Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
 
-                val veri_response = app.post(
-                    "${mainUrl}/ajax/dataEmbed.asp",
-                    data = mapOf("id" to veri.id)
-                ).document
-                val iframe = veri_response.selectFirst("iframe") ?: continue
-                if (iframe.startsWith("//")) iframe = "https:$iframe"
-                Log.d("SZD", "dil»1 | iframe » ${iframe}")
+                    val veri_response = app.post(
+                        "${mainUrl}/ajax/dataEmbed.asp",
+                        data = mapOf("id" to "${veri.id}")
+                    ).document
+                    var iframe = veri_response.selectFirst("iframe")?.attr("src") ?: continue
+                    if (iframe.startsWith("//")) {
+                        iframe = "https:$iframe"
+                    }
+                    Log.d("SZD", "dil»1 | iframe » ${iframe}")
 
-                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                    loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                }
             }
         }
 
