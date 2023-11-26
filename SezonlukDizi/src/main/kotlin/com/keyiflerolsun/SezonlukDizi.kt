@@ -46,7 +46,7 @@ class SezonlukDizi : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("${mainUrl}/diziler.asp?adi=${query}").document
 
-        return document.select("div#filtreSonuclari div.item").mapNotNull { it.toSearchResult() }
+        return document.select("div.afis a").mapNotNull { it.toSearchResult() }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
