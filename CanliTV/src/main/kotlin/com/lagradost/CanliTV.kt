@@ -55,6 +55,7 @@ class CanliTV : MainAPI() {
         return kanallar.items
             .filter { it.title.toString().lowercase().contains(query.lowercase()) }
             .map { kanal ->
+                Log.d("CTV", "${kanal.attributes["group-title"]}")
                 Log.d("CTV", "${kanal.attributes["group-title"].toString()}")
 
                 val streamurl   = kanal.url.toString()
