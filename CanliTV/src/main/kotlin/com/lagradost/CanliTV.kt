@@ -82,21 +82,25 @@ class CanliTV : MainAPI() {
         }
 
         val kanallar        = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        val recommendations = kanallar.items.filter { it.attributes["group-title"].toString() == loadData.group }.map { kanal ->
-            val rc_streamurl   = kanal.url.toString()
-            val rc_channelname = kanal.title.toString()
-            val rc_posterurl   = kanal.attributes["tvg-logo"].toString()
-            val rc_chGroup     = kanal.attributes["group-title"].toString()
-            val rc_nation      = kanal.attributes["tvg-country"].toString()
+        val recommendations = mutableListOf<LiveSearchResponse>()
 
-            LiveSearchResponse(
-                name      = rc_channelname,
-                url       = LoadData(rc_streamurl, rc_channelname, rc_posterurl, rc_chGroup, rc_nation).toJson(),
-                apiName   = this@CanliTV.name,
-                type      = TvType.Live,
-                posterUrl = rc_posterurl,
-                lang      = rc_nation,
-            )
+        for (kanal in kanallar.items) {
+            if (kanal.attributes["group-title"].toString() == loadData.group) {
+                val rc_streamurl   = kanal.url.toString()
+                val rc_channelname = kanal.title.toString()
+                val rc_posterurl   = kanal.attributes["tvg-logo"].toString()
+                val rc_chGroup     = kanal.attributes["group-title"].toString()
+                val rc_nation      = kanal.attributes["tvg-country"].toString()
+
+                recommendations.add(LiveSearchResponse(
+                    name      = rc_channelname,
+                    url       = LoadData(rc_streamurl, rc_channelname, rc_posterurl, rc_chGroup, rc_nation).toJson(),
+                    apiName   = this@CanliTV.name,
+                    type      = TvType.Live,
+                    posterUrl = rc_posterurl,
+                    lang      = rc_nation,
+                ))
+            }
         }
 
         return LiveStreamLoadResponse(
