@@ -132,6 +132,7 @@ class SezonlukDizi : MainAPI() {
                         iframe = "https:$iframe"
                     }
                     Log.d("SZD", "dil»1 | iframe » ${iframe}")
+                    if (iframe.contains("okru")) continue
 
                     loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
                 }
