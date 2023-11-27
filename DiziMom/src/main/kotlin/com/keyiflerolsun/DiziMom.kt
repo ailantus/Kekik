@@ -43,12 +43,15 @@ class DiziMom : MainAPI() {
         return newHomePageResponse(request.name, home)
     }
 
-    private fun Element.sonBolumler(): SearchResponse? {
+    private suspend fun Element.sonBolumler(): SearchResponse? {
         val name      = this.selectFirst("div.episode-name a")?.text()?.substringBefore(" izle") ?: return null
         val title     = name.replace(".Sezon ","x").replace(". Bölüm","")
 
-        val href      = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("div.cat-img img")?.attr("src"))
+        val ep_href   = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
+        val ep_doc    = app.get(ep_href).document
+        val href      = ep_doc.selectFirst("div#benzerli a")?.attr("href") ?: return null
+
+        val posterUrl = fixUrlNull(this.selectFirst("a img")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
