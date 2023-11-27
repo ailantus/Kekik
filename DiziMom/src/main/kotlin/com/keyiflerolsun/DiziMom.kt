@@ -109,6 +109,8 @@ class DiziMom : MainAPI() {
 
         if (iframe.contains("hdmomplayer")) {
             i_source      = app.get("${iframe}", referer="${mainUrl}/").text
+            Log.d("DZM", "i_source » ${i_source}")
+
             // m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
 
             // val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
@@ -127,6 +129,7 @@ class DiziMom : MainAPI() {
             //         )
             //     }
             // }
+
             val bePlayer = Regex("""bePlayer\('([^']+)',\s*'({[^}]+})'\);""").find(i_source)?.groupValues ?: return false
             Log.d("DZM", "bePlayer » ${bePlayer}")
 
