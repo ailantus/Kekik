@@ -242,7 +242,7 @@ class DiziMom : MainAPI() {
                     url     = m3u_link,
                     referer = iframe,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8")
+                    isM3u8  = m3u_link.contains(".m3u8") || iframe.contains("hdmomplayer")
                 )
             )
         } else {
