@@ -12,7 +12,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.extractors.helper.AesHelper
 
 class DiziMom : MainAPI() {
-    override var mainUrl              = "https://www.dizimom.pro"
+    override var mainUrl              = "https://www.dizimom.de"
     override var name                 = "DiziMom"
     override val hasMainPage          = true
     override var lang                 = "tr"
@@ -109,7 +109,6 @@ class DiziMom : MainAPI() {
 
         if (iframe.contains("hdmomplayer")) {
             i_source      = app.get("${iframe}", referer="${mainUrl}/").text
-            Log.d("DZM", "i_source » ${i_source}")
 
             // m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
 
@@ -130,7 +129,11 @@ class DiziMom : MainAPI() {
             //     }
             // }
 
-            val bePlayer = Regex("""bePlayer\('([^']+)',\s*'({[^}]+})'\);""").find(i_source)?.groupValues ?: return false
+            val bePlayer = Regex("""bePlayer\('([^']+)',\s*'({[^}]+})'\);""").find(i_source)?.groupValues
+            if (bePlayer == null) {
+                Log.d("DZM", "i_source » ${i_source}")
+                return false
+            }
             Log.d("DZM", "bePlayer » ${bePlayer}")
 
             val key      = bePlayer?.get(1) ?: return false
