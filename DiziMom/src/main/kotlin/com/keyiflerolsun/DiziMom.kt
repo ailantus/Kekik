@@ -35,7 +35,7 @@ class DiziMom : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}${page}/").document
         val home     = if (request.data.contains("/tum-bolumler/")) {
-            document.select("div.episode-item").mapNotNull { it.sonBolumler() } 
+            document.select("div.episode-box").mapNotNull { it.sonBolumler() } 
         } else {
             document.select("div.single-item").mapNotNull { it.diziler() }
         }
