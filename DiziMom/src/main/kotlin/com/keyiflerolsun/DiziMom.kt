@@ -130,11 +130,11 @@ class DiziMom : MainAPI() {
             // }
 
             val bePlayer = Regex("""bePlayer\('([^']+)',\s*'({[^}]+})'\);""").find(i_source)?.groupValues
+            Log.d("DZM", "bePlayer » ${bePlayer}")
             if (bePlayer == null) {
                 Log.d("DZM", "i_source » ${i_source}")
                 return false
             }
-            Log.d("DZM", "bePlayer » ${bePlayer}")
 
             val key      = bePlayer?.get(1) ?: return false
             Log.d("DZM", "key » ${key}")
