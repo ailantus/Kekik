@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.extractors.helper.AesHelper
 
 class DiziMom : MainAPI() {
     override var mainUrl              = "https://www.dizimom.pro"
@@ -108,24 +109,36 @@ class DiziMom : MainAPI() {
 
         if (iframe.contains("hdmomplayer")) {
             i_source      = app.get("${iframe}", referer="${mainUrl}/").text
-            m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            // m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
 
-            val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
-            if (track_str != null) {
-                val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
+            // val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
+            // if (track_str != null) {
+            //     val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
 
-                for (track in tracks) {
-                    if (track.file == null || track.label == null) continue
-                    if (track.label.contains("Forced")) continue
+            //     for (track in tracks) {
+            //         if (track.file == null || track.label == null) continue
+            //         if (track.label.contains("Forced")) continue
 
-                    subtitleCallback.invoke(
-                        SubtitleFile(
-                            lang = track.label,
-                            url  = fixUrl("https://hdmomplayer.com" + track.file)
-                        )
-                    )
-                }
-            }
+            //         subtitleCallback.invoke(
+            //             SubtitleFile(
+            //                 lang = track.label,
+            //                 url  = fixUrl("https://hdmomplayer.com" + track.file)
+            //             )
+            //         )
+            //     }
+            // }
+            val bePlayer = Regex("""bePlayer\('([^']+)',\s*'({[^}]+})'\);""").find(i_source)?.groupValues ?: return false
+            Log.d("DZM", "bePlayer » ${bePlayer}")
+
+            val key      = bePlayer?.get(1) ?: return false
+            Log.d("DZM", "key » ${key}")
+
+            val crypted  = bePlayer?.get(2) ?: return false
+            Log.d("DZM", "crypted » ${crypted}")
+
+            val decrypt  = AesHelper.cryptoAESHandler(crypted, key.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
+            Log.d("DZM", "decrypt » ${decrypt}")
+            return false
         }
 
         if (iframe.contains("hdplayersystem")) {
