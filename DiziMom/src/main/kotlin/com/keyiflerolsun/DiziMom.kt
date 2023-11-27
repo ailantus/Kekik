@@ -95,10 +95,10 @@ class DiziMom : MainAPI() {
         Log.d("DZM", "data » ${data}")
         val document = app.get(
             data,
-            // headers = mapOf(
-            //     "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-            //     "Cookie"     to "wordpress_logged_in_94427965a200eb7dd292509ed2c7c018=keyiflerolsun|1701195846|47kYwoaxbzwb7LQn3M5P4x2nBB2DRp8ky2tuHYYGffr|b504980f0c14ec2b85bc788ccfe903c8aeee0387e739ad0a42297b0ee874b406"
-            // )
+            headers = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1702291130|SNR8c0RiBRg04K7GooNcOci81mLdSneM4nxew0gYVcq|980a2d10f842a0448958a980eb0797e551da768e7649830fb47ed773ae77fcf7"
+            )
         ).document
         val iframe   = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
         Log.d("DZM", "iframe » ${iframe}")
@@ -137,15 +137,11 @@ class DiziMom : MainAPI() {
             }
 
             val key      = bePlayer?.get(1) ?: return false
-            Log.d("DZM", "key » ${key}")
-
             val crypted  = bePlayer?.get(2) ?: return false
-            Log.d("DZM", "crypted » ${crypted}")
-
             val decrypt  = AesHelper.cryptoAESHandler(crypted, key.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
             Log.d("DZM", "decrypt » ${decrypt}")
 
-            m3u_link = Regex("""video_location\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            m3u_link = Regex("""video_location\":\"([^\"]+)""").find(decrypt)?.groupValues?.get(1)
         }
 
         if (iframe.contains("hdplayersystem")) {
