@@ -22,6 +22,7 @@ class DiziMom : MainAPI() {
     override val supportedTypes       = setOf(TvType.TvSeries)
 
     override val mainPage = mainPageOf(
+        "${mainUrl}/tum-bolumler/page/"               to "Son Bölümler",
         "${mainUrl}/turkce-dublaj-diziler/page/"      to "Dublajlı Diziler",
         "${mainUrl}/netflix-dizileri-izle/page/"      to "Netflix Dizileri",
         "${mainUrl}/yabanci-dizi-izle/page/"          to "Yabancı Diziler",
@@ -33,12 +34,26 @@ class DiziMom : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}${page}/").document
-        val home     = document.select("div.single-item").mapNotNull { it.toSearchResult() }
+        val home     = if (request.data.contains("/tum-bolumler/")) {
+            document.select("div.episode-item").mapNotNull { it.sonBolumler() } 
+        } else {
+            document.select("div.single-item").mapNotNull { it.diziler() }
+        }
 
         return newHomePageResponse(request.name, home)
     }
 
-    private fun Element.toSearchResult(): SearchResponse? {
+    private fun Element.sonBolumler(): SearchResponse? {
+        val name      = this.selectFirst("div.episode-name a")?.text()?.substringBefore(" izle") ?: return null
+        val title     = name.replace(".Sezon ","x").replace(". Bölüm","")
+
+        val href      = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("div.cat-img img")?.attr("src"))
+
+        return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+    }
+
+    private fun Element.diziler(): SearchResponse? {
         val title     = this.selectFirst("div.categorytitle a")?.text()?.substringBefore(" izle") ?: return null
         val href      = fixUrlNull(this.selectFirst("div.categorytitle a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("div.cat-img img")?.attr("src"))
@@ -49,7 +64,7 @@ class DiziMom : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("${mainUrl}/?s=${query}").document
 
-        return document.select("div.single-item").mapNotNull { it.toSearchResult() }
+        return document.select("div.single-item").mapNotNull { it.diziler() }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -110,37 +125,34 @@ class DiziMom : MainAPI() {
         if (iframe.contains("hdmomplayer")) {
             i_source      = app.get("${iframe}", referer="${mainUrl}/").text
 
-            // m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+            val bePlayer  = Regex("""bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);""").find(i_source)?.groupValues
+            if (bePlayer != null) {
+                val bePlayerPass = bePlayer.get(1)
+                val bePlayerData = bePlayer.get(2)
+                val encrypted    = AesHelper.cryptoAESHandler(bePlayerData, bePlayerPass.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
+                Log.d("DZM", "encrypted » ${encrypted}")
 
-            // val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
-            // if (track_str != null) {
-            //     val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
+                m3u_link      = Regex("""video_location\":\"([^\"]+)""").find(encrypted)?.groupValues?.get(1)
+            } else {
+                m3u_link      = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
 
-            //     for (track in tracks) {
-            //         if (track.file == null || track.label == null) continue
-            //         if (track.label.contains("Forced")) continue
+                val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
+                if (track_str != null) {
+                    val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
 
-            //         subtitleCallback.invoke(
-            //             SubtitleFile(
-            //                 lang = track.label,
-            //                 url  = fixUrl("https://hdmomplayer.com" + track.file)
-            //             )
-            //         )
-            //     }
-            // }
+                    for (track in tracks) {
+                        if (track.file == null || track.label == null) continue
+                        if (track.label.contains("Forced")) continue
 
-            val bePlayer = Regex("""bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);""").find(i_source)?.groupValues
-            if (bePlayer == null) {
-                Log.d("DZM", "i_source » ${i_source}")
-                return false
+                        subtitleCallback.invoke(
+                            SubtitleFile(
+                                lang = track.label,
+                                url  = fixUrl("https://hdmomplayer.com" + track.file)
+                            )
+                        )
+                    }
+                }
             }
-
-            val key      = bePlayer?.get(1) ?: return false
-            val crypted  = bePlayer?.get(2) ?: return false
-            val decrypt  = AesHelper.cryptoAESHandler(crypted, key.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
-            Log.d("DZM", "decrypt » ${decrypt}")
-
-            m3u_link = Regex("""video_location\":\"([^\"]+)""").find(decrypt)?.groupValues?.get(1)
         }
 
         if (iframe.contains("hdplayersystem")) {
