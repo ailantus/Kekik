@@ -144,7 +144,8 @@ class DiziMom : MainAPI() {
 
             val decrypt  = AesHelper.cryptoAESHandler(crypted, key.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
             Log.d("DZM", "decrypt » ${decrypt}")
-            return false
+
+            m3u_link = Regex("""video_location\":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
         }
 
         if (iframe.contains("hdplayersystem")) {
