@@ -45,7 +45,7 @@ class DiziMom : MainAPI() {
 
     private suspend fun Element.sonBolumler(): SearchResponse? {
         val name      = this.selectFirst("div.episode-name a")?.text()?.substringBefore(" izle") ?: return null
-        val title     = name.replace(".Sezon ","x").replace(". Bölüm","")
+        val title     = name.replace(".Sezon ", "x").replace(".Bölüm", "")
 
         val ep_href   = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
         val ep_doc    = app.get(ep_href).document
