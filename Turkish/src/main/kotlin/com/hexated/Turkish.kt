@@ -8,8 +8,8 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 import org.jsoup.nodes.Element
 
 class Turkish : MainAPI() {
-    override var mainUrl = "https://turkish123.com"
-    override var name = "Turkish123"
+    override var mainUrl = "https://turkish123.today"
+    override var name = "TurkceTV"
     override val hasMainPage = true
     override var lang = "tr"
     override val hasDownloadSupport = true
