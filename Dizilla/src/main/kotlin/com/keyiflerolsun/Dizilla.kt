@@ -58,7 +58,9 @@ class Dizilla : MainAPI() {
     }
 
     private suspend fun Element.sonBolumler(): SearchResponse? {
-        val title     = this.selectFirst("h2")?.text() ?: return null
+        val name     = this.selectFirst("h2")?.text() ?: return null
+        val ep_name  = this.selectFirst("div.opacity-80")?.text().replace(".Sezon ", "x").replace(".Bölüm", "")
+        val title    = "${name} - ${ep_name}"
 
         val ep_doc    = app.get(this.attr("href")).document
         val href      = fixUrlNull(ep_doc.selectFirst("div.poster a.flex")?.attr("href")) ?: return null
