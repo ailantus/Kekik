@@ -138,10 +138,11 @@ class DiziMom : MainAPI() {
             iframes.add(sub_iframe)
         }
 
-        var i_source: String? = null
-        var m3u_link: String? = null
-
+        Log.d("DZM", "iframes » ${iframes}")
         for (iframe in iframes) {
+            var i_source: String? = null
+            var m3u_link: String? = null
+
             if (iframe.contains("hdmomplayer")) {
                 i_source      = app.get("${iframe}", referer="${mainUrl}/").text
 
