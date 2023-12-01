@@ -24,29 +24,45 @@ class Dizilla : MainAPI() {
     // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="  to "Aile",
-        "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Aksiyon",
-        "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Bilim Kurgu",
-        "${mainUrl}/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Biyografi",
-        "${mainUrl}/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Dram",
-        "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="  to "Fantastik",
-        "${mainUrl}/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="  to "Gerilim",
-        "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Komedi",
-        "${mainUrl}/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Korku",
-        "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=imdb&page="   to "Romantik"
+        "${mainUrl}/altyazili-bolumler?page=" to "Altyazılı Bölümler",
+        "${mainUrl}/dublaj-bolumler?page="    to "Dublaj Bölümler",
+        "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Aksiyon",
+        "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Bilim Kurgu",
+        "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Komedi",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Aile",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Biyografi",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Dram",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Fantastik",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Gerilim",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Korku",
+        // "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}${page}").document
-        val home     = document.select("span.watchlistitem-").mapNotNull { it.toSearchResult() }
+        val home     = if (request.data.contains("arsiv?")) { 
+            document.select("span.watchlistitem-").mapNotNull { it.diziler() }
+        } else {
+            document.select("div.grid a").mapNotNull { it.sonBolumler() }
+        }
 
         return newHomePageResponse(request.name, home)
     }
 
-    private fun Element.toSearchResult(): SearchResponse? {
+    private fun Element.diziler(): SearchResponse? {
         val title     = this.selectFirst("span.text-white")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
+
+        return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+    }
+
+    private suspend fun Element.sonBolumler(): SearchResponse? {
+        val title     = this.selectFirst("h2")?.text() ?: return null
+
+        val ep_doc    = app.get(this.attr("href")).document
+        val href      = fixUrlNull(ep_doc.selectFirst("div.poster a.flex")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(ep_doc.selectFirst("div.poster a.flex img")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
