@@ -132,7 +132,7 @@ class DiziMom : MainAPI() {
                     "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1702291130|SNR8c0RiBRg04K7GooNcOci81mLdSneM4nxew0gYVcq|980a2d10f842a0448958a980eb0797e551da768e7649830fb47ed773ae77fcf7"
                 )
             ).document
-            val sub_iframe   = sub_document.selectFirst("div#vast iframe")?.attr("src") ?: return false
+            val sub_iframe   = sub_document.selectFirst("div#vast iframe")?.attr("src") ?: return@forEach
             Log.d("DZM", "sub_iframe » ${sub_iframe}")
 
             iframes.add(sub_iframe)
