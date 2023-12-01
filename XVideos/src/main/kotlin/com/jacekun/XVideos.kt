@@ -21,9 +21,9 @@ class XVideos : MainAPI() {
     private val Dev                   = "DevDebug"
 
     fun getLinkAndExt(text: String) : Pair<String, String> {
-        val validlink = text.trim().trim('"').trim('\'')
-        val valindlinkext = validlink.substringAfterLast(".")
-            .substringBeforeLast("?").trim().uppercase()
+        val validlink     = text.trim().trim("\"").trim("\'")
+        val valindlinkext = validlink.substringAfterLast(".").substringBeforeLast("?").trim().uppercase()
+
         return Pair(validlink, valindlinkext)
     }
 
@@ -36,19 +36,22 @@ class XVideos : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val categoryData = request.data
         val categoryName = request.name
-        val isPaged = categoryData.endsWith('/')
-        val pagedLink = if (isPaged) categoryData + page else categoryData
+        val isPaged      = categoryData.endsWith('/')
+        val pagedLink    = if (isPaged) categoryData + page else categoryData
+
         try {
             if (!isPaged && page < 2 || isPaged) {
                 val soup = app.get(pagedLink).document
                 val home = soup.select("div.thumb-block").mapNotNull {
                     if (it == null) { return@mapNotNull null }
+
                     val title = it.selectFirst("p.title a")?.text() ?: ""
-                    val link = fixUrlNull(it.selectFirst("div.thumb a")?.attr("href")) ?: return@mapNotNull null
+                    val link  = fixUrlNull(it.selectFirst("div.thumb a")?.attr("href")) ?: return@mapNotNull null
                     val image = it.selectFirst("div.thumb a img")?.attr("data-src")
+
                     newMovieSearchResponse(
                         name = title,
-                        url = link,
+                        url  = link,
                         type = globalTvType,
                     ) {
                         this.posterUrl = image
@@ -75,18 +78,18 @@ class XVideos : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val url = "${mainUrl}?k=${query}"
+        val url      = "${mainUrl}?k=${query}"
         val document = app.get(url).document
+
         return document.select("div.thumb-block").mapNotNull {
-            val title = it.selectFirst("p.title a")?.text()
-                ?: it.selectFirst("p.profile-name a")?.text()
-                ?: ""
-            val href = fixUrlNull(it.selectFirst("div.thumb a")?.attr("href")) ?: return@mapNotNull null
-            val image = if (href.contains("channels") || href.contains("pornstars")) null else it.selectFirst("div.thumb-inside a img")?.attr("data-src")
+            val title      = it.selectFirst("p.title a")?.text() ?: it.selectFirst("p.profile-name a")?.text() ?: ""
+            val href       = fixUrlNull(it.selectFirst("div.thumb a")?.attr("href")) ?: return@mapNotNull null
+            val image      = if (href.contains("channels") || href.contains("pornstars")) null else it.selectFirst("div.thumb-inside a img")?.attr("data-src")
             val finaltitle = if (href.contains("channels") || href.contains("pornstars")) "" else title
+
             newMovieSearchResponse(
                 name = finaltitle,
-                url = href,
+                url  = href,
                 type = globalTvType,
             ) {
                 this.posterUrl = image
@@ -95,68 +98,62 @@ class XVideos : MainAPI() {
         }.toList()
     }
     override suspend fun load(url: String): LoadResponse {
-        val soup = app.get(url).document
-        val title = if (url.contains("channels")||url.contains("pornstars")) soup.selectFirst("html.xv-responsive.is-desktop head title")?.text() else
-            soup.selectFirst(".page-title")?.text()
-        val poster: String? = if (url.contains("channels") || url.contains("pornstars")) soup.selectFirst(".profile-pic img")?.attr("data-src") else
-            soup.selectFirst("head meta[property=og:image]")?.attr("content")
-        val tags = soup.select(".video-tags-list li a")
-            .map { it?.text()?.trim().toString().replace(", ","") }
-        val episodes = soup.select("div.thumb-block").mapNotNull {
-            val href = it?.selectFirst("a")?.attr("href") ?: return@mapNotNull null
-            val name = it.selectFirst("p.title a")?.text() ?: ""
+        val soup            = app.get(url).document
+        val title           = if (url.contains("channels")||url.contains("pornstars")) soup.selectFirst("html.xv-responsive.is-desktop head title")?.text() else soup.selectFirst(".page-title")?.text()
+        val poster: String? = if (url.contains("channels") || url.contains("pornstars")) soup.selectFirst(".profile-pic img")?.attr("data-src") else soup.selectFirst("head meta[property=og:image]")?.attr("content")
+        val tags            = soup.select(".video-tags-list li a").map { it?.text()?.trim().toString().replace(", ","") }
+
+        val episodes        = soup.select("div.thumb-block").mapNotNull {
+            val href    = it?.selectFirst("a")?.attr("href") ?: return@mapNotNull null
+            val name    = it.selectFirst("p.title a")?.text() ?: ""
             val epthumb = it.selectFirst("div.thumb a img")?.attr("data-src")
+
             Episode(
-                name = name,
-                data = href,
+                name      = name,
+                data      = href,
                 posterUrl = epthumb,
             )
         }
+
         val tvType = if (url.contains("channels") || url.contains("pornstars")) TvType.TvSeries else globalTvType
+
         return when (tvType) {
             TvType.TvSeries -> {
                 TvSeriesLoadResponse(
-                    name = title ?: "",
-                    url = url,
-                    apiName = this.name,
-                    type = globalTvType,
-                    episodes = episodes,
-                    posterUrl = poster,
-                    plot = title,
+                    name       = title ?: "",
+                    url        = url,
+                    apiName    = this.name,
+                    type       = globalTvType,
+                    episodes   = episodes,
+                    posterUrl  = poster,
+                    plot       = title,
                     showStatus = ShowStatus.Ongoing,
-                    tags = tags,
+                    tags       = tags,
                 )
             }
             else -> {
                 newMovieLoadResponse(
-                    name = title ?: "",
-                    url = url,
-                    type = globalTvType,
+                    name    = title ?: "",
+                    url     = url,
+                    type    = globalTvType,
                     dataUrl = url,
                 ) {
                     this.posterUrl = poster
-                    this.plot = title
-                    this.tags = tags
-                    this.duration = getDurationFromString(title)
+                    this.plot      = title
+                    this.tags      = tags
+                    this.duration  = getDurationFromString(title)
                 }
             }
         }
     }
-    override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         app.get(data).document.select("script").apmap { script ->
             val scriptdata = script.data()
-            if (scriptdata.isNullOrBlank()) {
-                return@apmap
-            }
+            if (scriptdata.isNullOrBlank()) { return@apmap }
             //Log.i(Dev, "scriptdata => $scriptdata")
+
             if (scriptdata.contains("HTML5Player")) {
-                val extractedlink = script.data().substringAfter(".setVideoHLS('")
-                    .substringBefore("');")
+                val extractedlink = script.data().substringAfter(".setVideoHLS('").substringBefore("');")
                 if (extractedlink.isNotBlank()) {
                     M3u8Helper().m3u8Generation(
                         M3u8Helper.M3u8Stream(
@@ -166,35 +163,37 @@ class XVideos : MainAPI() {
                     ).map { stream ->
                         callback(
                             ExtractorLink(
-                                source = this.name,
-                                name = "${this.name} m3u8",
-                                url = stream.streamUrl,
+                                source  = this.name,
+                                name    = "${this.name} m3u8",
+                                url     = stream.streamUrl,
                                 referer = data,
                                 quality = getQualityFromName(stream.quality?.toString()),
-                                isM3u8 = true
+                                isM3u8  = true
                             )
                         )
                     }
                 }
+
                 val mp4linkhigh = script.data().substringAfter("html5player.setVideoUrlHigh('").substringBefore("');")
                 if (mp4linkhigh.isNotBlank()) {
                     callback(
                         ExtractorLink(
-                            source = this.name,
-                            name = "${this.name} MP4 High",
-                            url = mp4linkhigh,
+                            source  = this.name,
+                            name    = "${this.name} MP4 High",
+                            url     = mp4linkhigh,
                             referer = data,
                             quality = Qualities.Unknown.value,
                         )
                     )
                 }
+
                 val mp4linklow = script.data().substringAfter("html5player.setVideoUrlLow('").substringBefore("');")
                 if (mp4linklow.isNotBlank()) {
                     callback(
                         ExtractorLink(
-                            source = this.name,
-                            name = "${this.name} MP4 Low",
-                            url = mp4linklow,
+                            source  = this.name,
+                            name    = "${this.name} MP4 Low",
+                            url     = mp4linklow,
                             referer = data,
                             quality = Qualities.Unknown.value,
                         )
@@ -207,40 +206,41 @@ class XVideos : MainAPI() {
             if (scriptdata.contains("contentUrl")) {
                 Log.i(Dev, "Fetching default link..")
 
-                "(?<=contentUrl\\\":)(.*)(?=\\\",)".toRegex(setOfRegexOption)
-                .findAll(scriptdata).forEach {
+                "(?<=contentUrl\\\":)(.*)(?=\\\",)".toRegex(setOfRegexOption).findAll(scriptdata).forEach {
                     it.groupValues.forEach { link ->
                         val validLinkVal = getLinkAndExt(link)
-                        val validlink = validLinkVal.first
+                        val validlink    = validLinkVal.first
                         val validlinkext = validLinkVal.second
                         Log.i(Dev, "Result Default => $validlink")
+
                         callback(
                             ExtractorLink(
-                                source = this.name,
-                                name = "${this.name} $validlinkext",
-                                url = validlink,
+                                source  = this.name,
+                                name    = "${this.name} $validlinkext",
+                                url     = validlink,
                                 referer = data,
                                 quality = Qualities.Unknown.value,
-                                isM3u8 = validlinkext.startsWith("M3")
+                                isM3u8  = validlinkext.startsWith("M3")
                             )
                         )
                     }
                 }
             }
+
             //Fetch HLS links
             Log.i(Dev, "Fetching HLS Low link..")
-            Regex("(?<=setVideoUrlLow\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata)
-                .forEach {
+            Regex("(?<=setVideoUrlLow\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata).forEach {
                 it.groupValues.forEach { link ->
                     val validLinkVal = getLinkAndExt(link)
-                    val validlink = validLinkVal.first
+                    val validlink    = validLinkVal.first
                     val validlinkext = validLinkVal.second
                     Log.i(Dev, "Result HLS Low => $validlink")
+
                     callback(
                         ExtractorLink(
-                            source = this.name,
-                            name = "${this.name} $validlinkext Low",
-                            url = validlink,
+                            source  = this.name,
+                            name    = "${this.name} $validlinkext Low",
+                            url     = validlink,
                             referer = data,
                             quality = Qualities.Unknown.value
                         )
@@ -249,18 +249,18 @@ class XVideos : MainAPI() {
             }
 
             Log.i(Dev, "Fetching HLS High link..")
-            Regex("(?<=setVideoUrlHigh\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata)
-                .forEach {
+            Regex("(?<=setVideoUrlHigh\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata).forEach {
                 it.groupValues.forEach { link ->
                     val validLinkVal = getLinkAndExt(link)
-                    val validlink = validLinkVal.first
+                    val validlink    = validLinkVal.first
                     val validlinkext = validLinkVal.second
                     Log.i(Dev, "Result HLS High => $validlink")
+
                     callback(
                         ExtractorLink(
-                            source = this.name,
-                            name = "${this.name} $validlinkext High",
-                            url = validlink,
+                            source  = this.name,
+                            name    = "${this.name} $validlinkext High",
+                            url     = validlink,
                             referer = data,
                             quality = Qualities.Unknown.value
                         )
@@ -269,26 +269,27 @@ class XVideos : MainAPI() {
             }
 
             Log.i(Dev, "Fetching HLS Default link..")
-            Regex("(?<=setVideoHLS\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata)
-                .forEach {
+            Regex("(?<=setVideoHLS\\()(.*?)(?=\\);)", setOfRegexOption).findAll(scriptdata).forEach {
                 it.groupValues.forEach { link ->
                     val validLinkVal = getLinkAndExt(link)
-                    val validlink = validLinkVal.first
+                    val validlink    = validLinkVal.first
                     val validlinkext = validLinkVal.second
                     Log.i(Dev, "Result HLS Default => $validlink")
+
                     callback(
                         ExtractorLink(
-                            source = this.name,
-                            name = "${this.name} $validlinkext Default",
-                            url = validlink,
+                            source  = this.name,
+                            name    = "${this.name} $validlinkext Default",
+                            url     = validlink,
                             referer = data,
                             quality = Qualities.Unknown.value,
-                            isM3u8 = true
+                            isM3u8  = true
                         )
                     )
                 }
             }
         }
+
         return true
     }
 }
