@@ -66,7 +66,7 @@ class CanliTV : MainAPI() {
                 posterUrl = posterurl,
                 lang      = nation
             )
-        }
+        } ?: emptyList<SearchResponse>()
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
