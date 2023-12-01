@@ -96,7 +96,10 @@ class CizgiMax : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("CZGM", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
+        var iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
+        if (iframe.startsWith("//")) {
+            iframe = "https:${iframe}"
+        }
         Log.d("CZGM", "iframe » ${iframe}")
 
         loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
