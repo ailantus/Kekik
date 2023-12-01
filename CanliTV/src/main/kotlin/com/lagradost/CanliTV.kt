@@ -49,6 +49,7 @@ class CanliTV : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
+		Log.d("CTV", "query » ${query}")
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
         return kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
@@ -66,7 +67,7 @@ class CanliTV : MainAPI() {
                 posterUrl = posterurl,
                 lang      = nation
             )
-        } ?: emptyList<SearchResponse>()
+        }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
