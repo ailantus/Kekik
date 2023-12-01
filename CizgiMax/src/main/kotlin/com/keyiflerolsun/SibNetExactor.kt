@@ -18,7 +18,7 @@ open class SibNet : ExtractorApi() {
 
         if (m3u_link != null) {
             m3u_link = "${mainUrl}${m3u_link}"
-            Log.d("CZGM_${this.name}", "m3u_link » ${m3u_link}")
+            Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
 
             callback.invoke(
                 ExtractorLink(

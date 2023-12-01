@@ -18,7 +18,7 @@ open class VideoSeyred : ExtractorApi() {
         val ext_ref   = referer ?: ""
         val video_id  = url.substringAfter("embed/").substringBefore("?")
         val video_url = "${mainUrl}/playlist/${video_id}.json"
-        Log.d("DZK_${this.name}", "video_url » ${video_url}")
+        Log.d("Kekik_${this.name}", "video_url » ${video_url}")
 
         val response_raw                          = app.get(video_url)
         val response_list:List<VideoSeyredSource> = jacksonObjectMapper().readValue(response_raw.text)

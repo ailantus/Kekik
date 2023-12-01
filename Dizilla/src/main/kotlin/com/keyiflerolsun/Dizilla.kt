@@ -4,7 +4,6 @@ package com.keyiflerolsun
 
 import android.util.Log
 import org.jsoup.nodes.Element
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
@@ -51,23 +50,6 @@ class Dizilla : MainAPI() {
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
-
-    data class SearchResult(
-        @JsonProperty("data") val data: SearchData?
-    )
-    
-    data class SearchData(
-        @JsonProperty("state")   val state: Boolean?           = null,
-        @JsonProperty("result")  val result: List<SearchItem>? = arrayListOf(),
-        @JsonProperty("message") val message: String?          = null,
-        @JsonProperty("html")    val html: String?             = null
-    )
-    
-    data class SearchItem(
-        @JsonProperty("used_slug")         val slug: String?   = null,
-        @JsonProperty("object_name")       val title: String?  = null,
-        @JsonProperty("object_poster_url") val poster: String? = null,
-    )
 
     private fun SearchItem.toSearchResponse(): SearchResponse? {
         return newTvSeriesSearchResponse(
@@ -174,50 +156,17 @@ class Dizilla : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZL", "data » ${data}")
-        val document   = app.get(data).document
-        val raw_iframe = document.selectFirst("div#playerLsDizilla iframe")?.attr("src") ?: return false
-        val iframe     = raw_iframe.substringAfter("//")
+        val document = app.get(data).document
 
-        if (iframe.startsWith("contentx.me") || iframe.startsWith("hotlinger.com")) {
-            val i_source  = app.get("https://${iframe}", referer="${mainUrl}/").text
-            val i_extract = Regex("""window\.openPlayer\('([^']+)'""").find(i_source)!!.groups[1]?.value ?: return false
+        document.select("a[href*='player']").forEach {
+            val player_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
+            val raw_iframe = player_doc.selectFirst("div#playerLsDizilla iframe")?.attr("src")?.substringAfter("//") ?: return false
+            val iframe     = "https://${raw_iframe}"
+            Log.d("DZL", "iframe » ${iframe}")
 
-            val vid_source  = app.get("https://contentx.me/source2.php?v=${i_extract}", referer="${mainUrl}/").text
-            val vid_extract = Regex("""file\":\"([^\"]+)""").find(vid_source)!!.groups[1]?.value ?: return false
-            val m3u_link    = vid_extract.replace("\\", "")
-
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = "https://${iframe}",
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
-                )
-            )
-
-            val i_dublaj = Regex(""",\"([^']+)\",\"Türkçe""").find(i_source)!!.groups[1]?.value
-            if (i_dublaj != null) {
-                val dublaj_source  = app.get("https://contentx.me/source2.php?v=${i_dublaj}", referer="${mainUrl}/").text
-                val dublaj_extract = Regex("""file\":\"([^\"]+)""").find(dublaj_source)!!.groups[1]?.value ?: return false
-                val dublaj_link    = dublaj_extract.replace("\\", "")
-
-                callback.invoke(
-                    ExtractorLink(
-                        source  = "${this.name} Türkçe Dublaj",
-                        name    = "${this.name} Türkçe Dublaj",
-                        url     = dublaj_link,
-                        referer = "https://${iframe}",
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = true
-                    )
-                )
-            }
-
-            return true
-        } else {
-            return loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
+
+        return true
     }
 }

@@ -16,7 +16,7 @@ open class PeaceMakerst : ExtractorApi() {
         val m3u_link:String?
         val ext_ref  = referer ?: ""
         val post_url = "${url}?do=getVideo"
-        Log.d("DZM_${this.name}", "post_url » ${post_url}")
+        Log.d("Kekik_${this.name}", "post_url » ${post_url}")
 
         val response = app.post(
             post_url,

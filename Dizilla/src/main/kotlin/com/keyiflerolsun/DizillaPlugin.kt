@@ -8,5 +8,7 @@ import android.content.Context
 class DizillaPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(Dizilla())
+        registerExtractorAPI(ContentX())
+        registerExtractorAPI(Hotlinger())
     }
 }

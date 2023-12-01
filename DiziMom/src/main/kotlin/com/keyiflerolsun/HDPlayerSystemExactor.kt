@@ -20,7 +20,7 @@ open class HDPlayerSystem : ExtractorApi() {
             url.substringAfter("?data=")
         }
         val post_url = "${mainUrl}/player/index.php?data=${vid_id}&do=getVideo"
-        Log.d("DZM_${this.name}", "post_url » ${post_url}")
+        Log.d("Kekik_${this.name}", "post_url » ${post_url}")
 
         val response = app.post(
             post_url,
