@@ -93,7 +93,7 @@ class DiziMom : MainAPI() {
 
             Episode(
                 data    = ep_href,
-                name    = ep_name,
+                name    = ep_name.substringBefore(" izle").replace(title, "").trim(),
                 season  = ep_season,
                 episode = ep_episode
             )
