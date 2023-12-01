@@ -78,7 +78,7 @@ class YouTube : MainAPI() {
             return provider.newMovieSearchResponse(
                 title,
                 "${provider.mainUrl}/watch?v=${videoId}",
-                TvType.Movie
+                TvType.Others
             ) {
                 this.posterUrl = "${provider.mainUrl}/vi/${videoId}/mqdefault.jpg"
             }
@@ -97,7 +97,7 @@ class YouTube : MainAPI() {
             return provider.newMovieLoadResponse(
                 title,
                 "${provider.mainUrl}/watch?v=${videoId}",
-                TvType.Movie,
+                TvType.Others,
                 "${videoId}"
             ) {
                 plot            = description
