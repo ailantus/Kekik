@@ -157,11 +157,16 @@ class Dizilla : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZL", "data » ${data}")
         val document = app.get(data).document
+        val iframes  = mutableSetOf<String>()
 
         document.select("a[href*='player']").forEach {
             val player_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
             val raw_iframe = player_doc.selectFirst("div#playerLsDizilla iframe")?.attr("src")?.substringAfter("//") ?: return false
             val iframe     = "https://${raw_iframe}"
+
+            if (iframe in iframes) { return@forEach }
+            iframes.add(iframe)
+
             Log.d("DZL", "iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
