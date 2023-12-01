@@ -77,7 +77,7 @@ class GoodPorn : MainAPI() {
         val document = app.get(url).document
 
         val title           = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
-        val poster          = fixUrlNull(document.selectFirst("meta[property=og:image]")?.attr("content").toString())
+        val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val tags            = document.select("div.info div:nth-child(5) > a").map { it.text() }
         val description     = document.select("div.info div:nth-child(2)").text().trim()
         val actors          = document.select("div.info div:nth-child(6) > a").map { it.text() }

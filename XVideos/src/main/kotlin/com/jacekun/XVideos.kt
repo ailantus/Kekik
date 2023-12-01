@@ -21,7 +21,7 @@ class XVideos : MainAPI() {
     private val Dev                   = "DevDebug"
 
     fun getLinkAndExt(text: String) : Pair<String, String> {
-        val validlink     = text.trim().trim("\"").trim("\'")
+        val validlink     = text.trim().trim('"').trim('\'')
         val valindlinkext = validlink.substringAfterLast(".").substringBeforeLast("?").trim().uppercase()
 
         return Pair(validlink, valindlinkext)
@@ -100,7 +100,7 @@ class XVideos : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val soup            = app.get(url).document
         val title           = if (url.contains("channels") || url.contains("pornstars")) soup.selectFirst("html.xv-responsive.is-desktop head title")?.text() else soup.selectFirst(".page-title")?.text()
-        val poster: String? = if (url.contains("channels") || url.contains("pornstars")) soup.selectFirst(".profile-pic img")?.attr("data-src") else soup.selectFirst("head meta[property=og:image]")?.attr("content")
+        val poster: String? = if (url.contains("channels") || url.contains("pornstars")) soup.selectFirst(".profile-pic img")?.attr("data-src") else soup.selectFirst("[property='og:image']")?.attr("content")
         val tags            = soup.select(".video-tags-list li a").map { it?.text()?.trim().toString().replace(", ","") }
 
         val episodes        = soup.select("div.thumb-block").mapNotNull {
