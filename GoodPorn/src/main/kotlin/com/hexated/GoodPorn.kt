@@ -52,7 +52,8 @@ class GoodPorn : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val full_title = this.selectFirst("strong.title")?.text() ?: return null
         val last_index = full_title.lastIndexOf(" - ")
-        val title      = if (last_index != -1) full_title.substring(0, last_index) else full_title
+        val raw_title  = if (last_index != -1) full_title.substring(0, last_index) else full_title
+        val title      = raw_title.removePrefix("- ").trim().removeSuffix("-").trim()
 
         val href       = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl  = fixUrlNull(this.select("div.img > img").attr("data-original"))
@@ -86,12 +87,13 @@ class GoodPorn : MainAPI() {
 
         val full_title      = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
         val last_index      = full_title.lastIndexOf(" - ")
-        val title           = if (last_index != -1) full_title.substring(0, last_index) else full_title
+        val raw_title       = if (last_index != -1) full_title.substring(0, last_index) else full_title
+        val title           = raw_title.removePrefix("- ").trim().removeSuffix("-").trim()
 
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
-        val tags            = document.select("div.info div:nth-child(4) > a").map { it.text() }
-        val description     = document.select("div.info div:nth-child(2)").text().trim()
-        val actors          = document.select("div.info div:nth-child(6) > a").map { it.text() }
+        val tags            = document.selectXpath("//div[contains(text(), 'Categories:')]/a").map { it.text() }
+        val description     = document.selectXpath("//div[contains(text(), 'Description:')]/em").text().trim()
+        val actors          = document.selectXpath("//div[contains(text(), 'Models:')]/a").map { it.text() }
         val recommendations = document.select("div#list_videos_related_videos_items div.item").mapNotNull { it.toSearchResult() }
 
         val year            = full_title.substring(full_title.length - 4).toIntOrNull()
@@ -111,7 +113,7 @@ class GoodPorn : MainAPI() {
             }
         }
 
-        return newMovieLoadResponse(title, url, TvType.NSFW, url) {
+        return newMovieLoadResponse(title.removePrefix("- ").removeSuffix("-").trim(), url, TvType.NSFW, url) {
             this.posterUrl       = poster
             this.year            = year
             this.plot            = description
