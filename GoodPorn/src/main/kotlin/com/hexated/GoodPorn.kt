@@ -9,23 +9,27 @@ import org.jsoup.nodes.Element
 import java.util.*
 
 class GoodPorn : MainAPI() {
-    override var mainUrl            = "https://goodporn.to"
-    override var name               = "GoodPorn"
-    override val hasMainPage        = true
-    override val hasDownloadSupport = true
-    override val vpnStatus          = VPNStatus.MightBeNeeded
-    override val supportedTypes     = setOf(TvType.NSFW)
+    override var mainUrl              = "https://goodporn.to"
+    override var name                 = "GoodPorn"
+    override val hasMainPage          = true
+    override var lang                 = "en"
+    override val hasQuickSearch       = false
+    override val hasDownloadSupport   = true
+    override val hasChromecastSupport = true
+    override val supportedTypes       = setOf(TvType.NSFW)
+    override val vpnStatus            = VPNStatus.MightBeNeeded
 
     override val mainPage = mainPageOf(
         "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=post_date&from="                            to "New Videos",
         "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=video_viewed&from="                         to "Most Viewed Videos",
-        "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=rating&from="                               to "Top Rated Videos ",
+        "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=rating&from="                               to "Top Rated Videos",
         "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=most_commented&from="                       to "Most Commented Videos",
         "${mainUrl}/?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=duration&from="                             to "Longest Videos",
         "${mainUrl}/channels/brazzers/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from="          to "Brazzers",
         "${mainUrl}/channels/digitalplayground/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=" to "Digital Playground",
         "${mainUrl}/channels/realitykings/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from="      to "Realitykings",
         "${mainUrl}/channels/babes-network/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from="     to "Babes Network",
+        "${mainUrl}/categories/amateur/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from="         to "Amateur"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -58,9 +62,9 @@ class GoodPorn : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val searchResponse = mutableListOf<SearchResponse>()
 
-        for (i in 1..15) {
+        for (say in 1..15) {
             val document = app.get(
-                "${mainUrl}/search/nikki-benz/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q=$query&category_ids=&sort_by=&from_videos=$i&from_albums=$i",
+                "${mainUrl}/search/nikki-benz/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q=${query}&category_ids=&sort_by=&from_videos=${say}&from_albums=${say}",
                 headers = mapOf("X-Requested-With" to "XMLHttpRequest")
             ).document
 
@@ -78,7 +82,7 @@ class GoodPorn : MainAPI() {
 
         val title           = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
-        val tags            = document.select("div.info div:nth-child(5) > a").map { it.text() }
+        val tags            = document.select("div.info div:nth-child(4) > a").map { it.text() }
         val description     = document.select("div.info div:nth-child(2)").text().trim()
         val actors          = document.select("div.info div:nth-child(6) > a").map { it.text() }
         val recommendations = document.select("div#list_videos_related_videos_items div.item").mapNotNull { it.toSearchResult() }

@@ -1,7 +1,7 @@
-version = 9
+version = 10
 
 cloudstream {
-    authors     = listOf("Sora")
+    authors     = listOf("Sora", "keyiflerolsun")
     language    = "en"
     description = "(VPN) Premium porn with 4K support"
 
