@@ -7,31 +7,25 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class HDStreamAble : PeaceMakerst() {
-    override var name            = "HDStreamAble"
-    override var mainUrl         = "https://hdstreamable.com"
-    override val requiresReferer = true
-}
-
 open class PeaceMakerst : ExtractorApi() {
     override val name            = "PeaceMakerst"
-    override val mainUrl         = "https://hdplayersystem.live"
+    override val mainUrl         = "https://peacemakerst.com"
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
         val m3u_link:String?
-
+        val ext_ref  = referer ?: ""
         val post_url = "${url}?do=getVideo"
-        Log.d("EXT_${this.name}", "post_url » ${post_url}")
+        Log.d("DZM_${this.name}", "post_url » ${post_url}")
 
         val response = app.post(
             post_url,
             data = mapOf(
                 "hash" to url.substringAfter("video/"),
-                "r"    to "${referer}/",
+                "r"    to ext_ref,
                 "s"    to ""
             ),
-            referer = "${referer}/",
+            referer = ext_ref,
             headers = mapOf(
                 "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                 "X-Requested-With" to "XMLHttpRequest"
@@ -42,7 +36,7 @@ open class PeaceMakerst : ExtractorApi() {
             val teve2_response = app.get(
                 "https://www.teve2.com.tr/action/media/${teve2_id}",
                 referer = "https://www.teve2.com.tr/embed/${teve2_id}"
-            ).parsedSafe<Teve2ApiResponse>() ?: return throw ErrorLoadingException("teve2 response is null")
+            ).parsedSafe<Teve2ApiResponse>() ?: throw ErrorLoadingException("teve2 response is null")
 
             m3u_link           = teve2_response.media.link.serviceUrl + "//" + teve2_response.media.link.securePath
         } else {
@@ -62,7 +56,7 @@ open class PeaceMakerst : ExtractorApi() {
                 source  = this.name,
                 name    = this.name,
                 url     = m3u_link,
-                referer = url,
+                referer = ext_ref,
                 quality = Qualities.Unknown.value,
                 isM3u8  = m3u_link.contains(".m3u8")
             )

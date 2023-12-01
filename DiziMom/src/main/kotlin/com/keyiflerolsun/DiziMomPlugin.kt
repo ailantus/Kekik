@@ -8,7 +8,7 @@ import android.content.Context
 class DiziMomPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(DiziMom())
-        registerExtractorAPI(HDMOMPlayer())
+        registerExtractorAPI(HDMomPlayer())
         registerExtractorAPI(HDPlayerSystem())
         registerExtractorAPI(VideoSeyred())
         registerExtractorAPI(PeaceMakerst())

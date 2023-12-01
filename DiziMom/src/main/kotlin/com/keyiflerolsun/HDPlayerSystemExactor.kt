@@ -13,22 +13,22 @@ open class HDPlayerSystem : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val vid_id = if (url.contains("video/")) {
+        val ext_ref  = referer ?: ""
+        val vid_id   = if (url.contains("video/")) {
             url.substringAfter("video/")
         } else {
             url.substringAfter("?data=")
         }
-
-        val post_url = "https://hdplayersystem.live/player/index.php?data=${vid_id}&do=getVideo"
-        Log.d("EXT_${this.name}", "post_url » ${post_url}")
+        val post_url = "${mainUrl}/player/index.php?data=${vid_id}&do=getVideo"
+        Log.d("DZM_${this.name}", "post_url » ${post_url}")
 
         val response = app.post(
             post_url,
             data = mapOf(
                 "hash" to vid_id,
-                "r"    to "${mainUrl}/"
+                "r"    to ext_ref
             ),
-            referer = referer,
+            referer = ext_ref,
             headers = mapOf(
                 "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                 "X-Requested-With" to "XMLHttpRequest"
@@ -42,7 +42,7 @@ open class HDPlayerSystem : ExtractorApi() {
                 source  = this.name,
                 name    = this.name,
                 url     = m3u_link,
-                referer = "${referer}/",
+                referer = ext_ref,
                 quality = Qualities.Unknown.value,
                 isM3u8  = m3u_link.contains(".m3u8")
             )

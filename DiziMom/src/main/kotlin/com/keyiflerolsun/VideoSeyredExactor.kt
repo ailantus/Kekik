@@ -12,12 +12,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 open class VideoSeyred : ExtractorApi() {
     override val name            = "VideoSeyred"
     override val mainUrl         = "https://videoseyred.in"
-    override val requiresReferer = false
+    override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
+        val ext_ref   = referer ?: ""
         val video_id  = url.substringAfter("embed/").substringBefore("?")
         val video_url = "${mainUrl}/playlist/${video_id}.json"
-        Log.d("EXT_${this.name}", "video_url » ${video_url}")
+        Log.d("DZM_${this.name}", "video_url » ${video_url}")
 
         val response_raw                          = app.get(video_url)
         val response_list:List<VideoSeyredSource> = jacksonObjectMapper().readValue(response_raw.text)
@@ -40,7 +41,7 @@ open class VideoSeyred : ExtractorApi() {
                     source  = this.name,
                     name    = this.name,
                     url     = source.file,
-                    referer = "${mainUrl}/",
+                    referer = ext_ref,
                     quality = Qualities.Unknown.value,
                     isM3u8  = source.file.contains(".m3u8")
                 )
