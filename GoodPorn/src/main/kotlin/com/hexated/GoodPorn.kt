@@ -34,7 +34,7 @@ class GoodPorn : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home     = document.select("div#list_videos_most_recent_videos_items div.item, div#list_videos_common_videos_list_items div.item").mapNotNull {
+        val home     = document.select("div#list_videos_common_videos_list_items div.item").mapNotNull {
             it.toSearchResult()
         }
 
@@ -49,7 +49,10 @@ class GoodPorn : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("strong.title")?.text() ?: return null
+        val full_title = this.selectFirst("strong.title")?.text() ?: return null
+        val last_index = full_title.lastIndexOf(" - ")
+        val title      = if (last_index != -1) full_title.substring(0, last_index) else full_title
+
         val href      = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = fixUrlNull(this.select("div.img > img").attr("data-original"))
 
@@ -80,18 +83,41 @@ class GoodPorn : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
+        val full_title = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
+        val last_index = full_title.lastIndexOf(" - ")
+        val title      = if (last_index != -1) full_title.substring(0, last_index) else full_title
+
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val tags            = document.select("div.info div:nth-child(4) > a").map { it.text() }
         val description     = document.select("div.info div:nth-child(2)").text().trim()
         val actors          = document.select("div.info div:nth-child(6) > a").map { it.text() }
         val recommendations = document.select("div#list_videos_related_videos_items div.item").mapNotNull { it.toSearchResult() }
 
+        val year            = full_title.substring(full_title.length - 4).toIntOrNull()
+        val rating          = document.selectFirst("div.rating span")?.text()?.substringBefore("%")?.trim()?.toFloatOrNull()?.div(10)?.toString()?.toRatingInt()
+
+        val raw_duration    = document.selectXpath("//span[contains(text(), 'Duration')]/em").text().trim()
+        val duration_parts  = raw_duration.split(":")
+        val duration        = when (duration_parts.size) {
+            3 -> {
+                val hours   = duration_parts[0].toIntOrNull() ?: 0
+                val minutes = duration_parts[1].toIntOrNull() ?: 0
+
+                hours * 60 + minutes
+            }
+            else -> {
+                duration_parts[0].toIntOrNull() ?: 0
+            }
+        }
+
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
             this.posterUrl       = poster
+            this.year            = year
             this.plot            = description
             this.tags            = tags
             this.recommendations = recommendations
+            this.rating          = rating
+            this.duration        = duration
             addActors(actors)
         }
     }
