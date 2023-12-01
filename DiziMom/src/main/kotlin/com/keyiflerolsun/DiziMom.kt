@@ -142,8 +142,10 @@ class DiziMom : MainAPI() {
         for (iframe in iframes) {
             var i_source: String? = null
             var m3u_link: String? = null
+            var kaynak: String?   = null
 
             if (iframe.contains("hdmomplayer")) {
+                kaynak        = "HDMOMPlayer"
                 i_source      = app.get("${iframe}", referer="${mainUrl}/").text
 
                 val bePlayer  = Regex("""bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);""").find(i_source)?.groupValues
@@ -177,6 +179,8 @@ class DiziMom : MainAPI() {
             }
 
             if (iframe.contains("hdplayersystem")) {
+                kaynak        = "HDPlayerSystem"
+
                 val vid_id = if (iframe.contains("video/")) {
                     iframe.substringAfter("video/")
                 } else {
@@ -201,6 +205,8 @@ class DiziMom : MainAPI() {
             }
 
             if (iframe.contains("peacemakerst") || iframe.contains("hdstreamable")) {
+                kaynak        = "PeaceMakerst"
+
                 val post_url = "${iframe}?do=getVideo"
                 val response = app.post(
                     post_url,
@@ -233,6 +239,8 @@ class DiziMom : MainAPI() {
             }
 
             if (iframe.contains("videoseyred.in")) {
+                kaynak        = "VideoSeyred"
+
                 val video_id = iframe.substringAfter("embed/").substringBefore("?")
                 val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
                 val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
@@ -269,8 +277,8 @@ class DiziMom : MainAPI() {
             if (m3u_link != null) {
                 callback.invoke(
                     ExtractorLink(
-                        source  = this.name,
-                        name    = this.name,
+                        source  = "${this.name} - ${kaynak}",
+                        name    = "${this.name} - ${kaynak}",
                         url     = m3u_link,
                         referer = iframe,
                         quality = Qualities.Unknown.value,
