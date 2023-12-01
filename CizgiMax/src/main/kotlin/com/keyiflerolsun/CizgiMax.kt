@@ -99,31 +99,7 @@ class CizgiMax : MainAPI() {
         val iframe   = document.selectFirst("div.video-content iframe")?.attr("src") ?: return false
         Log.d("CZGM", "iframe » ${iframe}")
 
-        if (loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)) {
-            return true
-        }
-
-        var i_source          = app.get("${iframe}", referer="${mainUrl}/").text
-        var m3u_link: String? = null
-
-        if (iframe.contains("sibnet.ru")) {
-            m3u_link      = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-            if (m3u_link != null) {
-                m3u_link = "https://video.sibnet.ru${m3u_link}"
-                Log.d("CZGM", "m3u_link » ${m3u_link}")
-
-                callback.invoke(
-                    ExtractorLink(
-                        source  = this.name,
-                        name    = this.name,
-                        url     = m3u_link,
-                        referer = iframe,
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = m3u_link.contains(".m3u8")
-                    )
-                )
-            }
-        }
+        loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
 
         return true
     }

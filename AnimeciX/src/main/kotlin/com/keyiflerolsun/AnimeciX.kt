@@ -105,27 +105,8 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        if (loadExtractor(data, "${mainUrl}/", subtitleCallback, callback)) {
-            return true
-        }
-
-        if (data.contains("tau-video.xyz")) {
-            val key = data.split("/").last()
-            val api = app.get("https://tau-video.xyz/api/video/${key}").parsedSafe<TauVideo>() ?: return false
-
-            for (video in api.urls) {
-                callback.invoke(
-                    ExtractorLink(
-                        source  = this.name,
-                        name    = "${this.name} - ${video.label}",
-                        url     = video.url,
-                        referer = "${mainUrl}/",
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = video.url.contains(".m3u8")
-                    )
-                )
-            }
-        }
+        Log.d("ACX", "data » ${data}")
+        loadExtractor(data, "${mainUrl}/", subtitleCallback, callback)
 
         return true
     }

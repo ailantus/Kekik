@@ -9,8 +9,6 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import org.jsoup.Jsoup
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 
 class DiziKorea : MainAPI() {
     override var mainUrl              = "https://dizikorea.tv"
@@ -142,46 +140,14 @@ class DiziKorea : MainAPI() {
 
 
         document.select("div.series-watch-alternatives button").forEach {
-            var iframe = it.attr("data-frame")
+            var iframe = it.attr("data-hhs")
             if (iframe.startsWith("//")) {
                 iframe = "https:${iframe}"
             }
             Log.d("DZK", "iframe » ${iframe}")
 
-            if (iframe.contains("vidmoly")) {
+            if (!iframe.contains("ok.ru")) {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
-            }
-
-            if (iframe.contains("videoseyred")) {
-                val video_id = iframe.substringAfter("embed/").substringBefore("?")
-                val response_raw = app.get("https://videoseyred.in/playlist/${video_id}.json")
-                val response_list:List<VideoSeyred> = jacksonObjectMapper().readValue(response_raw.text)
-                val response = response_list[0]
-                Log.d("DZK", "response » ${response}")
-
-                for (track in response.tracks) {
-                    if (track.label != null && track.kind == "captions") {
-                        subtitleCallback.invoke(
-                            SubtitleFile(
-                                lang = track.label,
-                                url  = fixUrl(track.file)
-                            )
-                        )
-                    }
-                }
-
-                for (source in response.sources) {
-                    callback.invoke(
-                        ExtractorLink(
-                            source  = "VideoSeyred",
-                            name    = "VideoSeyred",
-                            url     = source.file,
-                            referer = "https://videoseyred.in/",
-                            quality = Qualities.Unknown.value,
-                            isM3u8  = source.file.contains(".m3u8")
-                        )
-                    )
-                }
             }
         }
 

@@ -61,13 +61,3 @@ data class Video(
     @JsonProperty("season_num") val season_num: Int?,
     @JsonProperty("url") val url: String,
 )
-
-
-data class TauVideo(
-    @JsonProperty("urls") val urls: List<TauVideoUrl>
-)
-
-data class TauVideoUrl(
-    @JsonProperty("url") val url: String,
-    @JsonProperty("label") val label: String,
-)

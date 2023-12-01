@@ -8,5 +8,6 @@ import android.content.Context
 class DiziKoreaPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(DiziKorea())
+        registerExtractorAPI(VideoSeyred())
     }
 }

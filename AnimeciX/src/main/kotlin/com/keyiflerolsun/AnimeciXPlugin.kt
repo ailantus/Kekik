@@ -8,5 +8,6 @@ import android.content.Context
 class AnimeciXPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(AnimeciX())
+        registerExtractorAPI(TauVideo())
     }
 }
