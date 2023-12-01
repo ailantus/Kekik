@@ -56,7 +56,7 @@ open class HDMomPlayer : ExtractorApi() {
                 source  = this.name,
                 name    = this.name,
                 url     = m3u_link,
-                referer = ext_ref,
+                referer = url,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
             )
