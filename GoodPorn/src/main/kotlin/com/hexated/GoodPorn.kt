@@ -2,10 +2,11 @@
 
 package com.hexated
 
-import com.lagradost.cloudstream3.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.utils.*
+import android.util.Log
 import org.jsoup.nodes.Element
+import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import java.util.*
 
 class GoodPorn : MainAPI() {
@@ -34,7 +35,7 @@ class GoodPorn : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home     = document.select("div#list_videos_common_videos_list_items div.item").mapNotNull {
+        val home     = document.select("div#list_videos_most_recent_videos_items div.item, div#list_videos_common_videos_list_items div.item").mapNotNull {
             it.toSearchResult()
         }
 
@@ -53,8 +54,8 @@ class GoodPorn : MainAPI() {
         val last_index = full_title.lastIndexOf(" - ")
         val title      = if (last_index != -1) full_title.substring(0, last_index) else full_title
 
-        val href      = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = fixUrlNull(this.select("div.img > img").attr("data-original"))
+        val href       = fixUrl(this.selectFirst("a")!!.attr("href"))
+        val posterUrl  = fixUrlNull(this.select("div.img > img").attr("data-original"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
@@ -83,9 +84,9 @@ class GoodPorn : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val full_title = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
-        val last_index = full_title.lastIndexOf(" - ")
-        val title      = if (last_index != -1) full_title.substring(0, last_index) else full_title
+        val full_title      = document.selectFirst("div.headline > h1")?.text()?.trim().toString()
+        val last_index      = full_title.lastIndexOf(" - ")
+        val title           = if (last_index != -1) full_title.substring(0, last_index) else full_title
 
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val tags            = document.select("div.info div:nth-child(4) > a").map { it.text() }
@@ -140,5 +141,4 @@ class GoodPorn : MainAPI() {
 
         return true
     }
-
 }
