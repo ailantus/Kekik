@@ -39,7 +39,7 @@ open class RapidVid : ExtractorApi() {
                 url     = decoded,
                 referer = ext_ref,
                 quality = Qualities.Unknown.value,
-                isM3u8  = decoded.contains(".m3u8")
+                isM3u8  = true
             )
         )
     }
