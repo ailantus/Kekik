@@ -20,7 +20,7 @@ open class VidMoxy : ExtractorApi() {
 
             subtitleCallback.invoke(
                 SubtitleFile(
-                    lang = sub_lang,
+                    lang = sub_lang.replace("\\u0131", "ı").replace("\\u0130", "İ").replace("\\u00fc", "ü").replace("\\u00e7", "ç"),
                     url  = fixUrl(sub_url.replace("\\", ""))
                 )
             )

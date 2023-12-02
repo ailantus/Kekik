@@ -48,16 +48,25 @@ open class TRsTX : ExtractorApi() {
             val title    = mapEntry["title"] ?: continue
             val m3u_link = mapEntry["videoData"] ?: continue
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = ext_ref,
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8")
+            if (m3u_link.contains(".m3u8")) {
+                M3u8Helper.generateM3u8(
+                    source    = "${this.name} - ${title}",
+                    name      = "${this.name} - ${title}",
+                    streamUrl = m3u_link,
+                    referer   = ext_ref
+                ).forEach(callback)
+            } else {
+                callback.invoke(
+                    ExtractorLink(
+                        source  = "${this.name} - ${title}",
+                        name    = "${this.name} - ${title}",
+                        url     = m3u_link,
+                        referer = ext_ref,
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = false
+                    )
                 )
-            )
+            }
         }
     }
 
