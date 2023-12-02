@@ -128,10 +128,7 @@ class SezonlukDizi : MainAPI() {
                 data    = mapOf("id" to "${veri.id}")
             ).document
 
-            var iframe = veri_response.selectFirst("iframe")?.attr("src") ?: return@forEach
-            if (iframe.startsWith("//")) {
-                iframe = "https:$iframe"
-            }
+            var iframe = fixUrlNull(veri_response.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»1 | iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
@@ -168,10 +165,7 @@ class SezonlukDizi : MainAPI() {
                 data    = mapOf("id" to "${veri.id}")
             ).document
 
-            var iframe = veri_response.selectFirst("iframe")?.attr("src") ?: return@forEach
-            if (iframe.startsWith("//")) {
-                iframe = "https:$iframe"
-            }
+            var iframe = fixUrlNull(veri_response.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»0 | iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->

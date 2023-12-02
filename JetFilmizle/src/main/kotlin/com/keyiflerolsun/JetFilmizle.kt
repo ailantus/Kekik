@@ -102,34 +102,18 @@ class JetFilmizle : MainAPI() {
             if (source.lowercase().contains("okru") || source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
-            var iframe = movDoc.selectFirst("div#movie iframe")?.attr("src")
+            var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))
 
             if (iframe != null) {
-                if (iframe.startsWith("//")) iframe = "https:$iframe"
                 Log.d("JTF", "iframe » ${iframe}")
 
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             } else {
                 movDoc.select("div#movie p a").forEach { link ->
-                    var downloadLink = link.attr("href")
+                    var downloadLink = fixUrlNull(link.attr("href"))
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
-                    if (downloadLink.contains("pixeldrain")) {
-                        var pixel_id = Regex("""([^\/]+)(?=\?download)""").find(downloadLink)?.groupValues?.get(1)
-                        downloadLink = "https://pixeldrain.com/api/file/${pixel_id}?download"
-                        Log.d("JTF", "downloadLink » ${downloadLink}")
-
-                        callback.invoke(
-                            ExtractorLink(
-                                source  = "pixeldrain - ${pixel_id}",
-                                name    = "pixeldrain - ${pixel_id}",
-                                url     = downloadLink,
-                                referer = "https://pixeldrain.com/u/${pixel_id}?download",
-                                quality = Qualities.Unknown.value,
-                                isM3u8  = downloadLink.contains(".m3u8")
-                            )
-                        )
-                    }
+                    loadExtractor(downloadLink, "${mainUrl}/", subtitleCallback, callback)
                 }
             }
         }
