@@ -36,15 +36,15 @@ class AnimeciX : MainAPI() {
                 "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
                 TvType.Anime
             ) {
-                this.posterUrl = anime.poster
+                this.posterUrl = fixUrlNull(anime.poster)
             }
-        } ?: emptyList()
+        } ?: listOf<SearchResponse>()
 
         return newHomePageResponse(request.name, home)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("${mainUrl}/secure/search/${query}?limit=20").parsedSafe<Search>() ?: return emptyList()
+        val response = app.get("${mainUrl}/secure/search/${query}?limit=20").parsedSafe<Search>() ?: return listOf<SearchResponse>()
 
         return response.results.mapNotNull { anime ->
             newAnimeSearchResponse(
@@ -52,7 +52,7 @@ class AnimeciX : MainAPI() {
                 "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
                 TvType.Anime
             ) {
-                this.posterUrl = anime.poster
+                this.posterUrl = fixUrlNull(anime.poster)
             }
         }
     }
@@ -94,12 +94,12 @@ class AnimeciX : MainAPI() {
             TvType.Anime,
             episodes
         ) {
-            this.posterUrl = response.title.poster
+            this.posterUrl = fixUrlNull(response.title.poster)
             this.year      = response.title.year
             this.plot      = response.title.description
             this.tags      = response.title.tags.filterNotNull().map { it.name }
             this.rating    = response.title.rating.toRatingInt()
-            addActors(response.title.actors.filterNotNull().map { Actor(it.name, it.poster) })
+            addActors(response.title.actors.filterNotNull().map { Actor(it.name, fixUrlNull(it.poster)) })
             addTrailer(response.title.trailer)
         }
     }

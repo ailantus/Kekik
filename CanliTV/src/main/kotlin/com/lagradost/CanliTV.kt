@@ -52,7 +52,7 @@ class CanliTV : MainAPI() {
 		Log.d("CTV", "query » ${query}")
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        return kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
+        val results  = kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
             val streamurl   = kanal.url.toString()
             val channelname = kanal.title.toString()
             val posterurl   = kanal.attributes["tvg-logo"].toString()
@@ -67,6 +67,12 @@ class CanliTV : MainAPI() {
                 posterUrl = posterurl,
                 lang      = nation
             )
+        }
+
+        if (results.isEmpty()) {
+            return listOf<SearchResponse>()
+        } else {
+            return results
         }
     }
 
