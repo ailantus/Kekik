@@ -11,10 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.Qualities
 
 class FullHDFilmizlesene : MainAPI() {
     override var mainUrl              = "https://www.fullhdfilmizlesene.pw"
@@ -143,7 +142,7 @@ class FullHDFilmizlesene : MainAPI() {
 
         val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return emptyList()
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
-        val keys = listOf("atom", "advid", "advidprox")
+        val keys = listOf("atom", "advid", "advidprox", "proton")
 
         val linkList = mutableListOf<Map<String, String>>()
 
@@ -152,6 +151,7 @@ class FullHDFilmizlesene : MainAPI() {
                 "atom" -> scx_map.atom?.sx?.t
                 "advid" -> scx_map.advid?.sx?.t
                 "advidprox" -> scx_map.advidprox?.sx?.t
+                "proton" -> scx_map.proton?.sx?.t
                 else -> null
             }
 
@@ -175,46 +175,6 @@ class FullHDFilmizlesene : MainAPI() {
         return linkList
     }
 
-    private fun rapid2M3u8(rapid: String): String? {
-        val extracted_value = Regex("""file": "(.*)",""").find(rapid)?.groupValues?.get(1) ?: return null
-
-        val bytes   = extracted_value.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
-        val decoded = String(bytes, Charsets.UTF_8)
-        Log.d("FHD", "decoded » ${decoded}")
-
-        return decoded
-    }
-
-    private suspend fun trstx2M3u8(trstx: String): List<Map<String, String>> {
-        val file     = Regex("""file\":\"([^\"]+)""").find(trstx)?.groupValues?.get(1) ?: return emptyList()
-        val postLink = "https://trstx.org/" + file.replace("\\", "")
-        val rawList  = app.post(postLink, referer="${mainUrl}/").parsedSafe<List<Any>>() ?: return emptyList()
-
-        val postJson: List<TrstxVideoData> = rawList.drop(1).map { item ->
-            val mapItem = item as Map<*, *>
-            TrstxVideoData(
-                title = mapItem["title"] as? String,
-                file  = mapItem["file"]  as? String
-            )
-        }
-        Log.d("FHD", "postJson » ${postJson}")
-
-        val vid_data = mutableListOf<Map<String, String>>()
-        for (item in postJson) {
-            if (item.file == null || item.title == null) continue
-
-            val fileUrl   = "https://trstx.org/playlist/" + item.file.substring(1) + ".txt"
-            val videoData = app.post(fileUrl, referer="${mainUrl}/").text
-            vid_data.add(mapOf(
-                "title"     to item.title,
-                "videoData" to videoData
-            ))
-        }
-
-        Log.d("FHD", "vid_data » ${vid_data}")
-        return vid_data
-    }
-
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("FHD", "data » ${data}")
         val document    = app.get(data).document
@@ -224,44 +184,9 @@ class FullHDFilmizlesene : MainAPI() {
 
 
         for (video_map in video_links) {
-            for ((key, value) in video_map) {
-                val video_req = app.get(value, referer="${mainUrl}/").text
-
-                if (value.contains("rapidvid.net")) {
-                    val m3u_link = rapid2M3u8(video_req) ?: continue
-
-                    Log.d("FHD", "m3u_link » ${m3u_link}")
-
-                    callback.invoke(
-                        ExtractorLink(
-                            source  = "${this.name} - ${key}",
-                            name    = "${this.name} - ${key}",
-                            url     = m3u_link,
-                            referer = "${mainUrl}/",
-                            quality = Qualities.Unknown.value,
-                            isM3u8  = true
-                        )
-                    )
-                }
-
-                if (value.contains("trstx.org")) {
-                    val m3u_map = trstx2M3u8(video_req)
-                    for (mapEntry in m3u_map) {
-                        val title    = mapEntry["title"] ?: continue
-                        val m3u_link = mapEntry["videoData"] ?: continue
-
-                        callback.invoke(
-                            ExtractorLink(
-                                source  = "${this.name} - ${title}",
-                                name    = "${this.name} - ${title}",
-                                url     = m3u_link,
-                                referer = "${mainUrl}/",
-                                quality = Qualities.Unknown.value,
-                                isM3u8  = m3u_link.contains(".m3u8")
-                            )
-                        )
-                    }
-                }
+            for ((_, value) in video_map) {
+                val video_url = fixUrlNull(value) ?: continue
+                loadExtractor(video_url, "${mainUrl}/", subtitleCallback, callback)
             }
         }
 
@@ -270,9 +195,10 @@ class FullHDFilmizlesene : MainAPI() {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class SCXData(
-        @JsonProperty("atom") val atom: AtomData? = null,
-        @JsonProperty("advid") val advid: AtomData? = null,
-        @JsonProperty("advidprox") val advidprox: AtomData? = null
+        @JsonProperty("atom")      val atom: AtomData?      = null,
+        @JsonProperty("advid")     val advid: AtomData?     = null,
+        @JsonProperty("advidprox") val advidprox: AtomData? = null,
+        @JsonProperty("proton")    val proton: AtomData?    = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -283,10 +209,5 @@ class FullHDFilmizlesene : MainAPI() {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class SXData(
         @JsonProperty("t") var t: Any
-    )
-
-    data class TrstxVideoData(
-        @JsonProperty("title") val title: String? = null,
-        @JsonProperty("file") val file: String? = null
     )
 }

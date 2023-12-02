@@ -8,5 +8,8 @@ import android.content.Context
 class FullHDFilmizlesenePlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(FullHDFilmizlesene())
+        registerExtractorAPI(RapidVid())
+        registerExtractorAPI(TRsTX())
+        registerExtractorAPI(VidMoxy())
     }
 }

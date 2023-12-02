@@ -72,9 +72,12 @@ def fullhdfilmizlesene(url:str) -> list:
                 vid_links.append({key: rapid2m3u8(value)})
             if "trstx.org" in value:
                 vid_links.append({key: trstx2m3u8(value)})
+            if "proton" in key:
+                vid_links.append({key: value})
 
     return vid_links
 
 # konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
 konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/makine-2/"))
 konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/bula-izle-1/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.pw/film/cilgin-cocuklar-oyun-bitti-izle-1/"))
