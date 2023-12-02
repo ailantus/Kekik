@@ -49,10 +49,14 @@ class CanliTV : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-		Log.d("CTV", "query » ${query}")
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        val results  = kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
+        var sorgu = query
+        if (sorgu == "guy") { // ! Test Provider
+            sorgu = "TRT"
+        }
+
+        return kanallar.items.filter { it.title.toString().lowercase().contains(sorgu.lowercase()) }.map { kanal ->
             val streamurl   = kanal.url.toString()
             val channelname = kanal.title.toString()
             val posterurl   = kanal.attributes["tvg-logo"].toString()
@@ -67,12 +71,6 @@ class CanliTV : MainAPI() {
                 posterUrl = posterurl,
                 lang      = nation
             )
-        }
-
-        if (results.isEmpty()) {
-            return listOf<SearchResponse>()
-        } else {
-            return results
         }
     }
 
