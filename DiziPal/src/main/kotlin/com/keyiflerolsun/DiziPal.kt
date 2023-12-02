@@ -111,11 +111,6 @@ class DiziPal : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        var sorgu = query
-        if (sorgu == "guy") { // ! Test Provider
-            sorgu = "gibi"
-        }
-
         val response_raw = app.post(
             "${mainUrl}/api/search-autocomplete",
             headers = mapOf(
@@ -124,7 +119,7 @@ class DiziPal : MainAPI() {
             ),
             referer = "${mainUrl}/",
             data    = mapOf(
-                "query" to sorgu
+                "query" to query
             )
         )
 

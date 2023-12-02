@@ -70,12 +70,7 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        var sorgu = query
-        if (sorgu == "guy") { // ! Test Provider
-            sorgu = "adam"
-        }
-
-        val document = app.get("${mainUrl}/arama/${sorgu}").document
+        val document = app.get("${mainUrl}/arama/${query}").document
 
         return document.select("li.film").mapNotNull { it.toSearchResult() }
     }
