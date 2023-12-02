@@ -30,12 +30,16 @@ open class TRsTX : ExtractorApi() {
         }
         Log.d("FHD", "postJson » ${postJson}")
 
-        val vid_map = mutableListOf<Map<String, String>>()
+		val vid_links = mutableSetOf<String>()
+        val vid_map   = mutableListOf<Map<String, String>>()
         for (item in postJson) {
             if (item.file == null || item.title == null) continue
 
             val fileUrl   = "${mainUrl}/playlist/" + item.file.substring(1) + ".txt"
             val videoData = app.post(fileUrl, referer=ext_ref).text
+
+			if (videoData in vid_links) { continue }
+ 			vid_links.add(videoData)
             vid_map.add(mapOf(
                 "title"     to item.title,
                 "videoData" to videoData
@@ -48,25 +52,16 @@ open class TRsTX : ExtractorApi() {
             val title    = mapEntry["title"] ?: continue
             val m3u_link = mapEntry["videoData"] ?: continue
 
-            if (m3u_link.contains(".m3u8")) {
-                M3u8Helper.generateM3u8(
-                    source    = "${this.name} - ${title}",
-                    name      = "${this.name} - ${title}",
-                    streamUrl = m3u_link,
-                    referer   = ext_ref
-                ).forEach(callback)
-            } else {
-                callback.invoke(
-                    ExtractorLink(
-                        source  = "${this.name} - ${title}",
-                        name    = "${this.name} - ${title}",
-                        url     = m3u_link,
-                        referer = ext_ref,
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = false
-                    )
+	        callback.invoke(
+                ExtractorLink(
+                    source  = "${this.name} - ${title}",
+                    name    = "${this.name} - ${title}",
+                    url     = m3u_link,
+                    referer = ext_ref,
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = false
                 )
-            }
+            )
         }
     }
 
