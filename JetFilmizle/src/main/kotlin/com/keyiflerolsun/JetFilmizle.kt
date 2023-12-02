@@ -110,7 +110,7 @@ class JetFilmizle : MainAPI() {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             } else {
                 movDoc.select("div#movie p a").forEach { link ->
-                    var downloadLink = fixUrlNull(link.attr("href"))
+                    var downloadLink = fixUrlNull(link.attr("href")) ?: return@forEach
                     Log.d("JTF", "downloadLink » ${downloadLink}")
 
                     loadExtractor(downloadLink, "${mainUrl}/", subtitleCallback, callback)

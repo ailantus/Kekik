@@ -140,7 +140,7 @@ class DiziKorea : MainAPI() {
 
 
         document.select("div.series-watch-alternatives button").forEach {
-            var iframe = fixUrlNull(it.attr("data-hhs"))
+            var iframe = fixUrlNull(it.attr("data-hhs")) ?: return@forEach
             Log.d("DZK", "iframe » ${iframe}")
 
             if (!iframe.contains("ok.ru")) {
