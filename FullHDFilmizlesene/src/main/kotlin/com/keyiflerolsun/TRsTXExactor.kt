@@ -28,7 +28,7 @@ open class TRsTX : ExtractorApi() {
                 file  = mapItem["file"]  as? String
             )
         }
-        Log.d("FHD", "postJson » ${postJson}")
+        Log.d("Kekik_${this.name}", "postJson » ${postJson}")
 
 		val vid_links = mutableSetOf<String>()
         val vid_map   = mutableListOf<Map<String, String>>()
@@ -40,6 +40,7 @@ open class TRsTX : ExtractorApi() {
 
 			if (videoData in vid_links) { continue }
  			vid_links.add(videoData)
+
             vid_map.add(mapOf(
                 "title"     to item.title,
                 "videoData" to videoData
