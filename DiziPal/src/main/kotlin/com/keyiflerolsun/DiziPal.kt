@@ -8,9 +8,13 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class DiziPal : MainAPI() {
-    override var mainUrl              = "https://dizipal675.com"
+    override var mainUrl              = "https://dizipal674.com"
     override var name                 = "DiziPal"
     override val hasMainPage          = true
     override var lang                 = "tr"
@@ -23,6 +27,24 @@ class DiziPal : MainAPI() {
     override var sequentialMainPage = true        // * https://recloudstream.github.io/dokka/-cloudstream/com.lagradost.cloudstream3/-main-a-p-i/index.html#-2049735995%2FProperties%2F101969414
     // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
     // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+
+    // ! CloudFlare v2
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val request  = chain.request()
+            val response = chain.proceed(request)
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.select("title").text() == "Just a moment...") {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
 
     override val mainPage = mainPageOf(
         "${mainUrl}/diziler/son-bolumler"                          to "Son Bölümler",
@@ -67,7 +89,7 @@ class DiziPal : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data).document
+        val document = app.get(request.data, interceptor = interceptor).document
         val home     = if (request.data.contains("/diziler/son-bolumler")) {
             document.select("div.episode-item").mapNotNull { it.sonBolumler() } 
         } else {
@@ -118,12 +140,13 @@ class DiziPal : MainAPI() {
 
         val response_raw = app.post(
             "${mainUrl}/api/search-autocomplete",
-            headers = mapOf(
+            headers     = mapOf(
                 "Accept"           to "application/json, text/javascript, */*; q=0.01",
                 "X-Requested-With" to "XMLHttpRequest"
             ),
-            referer = "${mainUrl}/",
-            data    = mapOf(
+            referer     = "${mainUrl}/",
+            interceptor = interceptor,
+            data        = mapOf(
                 "query" to sorgu
             )
         )
@@ -142,7 +165,7 @@ class DiziPal : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val poster      = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val year        = document.selectXpath("//div[text()='Yapım Yılı']//following-sibling::div").text().trim().toIntOrNull()
@@ -192,7 +215,7 @@ class DiziPal : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZP", "data » ${data}")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor = interceptor).document
         val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: document.selectFirst("div#vast_new iframe")?.attr("src") ?: return false
         Log.d("DZP", "iframe » ${iframe}")
 
