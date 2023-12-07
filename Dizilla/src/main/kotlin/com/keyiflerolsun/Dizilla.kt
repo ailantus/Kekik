@@ -24,8 +24,8 @@ class Dizilla : MainAPI() {
     // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/altyazili-bolumler?page=" to "Altyazılı Bölümler",
-        "${mainUrl}/dublaj-bolumler?page="    to "Dublaj Bölümler",
+        "${mainUrl}/tum-bolumler?page="    to "Altyazılı Bölümler",
+        "${mainUrl}/dublaj-bolumler?page=" to "Dublaj Bölümler",
         "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Aksiyon",
         "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Bilim Kurgu",
         "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Komedi",
@@ -52,7 +52,7 @@ class Dizilla : MainAPI() {
     private fun Element.diziler(): SearchResponse? {
         val title     = this.selectFirst("span.text-white")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -63,8 +63,8 @@ class Dizilla : MainAPI() {
         val title    = "${name} - ${ep_name}"
 
         val ep_doc    = app.get(this.attr("href")).document
-        val href      = fixUrlNull(ep_doc.selectFirst("div.poster a.flex")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(ep_doc.selectFirst("div.poster a.flex img")?.attr("src"))
+        val href      = fixUrlNull(ep_doc.selectFirst("a.relative")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(ep_doc.selectFirst("img.imgt")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -177,17 +177,25 @@ class Dizilla : MainAPI() {
         val document = app.get(data).document
         val iframes  = mutableSetOf<String>()
 
-        document.select("a[href*='player']").forEach {
-            val player_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
-            val raw_iframe = player_doc.selectFirst("div#playerLsDizilla iframe")?.attr("src")?.substringAfter("//") ?: return false
-            val iframe     = "https://${raw_iframe}"
-
-            if (iframe in iframes) { return@forEach }
-            iframes.add(iframe)
+        val alternatifler = document.select("a[href*='player']")
+        if (alternatifler.isEmpty()) {
+            val iframe = fixUrlNull(document.selectFirst("div#playerLsDizilla iframe")?.attr("src")) ?: return false
 
             Log.d("DZL", "iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        } else {
+            alternatifler.forEach {
+                val player_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
+                val iframe     = fixUrlNull(player_doc.selectFirst("div#playerLsDizilla iframe")?.attr("src")) ?: return false
+
+                if (iframe in iframes) { return@forEach }
+                iframes.add(iframe)
+
+                Log.d("DZL", "iframe » ${iframe}")
+
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            }
         }
 
         return true
