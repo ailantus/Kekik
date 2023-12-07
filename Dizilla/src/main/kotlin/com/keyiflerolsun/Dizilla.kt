@@ -119,7 +119,7 @@ class Dizilla : MainAPI() {
         }
 
         val episode_list = mutableListOf<Episode>()
-        document.selectXpath("//div[contains(@class, 'episodes')]/div/a[contains(@href, '-sezon')]").forEach {
+        document.selectXpath("//div[contains(@class, 'gap-2')]/a[contains(@href, '-sezon')]").forEach {
             val ep_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
         
             ep_doc.select("div.episodes div.cursor-pointer").forEach ep@ { episodeElement ->
