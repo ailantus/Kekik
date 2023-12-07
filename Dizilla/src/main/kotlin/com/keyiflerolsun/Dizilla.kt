@@ -29,11 +29,11 @@ class Dizilla : MainAPI() {
         "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Aksiyon",
         "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Bilim Kurgu",
         "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Komedi",
-        "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik"
+        "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik",
+        "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Fantastik",
         // "${mainUrl}/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Aile",
         // "${mainUrl}/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Biyografi",
         // "${mainUrl}/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Dram",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Fantastik",
         // "${mainUrl}/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Gerilim",
         // "${mainUrl}/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Korku",
     )
@@ -88,27 +88,22 @@ class Dizilla : MainAPI() {
 
         Log.d("DZL", "query » ${query}")
 
-        val searchReq = app.post(
+        val search_req = app.post(
             "${mainUrl}/bg/searchcontent",
-            data    = mapOf(
+            data = mapOf(
                 "cKey"       to c_key,
                 "cValue"     to c_value,
                 "searchterm" to query
-            ),
-            headers = mapOf(
-                "Accept"           to "application/json, text/javascript, */*; q=0.01",
-                "X-Requested-With" to "XMLHttpRequest"
-            ),
-            referer = "${mainUrl}/"
+            )
         ).parsedSafe<SearchResult>()
 
-        Log.d("DZL", "searchReq » ${searchReq}")
+        Log.d("DZL", "search_req » ${search_req}")
 
-        if (searchReq?.data?.state != true) {
+        if (search_req?.data?.state != true) {
             throw ErrorLoadingException("Invalid Json response")
         }
 
-        searchReq.data.result?.forEach { search_item ->
+        search_req.data.result?.forEach { search_item ->
             Log.d("DZL", "search_item » ${search_item}")
             veriler.add(search_item.toSearchResponse() ?: return@forEach)
         }
