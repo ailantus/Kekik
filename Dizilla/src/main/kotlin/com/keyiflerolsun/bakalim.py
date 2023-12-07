@@ -14,11 +14,15 @@ c_key   = secici.css("input[name=cKey]::attr(value)").get()
 c_value = secici.css("input[name=cValue]::attr(value)").get()
 
 
-# oturum.headers.update({
-#     "Accept"           : "application/json, text/javascript, */*; q=0.01",
-#     "X-Requested-With" : "XMLHttpRequest",
-#     "Referer"          : f"{mainUrl}/",
-# })
+
+oturum.cookies.clear()
+oturum.headers.update({
+    "Accept"           : "application/json, text/javascript, */*; q=0.01",
+    "X-Requested-With" : "XMLHttpRequest",
+    "Referer"          : f"{mainUrl}/",
+})
+oturum.cookies.set("showAllDaFull", "true")
+oturum.cookies.set("PHPSESSID", istek.cookies["PHPSESSID"])
 istek = oturum.post(
     f"{mainUrl}/bg/searchcontent",
     data = {
@@ -27,5 +31,7 @@ istek = oturum.post(
         "searchterm" : "the"
     }
 )
-
-konsol.print(istek.json()["data"]["result"])
+try:
+    konsol.print(istek.json()["data"]["result"])
+except KeyError:
+    konsol.print(istek.json())

@@ -80,7 +80,8 @@ class Dizilla : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val main_page = app.get(mainUrl).document
+        val main_req  = app.get(mainUrl)
+        val main_page = main_req.document
         val c_key     = main_page.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
         val c_value   = main_page.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
 
@@ -94,6 +95,15 @@ class Dizilla : MainAPI() {
                 "cKey"       to c_key,
                 "cValue"     to c_value,
                 "searchterm" to query
+            ),
+            headers = mapOf(
+                "Accept"           to "application/json, text/javascript, */*; q=0.01",
+                "X-Requested-With" to "XMLHttpRequest"
+            ),
+            referer = "${mainUrl}/",
+            cookies = mapOf(
+                "showAllDaFull"   to "true",
+                "PHPSESSID"       to main_req.cookies["PHPSESSID"].toString(),
             )
         ).parsedSafe<SearchResult>()
 
