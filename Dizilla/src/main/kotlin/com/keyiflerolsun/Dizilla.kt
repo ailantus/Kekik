@@ -29,13 +29,13 @@ class Dizilla : MainAPI() {
         "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Aksiyon",
         "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Bilim Kurgu",
         "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Komedi",
+        "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik"
         // "${mainUrl}/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Aile",
         // "${mainUrl}/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Biyografi",
         // "${mainUrl}/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Dram",
         // "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Fantastik",
         // "${mainUrl}/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Gerilim",
         // "${mainUrl}/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Korku",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -84,7 +84,11 @@ class Dizilla : MainAPI() {
         val c_key     = main_page.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
         val c_value   = main_page.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
 
-        return app.post(
+        val veriler   = mutableListOf<SearchResponse>()
+
+        Log.d("DZL", "query » ${query}")
+
+        val searchReq = app.post(
             "${mainUrl}/bg/searchcontent",
             data    = mapOf(
                 "cKey"       to c_key,
@@ -97,9 +101,19 @@ class Dizilla : MainAPI() {
             ),
             referer = "${mainUrl}/"
         ).parsedSafe<SearchResult>()
-        ?.data?.result
-        ?.mapNotNull { search_item -> search_item.toSearchResponse() }
-        ?: throw ErrorLoadingException("Invalid Json response")        
+
+        Log.d("DZL", "searchReq » ${searchReq}")
+
+        if (searchReq?.data?.state != true) {
+            throw ErrorLoadingException("Invalid Json response")
+        }
+
+        searchReq.data.result?.forEach { search_item ->
+            Log.d("DZL", "search_item » ${search_item}")
+            veriler.add(search_item.toSearchResponse() ?: return@forEach)
+        }
+
+        return veriler     
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
