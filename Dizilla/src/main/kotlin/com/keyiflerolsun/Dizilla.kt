@@ -50,7 +50,7 @@ class Dizilla : MainAPI() {
     }
 
     private fun Element.diziler(): SearchResponse? {
-        val title     = this.selectFirst("span.text-white")?.text() ?: return null
+        val title     = this.selectFirst("span.font-normal")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
@@ -107,10 +107,10 @@ class Dizilla : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("div.w-full h1")?.text() ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.w-full img")?.attr("src")) ?: return null
-        val year        = document.select("div.gap-3 span.text-sm").get(0)?.text()?.trim()?.toIntOrNull()
-        val description = document.selectFirst("div.mv-det-p")?.text()?.trim()
+        val title       = document.selectFirst("div.page-top h1")?.text() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.page-top img")?.attr("src")) ?: return null
+        val year        = document.selectXpath("//span[text()='Yayın tarihi']//following-sibling::span").text().trim().split(" ").last().toIntOrNull()
+        val description = document.selectFirst("div.mv-det-p")?.text()?.trim() ?: document.selectFirst("div.w-full div.text-base")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span")?.text()?.trim().toRatingInt()
         val duration    = Regex("(\\d+)").find(document.select("div.gap-3 span.text-sm").get(1).text() ?: "")?.value?.toIntOrNull()
