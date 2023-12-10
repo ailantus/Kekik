@@ -21,10 +21,7 @@ open class OkRu : ExtractorApi() {
                 Integer.parseInt(matchResult.groupValues[1], 16).toChar().toString()
             }
         val videos_str = Regex("""\"videos\":(\[[^\]]*\])""").find(video_req)?.groupValues?.get(1) ?: throw ErrorLoadingException("Video not found")
-        Log.d("Kekik_${this.name}", "videos_str » ${videos_str}")
-
         val videos = AppUtils.tryParseJson<List<OkRuVideo>>(videos_str) ?: throw ErrorLoadingException("Video not found")
-        Log.d("Kekik_${this.name}", "videos » ${videos}")
 
         for (video in videos) {
             Log.d("Kekik_${this.name}", "video » ${video}")
