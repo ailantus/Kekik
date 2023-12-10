@@ -16,13 +16,11 @@ open class OkRu : ExtractorApi() {
         val ext_ref = referer ?: ""
         Log.d("Kekik_${this.name}", "url » ${url}")
 
-        val video_req  = app.get(url).text
-        val raw_str    = Regex("""videos\\&quot;:(.*),\\&quot;ondemandHls""").find(video_req)?.groupValues?.get(1)
-        if (raw_str == null) throw ErrorLoadingException("Video not found")
-
-        val videos_str = raw_str.replace("\\&quot;", "\"").replace("\\\\", "\\").replace(Regex("\\\\u([0-9A-Fa-f]{4})")) { matchResult ->
+        val video_req  = app.get(url).text.replace("\\&quot;", "\"").replace("\\\\", "\\")
+            .replace(Regex("\\\\u([0-9A-Fa-f]{4})")) { matchResult ->
                 Integer.parseInt(matchResult.groupValues[1], 16).toChar().toString()
             }
+        val videos_str = Regex("""\"videos\":(\[[^\]]*\])""").find(video_req)?.groupValues?.get(1)
         Log.d("Kekik_${this.name}", "videos_str » ${videos_str}")
 
         val videos = AppUtils.tryParseJson<List<OkRuVideo>>(videos_str) ?: throw ErrorLoadingException("Video not found")
