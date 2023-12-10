@@ -83,21 +83,35 @@ class UgurFilm : MainAPI() {
         Log.d("UGF", "iframe » ${iframe}")
 
         if (iframe.contains("${mainUrl}")) {
-            val vid_id = iframe.substringAfter("/play.php?vid=").trim()
+            val kaynaklar = app.get(iframe).document.select("li.c-dropdown__item").map {it.attr("data-dropdown-value")}
+            Log.d("UGF", "kaynaklar » ${kaynaklar}")
+
+            val vid_id    = iframe.substringAfter("/play.php?vid=").trim()
             Log.d("UGF", "vid_id » ${vid_id}")
 
-            val player_api = app.post(
-                "${mainUrl}/player/ajax_sources.php",
-                data = mapOf(
-                    "vid"         to vid_id,
-                    "alternative" to "vidmoly",
-                    "ord"         to "0"
-                )
-            ).text
-            val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: return false
-            Log.d("UGF", "player_data » ${player_data}")
+            val yuklenenler = mutableListOf<String>()
 
-            loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
+            kaynaklar.forEach {
+                Log.d("UGF", "kaynak » ${it}")
+
+                val player_api = app.post(
+                    "${mainUrl}/player/ajax_sources.php",
+                    data = mapOf(
+                        "vid"         to vid_id,
+                        "alternative" to "${it}",
+                        "ord"         to "0"
+                    )
+                ).text
+                val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: return@forEach
+                Log.d("UGF", "player_data » ${player_data}")
+
+                if (player_data.iframe in yuklenenler) return@forEach
+
+                if (player_data.iframe != null) {
+                    loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
+                    yuklenenler.add(player_data.iframe)
+                }
+            }
         } else {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
