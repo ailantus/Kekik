@@ -83,7 +83,7 @@ class UgurFilm : MainAPI() {
         Log.d("UGF", "iframe » ${iframe}")
 
         if (iframe.contains("${mainUrl}")) {
-            val vid_id = iframe.substringAfter("/play.php?vid=")
+            val vid_id = iframe.substringAfter("/play.php?vid=").trim()
             Log.d("UGF", "vid_id » ${vid_id}")
 
             val player_api = app.post(
