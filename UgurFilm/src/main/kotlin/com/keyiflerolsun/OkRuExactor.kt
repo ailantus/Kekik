@@ -16,7 +16,9 @@ open class OkRu : ExtractorApi() {
         val ext_ref = referer ?: ""
         Log.d("Kekik_${this.name}", "url » ${url}")
 
-        val video_req  = app.get(url).text.replace("\\&quot;", "\"").replace("\\\\", "\\")
+        val user_agent = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; rv:120.0) Gecko/20100101 Firefox/120.0")
+
+        val video_req  = app.get(url, headers=user_agent).text.replace("\\&quot;", "\"").replace("\\\\", "\\")
             .replace(Regex("\\\\u([0-9A-Fa-f]{4})")) { matchResult ->
                 Integer.parseInt(matchResult.groupValues[1], 16).toChar().toString()
             }
@@ -35,7 +37,7 @@ open class OkRu : ExtractorApi() {
                     url     = video_url,
                     referer = url,
                     quality = Qualities.Unknown.value,
-                    headers = mapOf("User-Agent" to "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"),
+                    headers = user_agent,
                     isM3u8  = false
                 )
             )
