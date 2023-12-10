@@ -87,7 +87,7 @@ class UgurFilm : MainAPI() {
             Log.d("UGF", "vid_id » ${vid_id}")
 
             val player_api = app.post(
-                "${mainUrl}/wp-admin/admin-ajax.php",
+                "${mainUrl}/player/ajax_sources.php",
                 data = mapOf(
                     "vid"         to vid_id,
                     "alternative" to "vidmoly",
