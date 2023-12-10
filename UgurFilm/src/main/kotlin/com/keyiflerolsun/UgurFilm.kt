@@ -82,9 +82,7 @@ class UgurFilm : MainAPI() {
         var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return false
         Log.d("UGF", "iframe » ${iframe}")
 
-        if (!iframe.contains("/play.php?vid=")) {
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
-        } else {
+        if (iframe.contains("${mainUrl}")) {
             val vid_id = iframe.substringAfter("/play.php?vid=")
             Log.d("UGF", "vid_id » ${vid_id}")
 
@@ -100,6 +98,8 @@ class UgurFilm : MainAPI() {
             Log.d("UGF", "player_data » ${player_data}")
 
             loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
+        } else {
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
