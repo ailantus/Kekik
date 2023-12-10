@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 open class MailRu : ExtractorApi() {
     override val name            = "MailRu"
     override val mainUrl         = "https://my.mail.ru"
-    override val requiresReferer = true
+    override val requiresReferer = false
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
         val ext_ref = referer ?: ""
@@ -25,13 +25,14 @@ open class MailRu : ExtractorApi() {
             Log.d("Kekik_${this.name}", "video » ${video}")
 
             val video_url = if (video.url.startsWith("//")) "https:${video.url}" else video.url
+            Log.d("Kekik_${this.name}", "video_url » ${video_url}")
 
             callback.invoke(
                 ExtractorLink(
                     source  = "${this.name} - ${video.key}",
                     name    = "${this.name} - ${video.key}",
                     url     = video_url,
-                    referer = ext_ref,
+                    referer = url,
                     quality = Qualities.Unknown.value,
                     isM3u8  = video_url.contains(".m3u8")
                 )
