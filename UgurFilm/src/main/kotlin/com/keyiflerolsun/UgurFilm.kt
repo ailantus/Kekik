@@ -83,7 +83,7 @@ class UgurFilm : MainAPI() {
         Log.d("UGF", "iframe » ${iframe}")
 
         if (iframe.contains("${mainUrl}")) {
-            val kaynaklar = app.get(iframe).document.select("li.c-dropdown__item").map {it.attr("data-dropdown-value")}
+            val kaynaklar = app.get(iframe, referer=data).document.select("li.c-dropdown__item").map {it.attr("data-dropdown-value")}
             Log.d("UGF", "kaynaklar » ${kaynaklar}")
 
             val vid_id    = iframe.substringAfter("/play.php?vid=").trim()
