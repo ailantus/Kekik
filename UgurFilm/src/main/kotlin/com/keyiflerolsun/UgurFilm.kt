@@ -83,7 +83,9 @@ class UgurFilm : MainAPI() {
         Log.d("UGF", "iframe » ${iframe}")
 
         if (iframe.contains("${mainUrl}")) {
-            val kaynaklar = app.get(iframe, referer=data).document.select("li.c-dropdown__item").map {it.attr("data-dropdown-value")}
+            val kaynaklar = app.get(iframe, referer=data).document.select("li.c-dropdown__item").associate {
+                it.attr("data-dropdown-value") to it.attr("data-order-value")
+            }
             Log.d("UGF", "kaynaklar » ${kaynaklar}")
 
             val vid_id    = iframe.substringAfter("/play.php?vid=").trim()
@@ -91,21 +93,21 @@ class UgurFilm : MainAPI() {
 
             val yuklenenler = mutableListOf<String>()
 
-            kaynaklar.forEach {
-                Log.d("UGF", "kaynak » ${it}")
+            for ((kaynak, order) in kaynaklar) {
+                Log.d("UGF", "kaynak » ${kaynak} | order » ${order}")
 
                 val player_api = app.post(
                     "${mainUrl}/player/ajax_sources.php",
                     data = mapOf(
                         "vid"         to vid_id,
-                        "alternative" to "${it}",
-                        "ord"         to "0"
+                        "alternative" to "${kaynak}",
+                        "ord"         to "${order}"
                     )
                 ).text
-                val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: return@forEach
+                val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: continue
                 Log.d("UGF", "player_data » ${player_data}")
 
-                if (player_data.iframe in yuklenenler) return@forEach
+                if (player_data.iframe in yuklenenler) continue
 
                 yuklenenler.add(player_data.iframe)
                 loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
