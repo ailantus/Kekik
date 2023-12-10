@@ -8,5 +8,6 @@ import android.content.Context
 class UgurFilmPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(UgurFilm())
+        registerExtractorAPI(MailRu())
     }
 }

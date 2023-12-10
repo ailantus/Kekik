@@ -17,9 +17,9 @@ open class TRsTX : ExtractorApi() {
 
         val video_req = app.get(url, referer=ext_ref).text
 
-        val file     = Regex("""file\":\"([^\"]+)""").find(video_req)?.groupValues?.get(1) ?: throw Error("File not found")
+        val file     = Regex("""file\":\"([^\"]+)""").find(video_req)?.groupValues?.get(1) ?: throw ErrorLoadingException("File not found")
         val postLink = "${mainUrl}/" + file.replace("\\", "")
-        val rawList  = app.post(postLink, referer=ext_ref).parsedSafe<List<Any>>() ?: throw Error("Post link not found")
+        val rawList  = app.post(postLink, referer=ext_ref).parsedSafe<List<Any>>() ?: throw ErrorLoadingException("Post link not found")
 
         val postJson: List<TrstxVideoData> = rawList.drop(1).map { item ->
             val mapItem = item as Map<*, *>
