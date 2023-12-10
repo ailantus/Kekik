@@ -82,7 +82,25 @@ class UgurFilm : MainAPI() {
         var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return false
         Log.d("UGF", "iframe » ${iframe}")
 
-        loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        if (!iframe.contains("/play.php?vid=")) {
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        } else {
+            val vid_id = iframe.substringAfter("/play.php?vid=")
+            Log.d("UGF", "vid_id » ${vid_id}")
+
+            val player_api = app.post(
+                "${mainUrl}/wp-admin/admin-ajax.php",
+                data = mapOf(
+                    "vid"         to vid_id,
+                    "alternative" to "vidmoly",
+                    "ord"         to "0"
+                )
+            ).text
+            val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: return false
+            Log.d("UGF", "player_data » ${player_data}")
+
+            loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
+        }
 
         return true
     }
