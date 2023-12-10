@@ -36,7 +36,7 @@ open class MailRu : ExtractorApi() {
                     url     = video_url,
                     referer = url,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = video_url.contains(".m3u8")
+                    isM3u8  = false
                 )
             )
         }
