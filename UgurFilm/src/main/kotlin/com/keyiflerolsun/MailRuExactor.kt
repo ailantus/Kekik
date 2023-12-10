@@ -34,7 +34,7 @@ open class MailRu : ExtractorApi() {
                     source  = "${this.name} - ${video.key}",
                     name    = "${this.name} - ${video.key}",
                     url     = video_url,
-                    referer = url,
+                    referer = video_url,
                     quality = Qualities.Unknown.value,
                     isM3u8  = false
                 )
