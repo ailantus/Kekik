@@ -21,13 +21,11 @@ open class MailRu : ExtractorApi() {
         val vid_id     = url.substringAfter("video/embed/").trim()
         val video_req  = app.get("${mainUrl}/+/video/meta/${vid_id}", referer=url).text
         val video_data = AppUtils.tryParseJson<MailRuData>(video_req) ?: throw ErrorLoadingException("Video not found")
-        Log.d("Kekik_${this.name}", "video_data » ${video_data}")
 
         for (video in video_data.videos) {
             Log.d("Kekik_${this.name}", "video » ${video}")
 
             val video_url = if (video.url.startsWith("//")) "https:${video.url}" else video.url
-            Log.d("Kekik_${this.name}", "video_url » ${video_url}")
 
             callback.invoke(
                 ExtractorLink(
