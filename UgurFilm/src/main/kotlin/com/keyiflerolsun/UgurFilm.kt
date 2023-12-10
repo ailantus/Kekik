@@ -21,10 +21,13 @@ class UgurFilm : MainAPI() {
     override val mainPage = mainPageOf(
         "${mainUrl}/turkce-altyazili-filmler/page/" to "Türkçe Altyazılı Filmler",
         "${mainUrl}/yerli-filmler/page/"            to "Yerli Filmler",
+        "${mainUrl}/en-cok-izlenen-filmler/page/"   to "En Çok İzlenen Filmler",
         "${mainUrl}/category/kisa-film/page/"       to "Kısa Film",
-        "${mainUrl}/category/kara-film/page/"       to "Kara Film",
+        "${mainUrl}/category/aksiyon/page/"         to "Aksiyon",
         "${mainUrl}/category/bilim-kurgu/page/"     to "Bilim Kurgu",
         "${mainUrl}/category/belgesel/page/"        to "Belgesel",
+        "${mainUrl}/category/komedi/page/"          to "Komedi",
+        "${mainUrl}/category/kara-film/page/"       to "Kara Film",
         "${mainUrl}/category/erotik/page/"          to "Erotik",
     )
 
