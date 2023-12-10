@@ -107,10 +107,8 @@ class UgurFilm : MainAPI() {
 
                 if (player_data.iframe in yuklenenler) return@forEach
 
-                if (player_data.iframe != null) {
-                    loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
-                    yuklenenler.add(player_data.iframe)
-                }
+                yuklenenler.add(player_data.iframe)
+                loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
             }
         } else {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
