@@ -99,7 +99,7 @@ class JetFilmizle : MainAPI() {
 
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
-            if (source.lowercase().contains("okru") || source.lowercase().contains("fragman")) return@forEach
+            if (source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
             var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))

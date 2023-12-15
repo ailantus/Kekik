@@ -120,7 +120,6 @@ class SezonlukDizi : MainAPI() {
         ).parsedSafe<Kaynak>()
         altyazi_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
             Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
-            if (veri.baslik.lowercase().contains("okru")) return@forEach
 
             val veri_response = app.post(
                 "${mainUrl}/ajax/dataEmbed.asp",
@@ -157,7 +156,6 @@ class SezonlukDizi : MainAPI() {
         ).parsedSafe<Kaynak>()
         dublaj_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
             Log.d("SZD", "dil»0 | veri.baslik » ${veri.baslik}")
-            if (veri.baslik.lowercase().contains("okru")) return@forEach
 
             val veri_response = app.post(
                 "${mainUrl}/ajax/dataEmbed.asp",

@@ -143,9 +143,7 @@ class DiziKorea : MainAPI() {
             var iframe = fixUrlNull(it.attr("data-hhs")) ?: return@forEach
             Log.d("DZK", "iframe » ${iframe}")
 
-            if (!iframe.contains("ok.ru")) {
-                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
-            }
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
