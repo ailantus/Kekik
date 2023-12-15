@@ -37,7 +37,14 @@ class RareFilmm : MainAPI() {
         val document = app.get("${request.data}${page}").document
         val home     = document.select("div.post").mapNotNull { it.toSearchResult() }
 
-        return newHomePageResponse(request.name, home)
+        return newHomePageResponse(
+            list    = HomePageList(
+                name               = request.name,
+                list               = home,
+                isHorizontalImages = true
+            ),
+            hasNext = true
+        )
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
