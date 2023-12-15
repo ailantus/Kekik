@@ -8,6 +8,7 @@ import android.content.Context
 class RareFilmmPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(RareFilmm())
+        registerExtractorAPI(Odnoklassniki())
         registerExtractorAPI(OkRu())
         registerExtractorAPI(OkRuHTTP())
     }
