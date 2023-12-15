@@ -9,6 +9,6 @@ class UgurFilmPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(UgurFilm())
         registerExtractorAPI(MailRu())
-        registerExtractorAPI(OkRu())
+        registerExtractorAPI(Odnoklassniki())
     }
 }

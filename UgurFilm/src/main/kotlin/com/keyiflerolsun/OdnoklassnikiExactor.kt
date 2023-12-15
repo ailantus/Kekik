@@ -7,8 +7,8 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.annotation.JsonProperty
 
-open class OkRu : ExtractorApi() {
-    override val name            = "OkRu"
+open class Odnoklassniki : ExtractorApi() {
+    override val name            = "Odnoklassniki"
     override val mainUrl         = "https://odnoklassniki.ru"
     override val requiresReferer = false
 
@@ -30,13 +30,23 @@ open class OkRu : ExtractorApi() {
 
             val video_url = if (video.url.startsWith("//")) "https:${video.url}" else video.url
 
+            val quality   = it.name.uppercase()
+                .replace("MOBILE", "144p")
+                .replace("LOWEST", "240p")
+                .replace("LOW",    "360p")
+                .replace("SD",     "480p")
+                .replace("HD",     "720p")
+                .replace("FULL",   "1080p")
+                .replace("QUAD",   "1440p")
+                .replace("ULTRA",  "4k")
+
             callback.invoke(
                 ExtractorLink(
                     source  = "${this.name} - ${video.name}",
                     name    = "${this.name} - ${video.name}",
                     url     = video_url,
                     referer = url,
-                    quality = Qualities.Unknown.value,
+                    quality = getQualityFromName(quality),
                     headers = user_agent,
                     isM3u8  = false
                 )
