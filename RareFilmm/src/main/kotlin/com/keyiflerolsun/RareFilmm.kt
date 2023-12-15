@@ -59,11 +59,11 @@ class RareFilmm : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("h1.entry-title")?.text()?.trim() ?: return null
-        val poster          = fixUrlNull(document.selectFirst("div.featured-image")?.attr("style")?.substringAfter("url(")?.substringBefore(")"))
-        val description     = document.selectFirst("div.entry-content p")?.text()?.trim()
-        val tags            = document.select("div.entry-tags a").map { it.text() }
-        val rating          = document.selectFirst("span.js-rmp-avg-rating")?.text()?.split(" ")?.last()?.toRatingInt()
+        val title       = document.selectFirst("h1.entry-title")?.text()?.trim() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.featured-image")?.attr("style")?.substringAfter("url(")?.substringBefore(")"))
+        val description = document.selectFirst("div.entry-content p")?.text()?.trim()
+        val tags        = document.select("div.entry-tags a").map { it.text() }
+        val rating      = document.selectFirst("span.js-rmp-avg-rating")?.text()?.split(" ")?.last()?.toRatingInt()
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl = poster
