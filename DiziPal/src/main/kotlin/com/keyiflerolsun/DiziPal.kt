@@ -14,7 +14,7 @@ import okhttp3.Response
 import org.jsoup.Jsoup
 
 class DiziPal : MainAPI() {
-    override var mainUrl              = "https://dizipal675.com"
+    override var mainUrl              = "https://dizipal730.com"
     override var name                 = "DiziPal"
     override val hasMainPage          = true
     override var lang                 = "tr"
