@@ -30,12 +30,12 @@ open class MailRu : ExtractorApi() {
 
             callback.invoke(
                 ExtractorLink(
-                    source  = "${this.name} - ${video.key}",
-                    name    = "${this.name} - ${video.key}",
+                    source  = "${this.name}",
+                    name    = "${this.name}",
                     url     = video_url,
                     referer = url,
                     headers = mapOf("Cookie" to "video_key=${video_key}"),
-                    quality = Qualities.Unknown.value,
+                    quality = getQualityFromName(video.key),
                     isM3u8  = false
                 )
             )
