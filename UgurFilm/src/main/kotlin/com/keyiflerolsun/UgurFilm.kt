@@ -16,7 +16,7 @@ class UgurFilm : MainAPI() {
     override val hasQuickSearch       = false
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
+    override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/turkce-altyazili-filmler/page/" to "Türkçe Altyazılı Filmler",
