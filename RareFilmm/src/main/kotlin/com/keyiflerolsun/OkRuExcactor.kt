@@ -2,8 +2,8 @@
 
 package com.keyiflerolsun
 
-class OkRu : Odnoklassniki() {
-    override var name    = "OkRu"
+class OkRuSSL : Odnoklassniki() {
+    override var name    = "OkRuSSL"
     override var mainUrl = "https://ok.ru"
 }
 
