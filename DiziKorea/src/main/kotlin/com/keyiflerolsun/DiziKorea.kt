@@ -140,7 +140,7 @@ class DiziKorea : MainAPI() {
 
 
         document.select("div.series-watch-alternatives button").forEach {
-            var iframe = fixUrlNull(it.attr("data-hhs")) ?: return@forEach
+            var iframe = fixUrlNull(it.attr("data-hhs"))?.replace("ok.ru", "odnoklassniki.ru") ?: return@forEach
             Log.d("DZK", "iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)

@@ -102,7 +102,7 @@ class JetFilmizle : MainAPI() {
             if (source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
-            var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))
+            var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))?.replace("ok.ru", "odnoklassniki.ru")
 
             if (iframe != null) {
                 Log.d("JTF", "iframe » ${iframe}")
