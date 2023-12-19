@@ -18,8 +18,9 @@ open class VideoSeyred : ExtractorApi() {
         val video_url = "${mainUrl}/playlist/${video_id}.json"
         Log.d("Kekik_${this.name}", "video_url » ${video_url}")
 
-        val response  = app.get(video_url).parsedSafe<VideoSeyredSource>() ?: throw Error("Failed to parse response")
-        Log.d("Kekik_${this.name}", "response » ${response}")
+        val response_raw                          = app.get(video_url)
+        val response_list:List<VideoSeyredSource> = jacksonObjectMapper().readValue(response_raw.text) ?: throw ErrorLoadingException("VideoSeyred")
+        val response                              = response_list[0] ?: throw ErrorLoadingException("VideoSeyred")
 
         for (track in response.tracks) {
             if (track.label != null && track.kind == "captions") {
