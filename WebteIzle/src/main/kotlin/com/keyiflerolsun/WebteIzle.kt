@@ -67,7 +67,7 @@ class WebteIzle : MainAPI() {
         Log.d("WBTI", "data » ${data}")
         val document = app.get(data).document
 
-        val film_id  = izle.selectFirst("button#wip")?.attr("data-id") ?: return false
+        val film_id  = document.selectFirst("button#wip")?.attr("data-id") ?: return false
         Log.d("WBTI", "film_id » ${film_id}")
 
         if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src")) {
