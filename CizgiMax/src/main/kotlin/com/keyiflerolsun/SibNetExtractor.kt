@@ -27,7 +27,7 @@ open class SibNet : ExtractorApi() {
                     url     = m3u_link,
                     referer = url,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = INFER_TYPE
+                    type    = INFER_TYPE
                 )
             )
         }

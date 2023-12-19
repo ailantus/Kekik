@@ -56,7 +56,7 @@ open class PeaceMakerst : ExtractorApi() {
                 url     = m3u_link ?: throw ErrorLoadingException("m3u link not found"),
                 referer = ext_ref,
                 quality = Qualities.Unknown.value,
-                isM3u8  = INFER_TYPE
+                type    = INFER_TYPE
             )
         )
     }
