@@ -67,10 +67,16 @@ class WebteIzle : MainAPI() {
         Log.d("WBTI", "data » ${data}")
         val document = app.get(data).document
 
-        val film_url  = fixUrlNull(document.selectFirst("div.golge a[href*=dublaj]")?.attr("src")) ?: fixUrlNull(document.selectFirst("div.golge a[href*=altyazi]")?.attr("src"))
-        val izle      = app.get(film_url).document
-        val film_id   = izle.selectFirst("div#dilsec")?.attr("data-id") ?: return false
+        val film_id  = izle.selectFirst("button#wip")?.attr("data-id") ?: return false
         Log.d("WBTI", "film_id » ${film_id}")
+
+        if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src")) {
+            return false
+        }
+
+        if (document.selectFirst("div.golge a[href*=altyazi]")?.attr("src")) {
+            return false
+        }
 
         // loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
 
