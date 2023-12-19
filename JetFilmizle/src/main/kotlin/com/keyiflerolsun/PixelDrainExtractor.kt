@@ -24,7 +24,7 @@ open class PixelDrain : ExtractorApi() {
                 url     = downloadLink,
                 referer = "${mainUrl}/u/${pixel_id}?download",
                 quality = Qualities.Unknown.value,
-                isM3u8  = video.url.contains(".m3u8")
+                isM3u8  = downloadLink.contains(".m3u8")
             )
         )
     }
