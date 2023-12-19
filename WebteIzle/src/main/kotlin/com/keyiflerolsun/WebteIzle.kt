@@ -70,11 +70,11 @@ class WebteIzle : MainAPI() {
         val film_id  = document.selectFirst("button#wip")?.attr("data-id") ?: return false
         Log.d("WBTI", "film_id » ${film_id}")
 
-        if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src")) {
+        if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src") != null) {
             return false
         }
 
-        if (document.selectFirst("div.golge a[href*=altyazi]")?.attr("src")) {
+        if (document.selectFirst("div.golge a[href*=altyazi]")?.attr("src") != null) {
             return false
         }
 
