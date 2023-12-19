@@ -43,7 +43,7 @@ open class VideoSeyred : ExtractorApi() {
                     url     = source.file,
                     referer = ext_ref,
                     quality = Qualities.Unknown.value,
-                    type    = INFER_TYPE
+                    isM3u8  = video.url.contains(".m3u8")
                 )
             )
         }

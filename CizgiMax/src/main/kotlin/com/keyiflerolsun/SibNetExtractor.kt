@@ -26,7 +26,7 @@ open class SibNet : ExtractorApi() {
                 url     = m3u_link,
                 referer = url,
                 quality = Qualities.Unknown.value,
-                type    = INFER_TYPE
+                isM3u8  = video.url.contains(".m3u8")
             )
         )
     }

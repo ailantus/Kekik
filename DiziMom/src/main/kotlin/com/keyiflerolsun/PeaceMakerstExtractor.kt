@@ -56,7 +56,7 @@ open class PeaceMakerst : ExtractorApi() {
                 url     = m3u_link ?: throw ErrorLoadingException("m3u link not found"),
                 referer = ext_ref,
                 quality = Qualities.Unknown.value,
-                type    = INFER_TYPE
+                isM3u8  = video.url.contains(".m3u8")
             )
         )
     }
