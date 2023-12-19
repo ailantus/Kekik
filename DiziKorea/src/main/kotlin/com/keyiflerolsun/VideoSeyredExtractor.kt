@@ -5,9 +5,6 @@ package com.keyiflerolsun
 import android.util.Log
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 
 open class VideoSeyred : ExtractorApi() {
     override val name            = "VideoSeyred"
@@ -20,9 +17,7 @@ open class VideoSeyred : ExtractorApi() {
         val video_url = "${mainUrl}/playlist/${video_id}.json"
         Log.d("Kekik_${this.name}", "video_url » ${video_url}")
 
-        val response_raw                          = app.get(video_url)
-        val response_list:List<VideoSeyredSource> = jacksonObjectMapper().readValue(response_raw.text)
-        val response                              = response_list[0]
+        val response  = app.get(video_url).parsed<List<VideoSeyredSource>>()
 
         for (track in response.tracks) {
             if (track.label != null && track.kind == "captions") {
@@ -43,7 +38,7 @@ open class VideoSeyred : ExtractorApi() {
                     url     = source.file,
                     referer = ext_ref,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = source.file.contains(".m3u8")
+                    isM3u8  = INFER_TYPE
                 )
             )
         }

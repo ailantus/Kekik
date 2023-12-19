@@ -14,7 +14,7 @@ open class SibNet : ExtractorApi() {
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
         val ext_ref   = referer ?: ""
         val i_source  = app.get(url, referer=ext_ref).text
-        var m3u_link  = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+        var m3u_link  = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
 
         if (m3u_link != null) {
             m3u_link = "${mainUrl}${m3u_link}"
@@ -27,7 +27,7 @@ open class SibNet : ExtractorApi() {
                     url     = m3u_link,
                     referer = url,
                     quality = Qualities.Unknown.value,
-                    isM3u8  = m3u_link.contains(".m3u8")
+                    isM3u8  = INFER_TYPE
                 )
             )
         }
