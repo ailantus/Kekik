@@ -16,20 +16,18 @@ open class SibNet : ExtractorApi() {
         val i_source  = app.get(url, referer=ext_ref).text
         var m3u_link  = Regex("""player.src\(\[\{src: \"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
 
-        if (m3u_link != null) {
-            m3u_link = "${mainUrl}${m3u_link}"
-            Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+        m3u_link = "${mainUrl}${m3u_link}"
+        Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
 
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = url,
-                    quality = Qualities.Unknown.value,
-                    type    = INFER_TYPE
-                )
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = m3u_link,
+                referer = url,
+                quality = Qualities.Unknown.value,
+                type    = INFER_TYPE
             )
-        }
+        )
     }
 }
