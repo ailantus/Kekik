@@ -20,13 +20,20 @@ class WebteIzle : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/film-izle/"       to "Güncel",
-        "${mainUrl}/yeni-filmler/"    to "Yeni",
-        "${mainUrl}/tavsiye-filmler/" to "Tavsiye",
+        "${mainUrl}/film-izle/"                    to "Güncel",
+        "${mainUrl}/yeni-filmler/"                 to "Yeni",
+        "${mainUrl}/tavsiye-filmler/"              to "Tavsiye",
+        "${mainUrl}/filtre/SAYFA?tur=Aksiyon"      to "Aksiyon",
+        "${mainUrl}/filtre/SAYFA?tur=Belgesel"     to "Belgesel",
+        "${mainUrl}/filtre/SAYFA?tur=Bilim-Kurgu"  to "Bilim Kurgu",
+        "${mainUrl}/filtre/SAYFA?tur=Komedi"       to "Komedi",
+        "${mainUrl}/filtre/SAYFA?tur=Macera"       to "Macera",
+        "${mainUrl}/filtre/SAYFA?tur=Romantik"     to "Romantik",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val url      = if ("SAYFA" in request.data) request.data.replace("SAYFA", page) else "${request.data}$page"
+        val document = app.get(url).document
         val home     = document.select("div.golgever").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
