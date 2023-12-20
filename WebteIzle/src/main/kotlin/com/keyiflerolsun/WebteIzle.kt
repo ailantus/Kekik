@@ -6,6 +6,8 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 
 class WebteIzle : MainAPI() {
     override var mainUrl              = "https://webteizle2.com"
@@ -80,6 +82,8 @@ class WebteIzle : MainAPI() {
         }
 
         dil_list.forEach {
+            val dilAd = if (it == "0") "Türkçe Dublaj" else "Altyazı"
+
             val player_api = app.post(
                 "${mainUrl}/ajax/dataAlternatif3.asp",
                 headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
@@ -119,6 +123,40 @@ class WebteIzle : MainAPI() {
                             else       -> null
                         }
                     }
+                } else if (iframe.contains(mainUrl)) {
+                    val i_source = app.get(iframe, referer="${mainUrl}/").text
+
+                    val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+
+                    val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
+                    if (track_str != null) {
+                        val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
+
+                        for (track in tracks) {
+                            if (track.file == null || track.label == null) continue
+                            if (track.label.contains("Forced")) continue
+
+                            subtitleCallback.invoke(
+                                SubtitleFile(
+                                    lang = track.label,
+                                    url  = fixUrl(mainUrl + track.file)
+                                )
+                            )
+                        }
+                    }
+
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "${this.name} - ${dilAd}",
+                            name    = "${this.name} - ${dilAd}",
+                            url     = m3u_link ?: continue,
+                            referer = "${mainUrl}/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = true
+                        )
+                    )
+
+                    continue
                 }
 
                 if (iframe != null) {

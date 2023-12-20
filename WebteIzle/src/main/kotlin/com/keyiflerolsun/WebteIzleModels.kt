@@ -16,3 +16,11 @@ data class EmbedData(
     @JsonProperty("baslik")   val baslik: String,
     @JsonProperty("kalitesi") val kalitesi: Int,
 )
+
+data class Track(
+    @JsonProperty("file")     val file: String?,
+    @JsonProperty("label")    val label: String?,
+    @JsonProperty("kind")     val kind: String?,
+    @JsonProperty("language") val language: String?,
+    @JsonProperty("default")  val default: String?
+)
