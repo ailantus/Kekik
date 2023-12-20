@@ -109,6 +109,9 @@ class WebteIzle : MainAPI() {
                     } else if ("okru" in embed_api.text()) {
                         val okru_id = embed_api.text().substringAfter("okru('").substringBefore("','")
                         iframe = "https://odnoklassniki.ru/videoembed/${okru_id}"
+                    } else if ("filemoon" in embed_api.text()) {
+                        val filemoon_id = embed_api.text().substringAfter("filemoon('").substringBefore("','")
+                        iframe = "https://filemoon.sx/e/${filemoon_id}"
                     } else {
                         Log.d("WBTI", "embed_api » ${embed_api}")
                     }
