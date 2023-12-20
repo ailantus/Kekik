@@ -108,13 +108,13 @@ class WebteIzle : MainAPI() {
 
                     if ("vidmoly" in script) {
                         val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(script)!!.groups[1]?.value
-                        iframe = "https://vidmoly.to/embed-${vidmoly_id}.html"
+                        iframe         = "https://vidmoly.to/embed-${vidmoly_id}.html"
                     } else if ("okru" in script) {
                         val okru_id = Regex("""okru\('(.*)','""").find(script)!!.groups[1]?.value
-                        iframe = "https://odnoklassniki.ru/videoembed/${okru_id}"
+                        iframe      = "https://odnoklassniki.ru/videoembed/${okru_id}"
                     } else if ("filemoon" in script) {
                         val filemoon_id = Regex("""filemoon\('(.*)','""").find(script)!!.groups[1]?.value
-                        iframe = "https://filemoon.sx/e/${filemoon_id}"
+                        iframe          = "https://filemoon.sx/e/${filemoon_id}"
                     } else {
                         Log.d("WBTI", "embed_api » ${embed_api}")
                     }
