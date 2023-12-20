@@ -103,20 +103,21 @@ class WebteIzle : MainAPI() {
 
                 var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
                 if (iframe == null) {
-                    // if ("https://vidmoly.to/embed-rycyk2eilqyz.html"
-                    if ("vidmoly" in embed_api.text) {
-                        val vidmoly_id = embed_api.text.substringAfter("vidmoly('").substringBefore("','")
+                    if ("vidmoly" in embed_api.text()) {
+                        val vidmoly_id = embed_api.text().substringAfter("vidmoly('").substringBefore("','")
                         iframe = "https://vidmoly.to/embed-${vidmoly_id}.html"
-                    } else if ("okru" in embed_api.text) {
-                        val okru_id = embed_api.text.substringAfter("okru('").substringBefore("','")
+                    } else if ("okru" in embed_api.text()) {
+                        val okru_id = embed_api.text().substringAfter("okru('").substringBefore("','")
                         iframe = "https://odnoklassniki.ru/videoembed/${okru_id}"
                     } else {
                         Log.d("WBTI", "embed_api » ${embed_api}")
                     }
                 }
 
-                Log.d("WBTI", "iframe » ${iframe}")
-                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                if (iframe != null) {
+                    Log.d("WBTI", "iframe » ${iframe}")
+                    loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                }
             }
         }
 
