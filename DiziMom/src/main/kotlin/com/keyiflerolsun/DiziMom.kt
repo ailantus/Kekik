@@ -113,7 +113,7 @@ class DiziMom : MainAPI() {
             data,
             headers = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1704232312|BjO8rtZ0TSbgeZ7VrdJf24EpQQshZZgWMufdwrsX6sa|9547786767c5ecf4be9968a569a52a9eae35b30d4e934ba9f4009fc9642361da"
+                "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1704264761|k7qkzi3jy4WSu5m4sbxFj6CrZTvxk4aI5B4BNc38jM8|839fa63a8d3de3b0c23288c32152172ea308b72d460eefb0259768e27e1f6fa8"
             )
         ).document
 
@@ -126,7 +126,7 @@ class DiziMom : MainAPI() {
                 it.attr("href"),
                 headers = mapOf(
                     "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                    "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1702291130|SNR8c0RiBRg04K7GooNcOci81mLdSneM4nxew0gYVcq|980a2d10f842a0448958a980eb0797e551da768e7649830fb47ed773ae77fcf7"
+                    "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1704264761|k7qkzi3jy4WSu5m4sbxFj6CrZTvxk4aI5B4BNc38jM8|839fa63a8d3de3b0c23288c32152172ea308b72d460eefb0259768e27e1f6fa8"
                 )
             ).document
             val sub_iframe   = sub_document.selectFirst("div#vast iframe")?.attr("src") ?: return@forEach
