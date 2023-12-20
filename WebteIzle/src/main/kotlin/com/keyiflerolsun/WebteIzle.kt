@@ -83,7 +83,8 @@ class WebteIzle : MainAPI() {
         dil_list.forEach {
             val player_api = app.post(
                 "${mainUrl}/ajax/dataAlternatif3.asp",
-                data = mapOf(
+                headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+                data    = mapOf(
                     "filmid" to film_id,
                     "dil"    to it,
                     "s"      to "",
@@ -96,9 +97,8 @@ class WebteIzle : MainAPI() {
             for (this_embed in player_data.data) { 
                 val embed_api = app.post(
                     "${mainUrl}/ajax/dataEmbed.asp",
-                    data = mapOf(
-                        "id" to this_embed.id.toString(),
-                    )
+                    headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+                    data    = mapOf("id" to this_embed.id.toString())
                 ).text
 
                 embed_list.add(embed_api)
