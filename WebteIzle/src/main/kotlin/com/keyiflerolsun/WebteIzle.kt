@@ -70,12 +70,40 @@ class WebteIzle : MainAPI() {
         val film_id  = document.selectFirst("button#wip")?.attr("data-id") ?: return false
         Log.d("WBTI", "film_id » ${film_id}")
 
+        val dil_list = mutableListOf<String>()
         if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src") != null) {
-            return false
+            dil_list.add("0")
         }
 
         if (document.selectFirst("div.golge a[href*=altyazi]")?.attr("src") != null) {
-            return false
+            dil_list.add("1")
+        }
+
+        val embed_list = mutableListOf<String>()
+        dil_list.forEach {
+            val player_api = app.post(
+                "${mainUrl}/ajax/dataAlternatif3.asp",
+                data = mapOf(
+                    "filmid" to film_id,
+                    "dil"    to it,
+                    "s"      to "",
+                    "b"      to "",
+                    "bot"    to "0"
+                )
+            ).text
+            val player_data = AppUtils.tryParseJson<DataAlternatif>(player_api) ?: return@forEach
+
+            for (this_embed in player_data.data) { 
+                val embed_api = app.post(
+                    "${mainUrl}/ajax/dataEmbed.asp",
+                    data = mapOf(
+                        "id" to this_embed.id.toString(),
+                    )
+                ).text
+
+                embed_list.add(embed_api)
+                Log.d("WBTI", "${this_embed} » ${embed_api}")
+            }
         }
 
         // loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
