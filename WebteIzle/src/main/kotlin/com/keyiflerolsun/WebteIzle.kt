@@ -32,7 +32,7 @@ class WebteIzle : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url      = if ("SAYFA" in request.data) request.data.replace("SAYFA", page) else "${request.data}$page"
+        val url      = if ("SAYFA" in "${request.data}") "${request.data}".replace("SAYFA", page) else "${request.data}$page"
         val document = app.get(url).document
         val home     = document.select("div.golgever").mapNotNull { it.toSearchResult() }
 
