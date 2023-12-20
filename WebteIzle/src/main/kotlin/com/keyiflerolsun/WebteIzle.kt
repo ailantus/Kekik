@@ -155,7 +155,7 @@ class WebteIzle : MainAPI() {
                             name    = "${this.name} - ${dilAd}",
                             url     = m3u_link ?: continue,
                             referer = "${mainUrl}/",
-                            quality = Qualities.Unknown.value,
+                            quality = getQualityFromName("1440p"),
                             isM3u8  = true
                         )
                     )
