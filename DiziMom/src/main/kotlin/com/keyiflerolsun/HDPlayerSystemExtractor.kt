@@ -34,7 +34,9 @@ open class HDPlayerSystem : ExtractorApi() {
                 "X-Requested-With" to "XMLHttpRequest"
             )
         )
-        val video_response = response.parsed<SystemResponse>() ?: throw ErrorLoadingException("failed to parse response")
+        Log.d("Kekik_${this.name}", "response.text » ${response.text}")
+
+        val video_response = response.parsedSafe<SystemResponse>() ?: throw ErrorLoadingException("failed to parse response")
         val m3u_link       = video_response.securedLink
 
         callback.invoke(
