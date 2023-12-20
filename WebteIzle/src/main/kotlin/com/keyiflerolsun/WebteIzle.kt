@@ -79,7 +79,6 @@ class WebteIzle : MainAPI() {
             dil_list.add("1")
         }
 
-        val embed_list = mutableListOf<String>()
         dil_list.forEach {
             val player_api = app.post(
                 "${mainUrl}/ajax/dataAlternatif3.asp",
