@@ -16,7 +16,7 @@ open class Odnoklassniki : ExtractorApi() {
         val ext_ref    = referer ?: ""
         Log.d("Kekik_${this.name}", "url » ${url}")
 
-        val user_agent = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36")
+        val user_agent = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36")
 
         val video_req  = app.get(url, headers=user_agent).text.replace("\\&quot;", "\"").replace("\\\\", "\\")
             .replace(Regex("\\\\u([0-9A-Fa-f]{4})")) { matchResult ->
