@@ -6,6 +6,8 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
@@ -60,15 +62,25 @@ class WebteIzle : MainAPI() {
 
         val title       = document.selectFirst("[property='og:title']")?.attr("content")?.substringBefore(" izle") ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.card img")?.attr("data-src"))
+        val year        = document.selectXpath("//td[contains(text(), 'Vizyon')]/following-sibling::td").text().trim().split(" ").last().toIntOrNull()
         val description = document.selectFirst("blockquote")?.text()?.trim()
         val tags        = document.selectXpath("//a[@itemgroup='genre']").map { it.text() }
         val rating      = document.selectFirst("div.detail")?.text()?.trim()?.toRatingInt()
+        val duration    = document.selectXpath("//td[contains(text(), 'Süre')]/following-sibling::td").text().trim().split(" ").first().toIntOrNull()
+        val trailer     = document.selectFirst("button#fragman")?.attr("data-ytid")
+        val actors      = document.selectXpath("//div[@data-tab='oyuncular']//a").map {
+            Actor(it.selectFirst("span")!!.text().trim(), fixUrlNull(it.selectFirst("img")!!.attr("data-src")))
+        }
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl = poster
+            this.year      = year
             this.plot      = description
             this.tags      = tags
             this.rating    = rating
+            this.duration  = duration
+            addTrailer("https://www.youtube.com/embed/${trailer}")
+            addActors(actors)
         }
     }
 
