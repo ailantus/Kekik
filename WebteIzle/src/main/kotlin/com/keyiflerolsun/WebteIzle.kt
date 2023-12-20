@@ -102,19 +102,19 @@ class WebteIzle : MainAPI() {
 
                 var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
                 if (iframe == null) {
-                    val text_source = embed_api.text()
+                    val text_source = embed_api.selectFirst("script")?.text() ?: ""
 
                     if ("vidmoly" in text_source) {
-                        val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(text_source)!!.groups[1]?.value
+                        val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(text_source)?.groupValues?.get(1)
                         iframe         = "https://vidmoly.to/embed-${vidmoly_id}.html"
                     } else if ("okru" in text_source) {
-                        val okru_id = Regex("""okru\('(.*)','""").find(text_source)!!.groups[1]?.value
+                        val okru_id = Regex("""okru\('(.*)','""").find(text_source)?.groupValues?.get(1)
                         iframe      = "https://odnoklassniki.ru/videoembed/${okru_id}"
                     } else if ("filemoon" in text_source) {
-                        val filemoon_id = Regex("""filemoon\('(.*)','""").find(text_source)!!.groups[1]?.value
+                        val filemoon_id = Regex("""filemoon\('(.*)','""").find(text_source)?.groupValues?.get(1)
                         iframe          = "https://filemoon.sx/e/${filemoon_id}"
                     } else {
-                        Log.d("WBTI", "embed_api » ${embed_api}")
+                        Log.d("WBTI", "text_source » ${text_source}")
                     }
                 }
 
