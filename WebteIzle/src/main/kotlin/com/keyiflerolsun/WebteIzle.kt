@@ -104,7 +104,6 @@ class WebteIzle : MainAPI() {
                 var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
                 if (iframe == null) {
                     val script = embed_api.selectFirst("script")?.text()
-                    Log.d("WBTI", "script » ${script}")
 
                     if ("vidmoly" in script) {
                         val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(script)!!.groups[1]?.value
