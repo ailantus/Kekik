@@ -101,20 +101,24 @@ class WebteIzle : MainAPI() {
                 ).document
 
                 var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
-                if (iframe == null) {
-                    val text_source = embed_api.selectFirst("script")?.text() ?: ""
 
-                    if ("vidmoly" in text_source) {
-                        val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(text_source)?.groupValues?.get(1)
-                        iframe         = "https://vidmoly.to/embed-${vidmoly_id}.html"
-                    } else if ("okru" in text_source) {
-                        val okru_id = Regex("""okru\('(.*)','""").find(text_source)?.groupValues?.get(1)
-                        iframe      = "https://odnoklassniki.ru/videoembed/${okru_id}"
-                    } else if ("filemoon" in text_source) {
-                        val filemoon_id = Regex("""filemoon\('(.*)','""").find(text_source)?.groupValues?.get(1)
-                        iframe          = "https://filemoon.sx/e/${filemoon_id}"
+                if (iframe == null) {
+                    val scriptSource = embed_api.selectFirst("script")?.text() ?: ""
+                    val matchResult  = Regex("""(vidmoly|okru|filemoon)\('(.*)','""").find(scriptSource)
+
+                    if (matchResult != null) {
+                        val platform = matchResult.groupValues[1]
+                        val vidId       = matchResult.groupValues[2]
+
+                        iframe       = when(platform) {
+                            "vidmoly"  -> "https://vidmoly.to/embed-${vidId}.html"
+                            "okru"     -> "https://odnoklassniki.ru/videoembed/${vidId}"
+                            "filemoon" -> "https://filemoon.sx/e/${vidId}"
+                            else       -> null
+                        }
+
                     } else {
-                        Log.d("WBTI", "text_source » ${text_source}")
+                        Log.d("WBTI", "scriptSource » $scriptSource")
                     }
                 }
 
