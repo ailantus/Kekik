@@ -106,9 +106,11 @@ class WebteIzle : MainAPI() {
                     val scriptSource = embed_api.selectFirst("script")?.text() ?: ""
                     val matchResult  = Regex("""(vidmoly|okru|filemoon)\('(.*)','""").find(scriptSource)
 
-                    if (matchResult != null) {
+                    if (matchResult == null) {
+                        Log.d("WBTI", "scriptSource » $scriptSource")
+                    } else {
                         val platform = matchResult.groupValues[1]
-                        val vidId       = matchResult.groupValues[2]
+                        val vidId    = matchResult.groupValues[2]
 
                         iframe       = when(platform) {
                             "vidmoly"  -> "https://vidmoly.to/embed-${vidId}.html"
@@ -116,9 +118,6 @@ class WebteIzle : MainAPI() {
                             "filemoon" -> "https://filemoon.sx/e/${vidId}"
                             else       -> null
                         }
-
-                    } else {
-                        Log.d("WBTI", "scriptSource » $scriptSource")
                     }
                 }
 
