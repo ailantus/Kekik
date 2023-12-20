@@ -102,16 +102,16 @@ class WebteIzle : MainAPI() {
 
                 var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
                 if (iframe == null) {
-                    val script = embed_api.selectFirst("script")?.text()
+                    val text_source = embed_api.text()
 
-                    if ("vidmoly" in script) {
-                        val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(script)!!.groups[1]?.value
+                    if ("vidmoly" in text_source) {
+                        val vidmoly_id = Regex("""vidmoly\('(.*)','""").find(text_source)!!.groups[1]?.value
                         iframe         = "https://vidmoly.to/embed-${vidmoly_id}.html"
-                    } else if ("okru" in script) {
-                        val okru_id = Regex("""okru\('(.*)','""").find(script)!!.groups[1]?.value
+                    } else if ("okru" in text_source) {
+                        val okru_id = Regex("""okru\('(.*)','""").find(text_source)!!.groups[1]?.value
                         iframe      = "https://odnoklassniki.ru/videoembed/${okru_id}"
-                    } else if ("filemoon" in script) {
-                        val filemoon_id = Regex("""filemoon\('(.*)','""").find(script)!!.groups[1]?.value
+                    } else if ("filemoon" in text_source) {
+                        val filemoon_id = Regex("""filemoon\('(.*)','""").find(text_source)!!.groups[1]?.value
                         iframe          = "https://filemoon.sx/e/${filemoon_id}"
                     } else {
                         Log.d("WBTI", "embed_api » ${embed_api}")
