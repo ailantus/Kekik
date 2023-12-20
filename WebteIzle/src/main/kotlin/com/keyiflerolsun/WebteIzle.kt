@@ -142,8 +142,8 @@ class WebteIzle : MainAPI() {
 
                             subtitleCallback.invoke(
                                 SubtitleFile(
-                                    lang = track.label,
-                                    url  = fixUrl(mainUrl + track.file)
+                                    lang = track.label.replace("\\u0131", "ı").replace("\\u0130", "İ").replace("\\u00fc", "ü").replace("\\u00e7", "ç"),
+                                    url  = fixUrl(track.file).replace("\\", "")
                                 )
                             )
                         }
