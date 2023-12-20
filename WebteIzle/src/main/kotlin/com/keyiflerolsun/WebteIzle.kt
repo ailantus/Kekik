@@ -124,9 +124,13 @@ class WebteIzle : MainAPI() {
                         }
                     }
                 } else if (iframe.contains(mainUrl)) {
-                    val i_source = app.get(iframe, referer="${mainUrl}/").text
+                    Log.d("WBTI", "iframe » ${iframe}")
+                    val i_source = app.get(iframe, referer=data).text
 
-                    val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                    val encoded  = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+                    val bytes    = encoded.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
+                    val m3u_link = String(bytes, Charsets.UTF_8)
+                    Log.d("WBTI", "m3u_link » ${m3u_link}")
 
                     val track_str = Regex("""tracks:\[([^\]]+)""").find(i_source)?.groupValues?.get(1)
                     if (track_str != null) {

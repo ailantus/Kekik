@@ -18,9 +18,7 @@ data class EmbedData(
 )
 
 data class Track(
-    @JsonProperty("file")     val file: String?,
-    @JsonProperty("label")    val label: String?,
-    @JsonProperty("kind")     val kind: String?,
-    @JsonProperty("language") val language: String?,
-    @JsonProperty("default")  val default: String?
+    @JsonProperty("kind")  val kind: String?,
+    @JsonProperty("file")  val file: String?,
+    @JsonProperty("label") val label: String?,
 )
