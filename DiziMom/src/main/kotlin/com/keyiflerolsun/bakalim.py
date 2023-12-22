@@ -9,14 +9,14 @@ oturum = CloudScraper()
 oturum.headers.update({"User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"})
 oturum.cookies.update({"wordpress_logged_in_94427965a200eb7dd292509ed2c7c018": "keyiflerolsun|1699737674|EvfGx8bnw88aTkvvmRNqWQUuIYsUzLOIlWa4nwixKFn|87a00e3a0d391fa1074e004d37a54a66e7bfc85bdc0191a8eec3cb9df741db8c"})
 
-istek  = oturum.get("https://www.dizimom.pro/pokemon-pokemon-ustasi-olmak-1-sezon-3-bolum-izle/")
+istek  = oturum.get("https://www.dizimom.de/pokemon-pokemon-ustasi-olmak-1-sezon-3-bolum-izle/")
 konsol.print(istek.url)
 
 secici = Selector(istek.text)
 iframe = secici.css("div#vast iframe::attr(src)").get()
 konsol.print(iframe)
 
-oturum.headers.update({"Referer": "https://www.dizimom.pro/"})
+oturum.headers.update({"Referer": "https://www.dizimom.de/"})
 i_source = oturum.get(iframe).text
 
 be_player = search(r"bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);", i_source).groups()
