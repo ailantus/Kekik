@@ -7,7 +7,17 @@ from re           import search
 
 oturum = CloudScraper()
 oturum.headers.update({"User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"})
-oturum.cookies.update({"wordpress_logged_in_94427965a200eb7dd292509ed2c7c018": "keyiflerolsun|1699737674|EvfGx8bnw88aTkvvmRNqWQUuIYsUzLOIlWa4nwixKFn|87a00e3a0d391fa1074e004d37a54a66e7bfc85bdc0191a8eec3cb9df741db8c"})
+# oturum.cookies.update({"wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f": "keyiflerolsun|1704461004|TJh8nQRYrqZ9xlAyO7rO5QgiqTQiw7op8I6LKkSvytX|0dc654883fad5f0301df32e6465aa676a3f235288dd9c8a73260d9c8a20b19ae"})
+
+oturum.post(
+    url  = "https://www.dizimom.de/wp-login.php",
+    data = {
+        "log"         : "keyiflerolsun",
+        "pwd"         : "12345",
+        "rememberme"  : "forever",
+        "redirect_to" : "https://www.dizimom.de",
+    }
+)
 
 istek  = oturum.get("https://www.dizimom.de/pokemon-pokemon-ustasi-olmak-1-sezon-3-bolum-izle/")
 konsol.print(istek.url)

@@ -109,26 +109,28 @@ class DiziMom : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZM", "data » ${data}")
 
-        val document = app.get(
-            data,
-            headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1704461004|TJh8nQRYrqZ9xlAyO7rO5QgiqTQiw7op8I6LKkSvytX|0dc654883fad5f0301df32e6465aa676a3f235288dd9c8a73260d9c8a20b19ae"
+        val ua = mapOf("User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36")
+
+        app.post(
+            "${mainUrl}/wp-login.php",
+            headers = ua,
+            referer = "${mainUrl}/",
+            data    = mapOf(
+                "log"         to "keyiflerolsun",
+                "pwd"         to "12345",
+                "rememberme"  to "forever",
+                "redirect_to" to "${mainUrl}",
             )
-        ).document
+        )
+
+        val document = app.get(data, headers=ua).document
 
         val iframes     = mutableListOf<String>()
         val main_iframe = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
         iframes.add(main_iframe)
 
         document.select("div.sources a").forEach {
-            val sub_document = app.get(
-                it.attr("href"),
-                headers = mapOf(
-                    "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                    "Cookie"     to "wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f=keyiflerolsun|1704461004|TJh8nQRYrqZ9xlAyO7rO5QgiqTQiw7op8I6LKkSvytX|0dc654883fad5f0301df32e6465aa676a3f235288dd9c8a73260d9c8a20b19ae"
-                )
-            ).document
+            val sub_document = app.get(it.attr("href"), headers=ua).document
             val sub_iframe   = sub_document.selectFirst("div#vast iframe")?.attr("src") ?: return@forEach
 
             iframes.add(sub_iframe)
