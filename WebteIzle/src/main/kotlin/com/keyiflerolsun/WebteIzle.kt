@@ -190,9 +190,9 @@ class WebteIzle : MainAPI() {
 
                     callback.invoke(
                         ExtractorLink(
-                            source  = "${this.name} - ${dilAd}",
-                            name    = "${this.name} - ${dilAd}",
-                            url     = m3u_link ?: continue,
+                            source  = "${dilAd} - ${this.name}",
+                            name    = "${dilAd} - ${this.name}",
+                            url     = m3u_link,
                             referer = "${mainUrl}/",
                             quality = getQualityFromName("1440p"),
                             isM3u8  = true
@@ -204,7 +204,20 @@ class WebteIzle : MainAPI() {
 
                 if (iframe != null) {
                     Log.d("WBTI", "iframe » ${iframe}")
-                    loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                    loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
+                        callback.invoke(
+                            ExtractorLink(
+                                source        = "${dilAd} - ${link.source}",
+                                name          = "${dilAd} - ${link.name}",
+                                url           = link.url,
+                                referer       = link.referer,
+                                quality       = link.quality,
+                                headers       = link.headers,
+                                extractorData = link.extractorData,
+                                type          = link.type
+                            )
+                        )
+                    }
                 }
             }
         }
