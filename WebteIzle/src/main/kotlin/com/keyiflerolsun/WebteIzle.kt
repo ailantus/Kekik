@@ -121,7 +121,7 @@ class WebteIzle : MainAPI() {
         }
 
         dil_list.forEach {
-            val dilAd = if (it == "0") "Türkçe Dublaj" else "Altyazı"
+            val dilAd = if (it == "0") "Dublaj" else "Altyazı"
 
             val player_api = app.post(
                 "${mainUrl}/ajax/dataAlternatif3.asp",
