@@ -207,8 +207,8 @@ class WebteIzle : MainAPI() {
                     loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
                         callback.invoke(
                             ExtractorLink(
-                                source        = "${dilAd} - ${link.url.replace("https://", "").split(".")[0].replaceFirstChar { it.uppercase() }}",
-                                name          = "${dilAd} - ${link.url.replace("https://", "").split(".")[0].replaceFirstChar { it.uppercase() }}",
+                                source        = "${dilAd} - ${link.name}",
+                                name          = "${dilAd} - ${link.name}",
                                 url           = link.url,
                                 referer       = link.referer,
                                 quality       = link.quality,
