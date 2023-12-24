@@ -84,9 +84,10 @@ class UgurFilm : MainAPI() {
         val main_document = app.get(data).document
 
         main_document.select("li.parttab a").forEach {
-            val document = app.get(fixUrlNull(it.attr("href")))?.document ?: return false
+            val sub_url  = fixUrlNull(it.attr("href")) ?: return false
+            val document = app.get(sub_url)?.document
 
-            var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return false
+            var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return@forEach
             Log.d("UGF", "iframe » ${iframe}")
 
             if (iframe.contains("${mainUrl}")) {
