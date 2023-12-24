@@ -81,42 +81,47 @@ class UgurFilm : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("UGF", "data » ${data}")
-        val document = app.get(data).document
-        var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return false
-        Log.d("UGF", "iframe » ${iframe}")
+        val main_document = app.get(data).document
 
-        if (iframe.contains("${mainUrl}")) {
-            val kaynaklar = app.get(iframe, referer=data).document.select("li.c-dropdown__item").associate {
-                it.attr("data-dropdown-value") to it.attr("data-order-value")
+        main_document.select("li.parttab a").forEach {
+            val document = app.get(fixUrlNull(it.attr("href")))?.document ?: return false
+
+            var iframe   = fixUrlNull(document.selectFirst("div#vast iframe")?.attr("src")) ?: return false
+            Log.d("UGF", "iframe » ${iframe}")
+
+            if (iframe.contains("${mainUrl}")) {
+                val kaynaklar = app.get(iframe, referer=data).document.select("li.c-dropdown__item").associate {
+                    it.attr("data-dropdown-value") to it.attr("data-order-value")
+                }
+                Log.d("UGF", "kaynaklar » ${kaynaklar}")
+
+                val vid_id    = iframe.substringAfter("/play.php?vid=").trim()
+                Log.d("UGF", "vid_id » ${vid_id}")
+
+                val yuklenenler = mutableListOf<String>()
+
+                for ((kaynak, order) in kaynaklar) {
+                    Log.d("UGF", "kaynak » ${kaynak} | order » ${order}")
+
+                    val player_api = app.post(
+                        "${mainUrl}/player/ajax_sources.php",
+                        data = mapOf(
+                            "vid"         to vid_id,
+                            "alternative" to "${kaynak}",
+                            "ord"         to "${order}"
+                        )
+                    ).text
+                    val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: continue
+                    Log.d("UGF", "player_data » ${player_data}")
+
+                    if (player_data.iframe in yuklenenler) continue
+
+                    yuklenenler.add(player_data.iframe)
+                    loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
+                }
+            } else {
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
             }
-            Log.d("UGF", "kaynaklar » ${kaynaklar}")
-
-            val vid_id    = iframe.substringAfter("/play.php?vid=").trim()
-            Log.d("UGF", "vid_id » ${vid_id}")
-
-            val yuklenenler = mutableListOf<String>()
-
-            for ((kaynak, order) in kaynaklar) {
-                Log.d("UGF", "kaynak » ${kaynak} | order » ${order}")
-
-                val player_api = app.post(
-                    "${mainUrl}/player/ajax_sources.php",
-                    data = mapOf(
-                        "vid"         to vid_id,
-                        "alternative" to "${kaynak}",
-                        "ord"         to "${order}"
-                    )
-                ).text
-                val player_data = AppUtils.tryParseJson<AjaxSource>(player_api) ?: continue
-                Log.d("UGF", "player_data » ${player_data}")
-
-                if (player_data.iframe in yuklenenler) continue
-
-                yuklenenler.add(player_data.iframe)
-                loadExtractor(player_data.iframe, "${mainUrl}/", subtitleCallback, callback)
-            }
-        } else {
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
