@@ -112,10 +112,10 @@ class KultFilmler : MainAPI() {
                 val sub_url = fixUrlNull(it.attr("href"))
 
                 if (sub_url == null) {
-                    sub_iframe = fixUrlNull(getIframe(document.html())) ?: return@forEach
+                    sub_iframe  = fixUrlNull(getIframe(document.html())) ?: return@forEach
                 } else {
-                    val sub_doc    = app.get(sub_url).document
-                    sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
+                    val sub_doc = app.get(sub_url).document
+                    sub_iframe  = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
                 }
 
                 Log.d("KLT", "sub_iframe » ${sub_iframe}")
