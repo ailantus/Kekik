@@ -109,7 +109,7 @@ class KultFilmler : MainAPI() {
         if (document.selectFirst("div#action-parts a") != null) {
             document.select("div#action-parts div.part").forEach {
                 var sub_iframe:String
-                val sub_url = fixUrlNull(it.selectFirst("a").attr("href"))
+                val sub_url = fixUrlNull(it.parent()?.attr("href"))
 
                 if (sub_url == null) {
                     sub_iframe  = fixUrlNull(getIframe(document.html())) ?: return@forEach
