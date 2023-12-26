@@ -106,24 +106,31 @@ class KultFilmler : MainAPI() {
         Log.d("KLT", "data » ${data}")
         val document = app.get(data).document
 
-        val iframes = mutableListOf<String>()
-
         if (document.selectFirst("div#action-parts a") != null) {
             document.select("div#action-parts a").forEach {
                 val sub_url = fixUrlNull(it.attr("href")) ?: return@forEach
                 val sub_doc = app.get(sub_url).document
 
                 val sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
-                iframes.add(sub_iframe)
+                Log.d("KLT", "sub_iframe » ${sub_iframe}")
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
+                    callback.invoke(
+                        ExtractorLink(
+                            source        = "${it.selectFirst("div.part-lang span")?.text()?.trim()} - ${link.name}",
+                            name          = "${it.selectFirst("div.part-lang span")?.text()?.trim()} - ${link.name}",
+                            url           = link.url,
+                            referer       = link.referer,
+                            quality       = link.quality,
+                            headers       = link.headers,
+                            extractorData = link.extractorData,
+                            type          = link.type
+                        )
+                    )
+                }
             }
         } else {
             val iframe = fixUrlNull(getIframe(document.html())) ?: return false
-            iframes.add(iframe)
-        }
-
-        for (iframe in iframes) {
             Log.d("KLT", "iframe » ${iframe}")
-
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
