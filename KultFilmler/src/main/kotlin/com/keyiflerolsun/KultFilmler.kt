@@ -116,8 +116,8 @@ class KultFilmler : MainAPI() {
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
                     callback.invoke(
                         ExtractorLink(
-                            source        = "${it.selectFirst("div.part-lang span")?.text()?.trim()} - ${link.name}",
-                            name          = "${it.selectFirst("div.part-lang span")?.text()?.trim()} - ${link.name}",
+                            source        = "${it.selectFirst("div.part-lang span")?.attr("title")?.trim()} - ${link.name}",
+                            name          = "${it.selectFirst("div.part-lang span")?.attr("title")?.trim()} - ${link.name}",
                             url           = link.url,
                             referer       = link.referer,
                             quality       = link.quality,
