@@ -107,11 +107,17 @@ class KultFilmler : MainAPI() {
         val document = app.get(data).document
 
         if (document.selectFirst("div#action-parts a") != null) {
-            document.select("div#action-parts a").forEach {
-                val sub_url = fixUrlNull(it.attr("href")) ?: return@forEach
-                val sub_doc = app.get(sub_url).document
+            document.select("div#action-parts div.part").forEach {
+                var sub_iframe:String
+                val sub_url = fixUrlNull(it.attr("href"))
 
-                val sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
+                if (sub_url == null) {
+                    sub_iframe = fixUrlNull(getIframe(document.html())) ?: return@forEach
+                } else {
+                    val sub_doc    = app.get(sub_url).document
+                    sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
+                }
+
                 Log.d("KLT", "sub_iframe » ${sub_iframe}")
                 loadExtractor(sub_iframe, "${mainUrl}/", subtitleCallback) { link ->
                     callback.invoke(
