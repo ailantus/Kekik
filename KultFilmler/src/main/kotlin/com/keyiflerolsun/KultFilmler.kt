@@ -7,6 +7,8 @@ import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import android.util.Base64
+import org.jsoup.Jsoup
 
 class KultFilmler : MainAPI() {
     override var mainUrl              = "https://kultfilmler.com"
@@ -94,6 +96,12 @@ class KultFilmler : MainAPI() {
         }
     }
 
+    private fun getIframe(source_code: String): String {
+        val atob_key = Regex("""atob\("(.*)"\)""").find(source_code)?.groupValues?.get(1) ?: return ""
+
+        return Jsoup.parse(String(Base64.decode(atob_key, Base64.DEFAULT))).selectFirst("iframe")?.attr("src") ?: ""
+    }
+
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("KLT", "data » ${data}")
         val document = app.get(data).document
@@ -105,11 +113,11 @@ class KultFilmler : MainAPI() {
                 val sub_url = fixUrlNull(it.attr("href")) ?: return@forEach
                 val sub_doc = app.get(sub_url).document
 
-                val sub_iframe = fixUrlNull(sub_doc.selectFirst("p#player iframe")?.attr("src")) ?: return@forEach
+                val sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
                 iframes.add(sub_iframe)
             }
         } else {
-            val iframe = fixUrlNull(document.selectFirst("p#player iframe")?.attr("src")) ?: return false
+            val iframe = fixUrlNull(getIframe(document.html())) ?: return false
             iframes.add(iframe)
         }
 
