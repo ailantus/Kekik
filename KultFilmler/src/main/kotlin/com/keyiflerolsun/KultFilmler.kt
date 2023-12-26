@@ -113,7 +113,7 @@ class KultFilmler : MainAPI() {
 
                 val sub_iframe = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
                 Log.d("KLT", "sub_iframe » ${sub_iframe}")
-                loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
+                loadExtractor(sub_iframe, "${mainUrl}/", subtitleCallback) { link ->
                     callback.invoke(
                         ExtractorLink(
                             source        = "${it.selectFirst("div.part-lang span")?.attr("title")?.trim()} - ${link.name}",
