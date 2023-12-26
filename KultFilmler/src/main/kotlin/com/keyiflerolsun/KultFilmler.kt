@@ -77,8 +77,8 @@ class KultFilmler : MainAPI() {
         val description = document.selectFirst("div.description")?.text()?.trim()
         val tags        = document.select("ul.post-categories a").map { it.text() }
         val rating      = document.selectFirst("div.imdb-count")?.text()?.trim()?.split(" ")?.first()?.toRatingInt()
-        val year        = Regex("""\d+""").find(document.selectFirst("li.release")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
-        val duration    = Regex("""\d+""").find(document.selectFirst("li.time")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
+        val year        = Regex("""(\d+)""").find(document.selectFirst("li.release")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
+        val duration    = Regex("""(\d+)""").find(document.selectFirst("li.time")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
         val actors      = document.select("[href*='oyuncular']").map {
             Actor(it.text())
         }
