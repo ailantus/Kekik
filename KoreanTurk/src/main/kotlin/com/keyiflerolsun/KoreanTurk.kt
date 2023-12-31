@@ -18,14 +18,48 @@ class KoreanTurk : MainAPI() {
     override val supportedTypes       = setOf(TvType.AsianDrama)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/bolumler/page/" to "Son Eklenenler",
+        "${mainUrl}/bolumler/page/"       to "Son Eklenenler",
+        "${mainUrl}/Konu-Aile"            to "Aile",
+        "${mainUrl}/Konu-Aksiyon"         to "Aksiyon",
+        "${mainUrl}/Konu-Bilim-Kurgu"     to "Bilim Kurgu",
+        "${mainUrl}/Konu-Donem"           to "Dönem",
+        "${mainUrl}/Konu-Dram"            to "Dram",
+        "${mainUrl}/Konu-Fantastik"       to "Fantastik",
+        "${mainUrl}/Konu-Genclik"         to "Gençlik",
+        "${mainUrl}/Konu-Gerilim"         to "Gerilim",
+        "${mainUrl}/Konu-Gizem"           to "Gizem",
+        "${mainUrl}/Konu-Hukuk"           to "Hukuk",
+        "${mainUrl}/Konu-Komedi"          to "Komedi",
+        "${mainUrl}/Konu-Korku"           to "Korku",
+        "${mainUrl}/Konu-Medikal"         to "Medikal",
+        "${mainUrl}/Konu-Mini-Dizi"       to "Mini Dizi",
+        "${mainUrl}/Konu-Okul"            to "Okul",
+        "${mainUrl}/Konu-Polisiye-Askeri" to "Polisiye-Askeri",
+        "${mainUrl}/Konu-Romantik"        to "Romantik",
+        "${mainUrl}/Konu-Romantik-Komedi" to "Romantik Komedi",
+        "${mainUrl}/Konu-Suc"             to "Suç",
+        "${mainUrl}/Konu-Tarih"           to "Tarih",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
-        val home     = document.select("div.standartbox").mapNotNull { it.toSearchResult() }
+        if ("${request.data}".contains("Konu-")) {
+            val document = app.get("${request.data}").document
+            val home     = document.selectXpath("//img[contains(@onload, 'NcodeImageResizer')]").mapNotNull { it.toKonuResult() }
 
-        return newHomePageResponse(request.name, home)
+            return newHomePageResponse(
+                list = HomePageList(
+                    name = request.name,
+                    list = home,
+                    isHorizontalImages = false
+                ),
+                hasNext = false
+            )
+        } else {
+            val document = app.get("${request.data}${page}").document
+            val home     = document.select("div.standartbox").mapNotNull { it.toSearchResult() }
+
+            return newHomePageResponse(request.name, home)
+        }
     }
 
     private fun removeEpisodePart(url: String): String {
@@ -38,10 +72,22 @@ class KoreanTurk : MainAPI() {
         val bolum     = this.selectFirst("h2")?.ownText()?.substringBefore(".Bölüm")?.trim()
         val title     = "${dizi} | ${bolum}"
 
-        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        var href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        if (href.contains("izle.html")) {
+            href = removeEpisodePart(href)
+        }
+
         val posterUrl = fixUrlNull(this.selectFirst("div.resimcik img")?.attr("src"))
 
-        return newTvSeriesSearchResponse(title, removeEpisodePart(href), TvType.AsianDrama) { this.posterUrl = posterUrl }
+        return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
+    }
+
+    private fun Element.toKonuResult(): SearchResponse? {
+        val title     = this.selectXpath("//preceding-sibling::a")?.text()?.trim() ?: return null
+        var href      = fixUrlNull(this.selectXpath("//preceding-sibling::a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.attr("src"))
+
+        return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -55,7 +101,7 @@ class KoreanTurk : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("[property='og:title']")?.attr("content")?.substringAfter(" - Koreantürk Kore Dizileri")?.trim() ?: return null
+        val title       = document.selectFirst("h3")?.text()?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.resimcik img")?.attr("src"))
         val description = document.selectFirst("[property='og:description']")?.attr("content")?.trim()
 
