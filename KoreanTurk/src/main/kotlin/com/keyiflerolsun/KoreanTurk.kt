@@ -57,8 +57,8 @@ class KoreanTurk : MainAPI() {
 
         val title           = document.selectFirst("[property='og:title']")?.attr("content")?.substringAfter(" - Koreantürk Kore Dizileri")?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("div.resimcik img")?.attr("src"))
-        val description     = document.selectFirst("[property='og:description']")?.attr("content")?.substringAfter(" Türler: ")?.trim()
-        val tags            = document.selectFirst("[property='og:description']")?.attr("content")?.substringBefore(" Türler: ")?.trim()?.split(",")?.mapNotNull { it.trim() }
+        val description     = document.selectFirst("[property='og:description']")?.attr("content")?.trim()
+
         val episodes        = document.select("div.standartbox a").mapNotNull {
             val ep_name    = it.selectFirst("h2")?.ownText()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
@@ -77,7 +77,6 @@ class KoreanTurk : MainAPI() {
         return newTvSeriesLoadResponse(title, url, TvType.AsianDrama, episodes) {
             this.posterUrl = poster
             this.plot      = description
-            this.tags      = tags
         }
     }
 
