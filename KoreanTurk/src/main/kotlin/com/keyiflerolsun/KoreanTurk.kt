@@ -47,7 +47,7 @@ class KoreanTurk : MainAPI() {
             val document = app.get("${request.data}").document
             val home     = document.selectXpath("//img[contains(@onload, 'NcodeImageResizer')]")
                 .shuffled(Random(System.nanoTime()))
-                .take(10)
+                .take(12)
                 .mapNotNull { it.toKonuResult() }
 
             return newHomePageResponse(
