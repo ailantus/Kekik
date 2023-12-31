@@ -63,7 +63,7 @@ class KoreanTurk : MainAPI() {
     }
 
     private fun removeEpisodePart(url: String): String {
-        val regex = "-[0-9]+-bolum-izle\\.html".toRegex()
+        val regex = "-[0-9]+(-final)?-bolum-izle\\.html".toRegex()
         return regex.replace(url, "")
     }
 
