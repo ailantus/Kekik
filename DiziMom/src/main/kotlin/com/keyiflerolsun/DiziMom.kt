@@ -126,12 +126,12 @@ class DiziMom : MainAPI() {
         val document = app.get(data, headers=ua).document
 
         val iframes     = mutableListOf<String>()
-        val main_iframe = document.selectFirst("div#vast iframe")?.attr("src") ?: return false
+        val main_iframe = document.selectFirst("iframe[loading='lazy']")?.attr("src") ?: return false
         iframes.add(main_iframe)
 
         document.select("div.sources a").forEach {
             val sub_document = app.get(it.attr("href"), headers=ua).document
-            val sub_iframe   = sub_document.selectFirst("div#vast iframe")?.attr("src") ?: return@forEach
+            val sub_iframe   = sub_document.selectFirst("iframe[loading='lazy']")?.attr("src") ?: return@forEach
 
             iframes.add(sub_iframe)
         }
