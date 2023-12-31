@@ -55,11 +55,11 @@ class KoreanTurk : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("[property='og:title']")?.attr("content")?.substringAfter(" - Koreantürk Kore Dizileri")?.trim() ?: return null
-        val poster          = fixUrlNull(document.selectFirst("div.resimcik img")?.attr("src"))
-        val description     = document.selectFirst("[property='og:description']")?.attr("content")?.trim()
+        val title       = document.selectFirst("[property='og:title']")?.attr("content")?.substringAfter(" - Koreantürk Kore Dizileri")?.trim() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.resimcik img")?.attr("src"))
+        val description = document.selectFirst("[property='og:description']")?.attr("content")?.trim()
 
-        val episodes        = document.select("div.standartbox a").mapNotNull {
+        val episodes    = document.select("div.standartbox a").mapNotNull {
             val ep_name    = it.selectFirst("h2")?.ownText()?.trim() ?: return@mapNotNull null
             val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
             val ep_episode = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
