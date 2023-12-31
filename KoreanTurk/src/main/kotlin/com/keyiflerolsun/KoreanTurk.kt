@@ -6,6 +6,7 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import kotlin.random.Random
 
 class KoreanTurk : MainAPI() {
     override var mainUrl              = "https://www.koreanturk.com"
@@ -19,32 +20,35 @@ class KoreanTurk : MainAPI() {
 
     override val mainPage = mainPageOf(
         "${mainUrl}/bolumler/page/"       to "Son Eklenenler",
-        // "${mainUrl}/Konu-Aile"            to "Aile",
-        // "${mainUrl}/Konu-Aksiyon"         to "Aksiyon",
-        // "${mainUrl}/Konu-Bilim-Kurgu"     to "Bilim Kurgu",
-        // "${mainUrl}/Konu-Donem"           to "Dönem",
-        // "${mainUrl}/Konu-Dram"            to "Dram",
-        // "${mainUrl}/Konu-Fantastik"       to "Fantastik",
-        // "${mainUrl}/Konu-Genclik"         to "Gençlik",
-        // "${mainUrl}/Konu-Gerilim"         to "Gerilim",
-        // "${mainUrl}/Konu-Gizem"           to "Gizem",
-        // "${mainUrl}/Konu-Hukuk"           to "Hukuk",
-        // "${mainUrl}/Konu-Komedi"          to "Komedi",
-        // "${mainUrl}/Konu-Korku"           to "Korku",
-        // "${mainUrl}/Konu-Medikal"         to "Medikal",
-        // "${mainUrl}/Konu-Mini-Dizi"       to "Mini Dizi",
-        // "${mainUrl}/Konu-Okul"            to "Okul",
-        // "${mainUrl}/Konu-Polisiye-Askeri" to "Polisiye-Askeri",
-        // "${mainUrl}/Konu-Romantik"        to "Romantik",
-        // "${mainUrl}/Konu-Romantik-Komedi" to "Romantik Komedi",
-        // "${mainUrl}/Konu-Suc"             to "Suç",
-        // "${mainUrl}/Konu-Tarih"           to "Tarih",
+        "${mainUrl}/Konu-Aile"            to "Aile",
+        "${mainUrl}/Konu-Aksiyon"         to "Aksiyon",
+        "${mainUrl}/Konu-Bilim-Kurgu"     to "Bilim Kurgu",
+        "${mainUrl}/Konu-Donem"           to "Dönem",
+        "${mainUrl}/Konu-Dram"            to "Dram",
+        "${mainUrl}/Konu-Fantastik"       to "Fantastik",
+        "${mainUrl}/Konu-Genclik"         to "Gençlik",
+        "${mainUrl}/Konu-Gerilim"         to "Gerilim",
+        "${mainUrl}/Konu-Gizem"           to "Gizem",
+        "${mainUrl}/Konu-Hukuk"           to "Hukuk",
+        "${mainUrl}/Konu-Komedi"          to "Komedi",
+        "${mainUrl}/Konu-Korku"           to "Korku",
+        "${mainUrl}/Konu-Medikal"         to "Medikal",
+        "${mainUrl}/Konu-Mini-Dizi"       to "Mini Dizi",
+        "${mainUrl}/Konu-Okul"            to "Okul",
+        "${mainUrl}/Konu-Polisiye-Askeri" to "Polisiye-Askeri",
+        "${mainUrl}/Konu-Romantik"        to "Romantik",
+        "${mainUrl}/Konu-Romantik-Komedi" to "Romantik Komedi",
+        "${mainUrl}/Konu-Suc"             to "Suç",
+        "${mainUrl}/Konu-Tarih"           to "Tarih",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         if ("${request.data}".contains("Konu-")) {
             val document = app.get("${request.data}").document
-            val home     = document.selectXpath("//img[contains(@onload, 'NcodeImageResizer')]").mapNotNull { it.toKonuResult() }
+            val home     = document.selectXpath("//img[contains(@onload, 'NcodeImageResizer')]")
+                .shuffled(Random(System.nanoTime()))
+                .take(10)
+                .mapNotNull { it.toKonuResult() }
 
             return newHomePageResponse(
                 list = HomePageList(
@@ -83,8 +87,8 @@ class KoreanTurk : MainAPI() {
     }
 
     private fun Element.toKonuResult(): SearchResponse? {
-        val title     = this.selectXpath("//preceding-sibling::a")?.text()?.trim() ?: return null
-        var href      = fixUrlNull(this.selectXpath("//preceding-sibling::a")?.attr("href")) ?: return null
+        val title     = this.selectXpath("preceding-sibling::a[1]")?.text()?.trim() ?: return null
+        var href      = fixUrlNull(this.selectXpath("preceding-sibling::a[1]")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.AsianDrama) { this.posterUrl = posterUrl }
