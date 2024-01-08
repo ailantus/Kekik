@@ -10,6 +10,6 @@ class DizillaPlugin: Plugin() {
         registerMainAPI(Dizilla())
         registerExtractorAPI(ContentX())
         registerExtractorAPI(Hotlinger())
-        registerExtractorAPI(Four())
+        registerExtractorAPI(FourCX())
     }
 }
