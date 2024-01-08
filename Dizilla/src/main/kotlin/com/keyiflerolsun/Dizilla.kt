@@ -52,7 +52,7 @@ class Dizilla : MainAPI() {
     private fun Element.diziler(): SearchResponse? {
         val title     = this.selectFirst("span.font-normal")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -64,7 +64,7 @@ class Dizilla : MainAPI() {
 
         val ep_doc    = app.get(this.attr("href")).document
         val href      = fixUrlNull(ep_doc.selectFirst("a.relative")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(ep_doc.selectFirst("img.imgt")?.attr("src"))
+        val posterUrl = fixUrlNull(ep_doc.selectFirst("img.imgt")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -127,7 +127,7 @@ class Dizilla : MainAPI() {
         val document = app.get(url).document
 
         val title       = document.selectFirst("div.page-top h1")?.text() ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.page-top img")?.attr("src")) ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.page-top img")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';")) ?: return null
         val year        = document.selectXpath("//span[text()='Yayın tarihi']//following-sibling::span").text().trim().split(" ").last().toIntOrNull()
         val description = document.selectFirst("div.mv-det-p")?.text()?.trim() ?: document.selectFirst("div.w-full div.text-base")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }

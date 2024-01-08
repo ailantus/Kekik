@@ -6,3 +6,8 @@ class Hotlinger : ContentX() {
     override var name    = "Hotlinger"
     override var mainUrl = "https://hotlinger.com"
 }
+
+class Four : ContentX() {
+    override var name    = "Four"
+    override var mainUrl = "https://four.contentx.me"
+}
