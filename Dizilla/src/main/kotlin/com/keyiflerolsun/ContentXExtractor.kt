@@ -8,7 +8,7 @@ import com.lagradost.cloudstream3.utils.*
 
 open class ContentX : ExtractorApi() {
     override val name            = "ContentX"
-    override val mainUrl         = "${mainUrl}"
+    override val mainUrl         = "https://contentx.me"
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
