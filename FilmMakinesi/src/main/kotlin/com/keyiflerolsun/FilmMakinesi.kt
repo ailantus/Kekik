@@ -24,24 +24,24 @@ class FilmMakinesi : MainAPI() {
         "${mainUrl}/film-izle/olmeden-izlenmesi-gerekenler/page/" to "Ölmeden İzle",
         "${mainUrl}/film-izle/aksiyon-filmleri-izle/page/"        to "Aksiyon",
         "${mainUrl}/film-izle/bilimkurgu/page/"                   to "Bilim Kurgu",
-        "${mainUrl}/film-izle/fantastik/page/"                    to "Fantastik",
-        "${mainUrl}/film-izle/korku/page/"                        to "Korku",
+        // "${mainUrl}/film-izle/fantastik/page/"                    to "Fantastik",
+        // "${mainUrl}/film-izle/korku/page/"                        to "Korku",
         "${mainUrl}/film-izle/macera-filmleri/page/"              to "Macera",
-        "${mainUrl}/film-izle/polisiye/page/"                     to "Polisiye Suç",
+        // "${mainUrl}/film-izle/polisiye/page/"                     to "Polisiye Suç",
         "${mainUrl}/film-izle/komedi/page/"                       to "Komedi",
-        "${mainUrl}/film-izle/savas/page/"                        to "Tarihi ve Savaş",
-        "${mainUrl}/film-izle/gerilim-filmleri-izle/page/"        to "Gerilim Heyecan",
-        "${mainUrl}/film-izle/gizemli/page/"                      to "Gizem",
-        "${mainUrl}/film-izle/aile-filmleri/page/"                to "Aile",
-        "${mainUrl}/film-izle/animasyon-filmler/page/"            to "Animasyon",
-        "${mainUrl}/film-izle/western/page/"                      to "Western",
+        // "${mainUrl}/film-izle/savas/page/"                        to "Tarihi ve Savaş",
+        // "${mainUrl}/film-izle/gerilim-filmleri-izle/page/"        to "Gerilim Heyecan",
+        // "${mainUrl}/film-izle/gizemli/page/"                      to "Gizem",
+        // "${mainUrl}/film-izle/aile-filmleri/page/"                to "Aile",
+        // "${mainUrl}/film-izle/animasyon-filmler/page/"            to "Animasyon",
+        // "${mainUrl}/film-izle/western/page/"                      to "Western",
         "${mainUrl}/film-izle/ask/page/"                          to "Romantik",
         "${mainUrl}/film-izle/belgesel/page/"                     to "Belgesel",
-        "${mainUrl}/film-izle/biyografi/page/"                    to "Biyografik",
-        "${mainUrl}/film-izle/dram/page/"                         to "Dram",
+        // "${mainUrl}/film-izle/biyografi/page/"                    to "Biyografik",
+        // "${mainUrl}/film-izle/dram/page/"                         to "Dram",
         "${mainUrl}/film-izle/genclik/page/"                      to "Gençlik",
-        "${mainUrl}/film-izle/muzik/page/"                        to "Müzik",
-        "${mainUrl}/film-izle/spor/page/"                         to "Spor"
+        // "${mainUrl}/film-izle/muzik/page/"                        to "Müzik",
+        // "${mainUrl}/film-izle/spor/page/"                         to "Spor"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -124,23 +124,7 @@ class FilmMakinesi : MainAPI() {
         val iframe   = document.selectFirst("div.player-div iframe")?.attr("data-src") ?: return false
         Log.d("FLMM", "iframe » ${iframe}")
 
-        val i_source = app.get("${iframe}", referer="${mainUrl}/").text
-        val m3u_link = Regex("""contentUrl\": \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-        if (m3u_link != null) {
-            Log.d("FLMM", "i_source » ${i_source}")
-
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = m3u_link,
-                    referer = "${mainUrl}/",
-                    quality = Qualities.Unknown.value,
-                    type    = INFER_TYPE
-                )
-            )
-
-        }
+        loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
 
         return true
     }
