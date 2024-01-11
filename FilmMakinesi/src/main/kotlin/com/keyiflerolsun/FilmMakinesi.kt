@@ -19,6 +19,11 @@ class FilmMakinesi : MainAPI() {
     override val hasDownloadSupport   = true
     override val supportedTypes       = setOf(TvType.Movie)
 
+    // ! CloudFlare bypass
+    override var sequentialMainPage = true        // * https://recloudstream.github.io/dokka/-cloudstream/com.lagradost.cloudstream3/-main-a-p-i/index.html#-2049735995%2FProperties%2F101969414
+    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
+    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+
     override val mainPage = mainPageOf(
         "${mainUrl}/page/"                                        to "Son Filmler",
         "${mainUrl}/film-izle/olmeden-izlenmesi-gerekenler/page/" to "Ölmeden İzle",
