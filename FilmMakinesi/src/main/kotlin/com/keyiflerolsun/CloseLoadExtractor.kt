@@ -43,7 +43,7 @@ open class CloseLoad : ExtractorApi() {
                 url     = m3u_link,
                 referer = mainUrl,
                 quality = Qualities.Unknown.value,
-                isM3u   = true
+                isM3u8  = true
             )
         )
     }
