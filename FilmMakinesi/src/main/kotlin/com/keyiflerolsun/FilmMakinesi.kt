@@ -58,7 +58,7 @@ class FilmMakinesi : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val title     = this.selectFirst("h6 a")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("h6 a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("div.img img")?.attr("src"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
@@ -97,7 +97,7 @@ class FilmMakinesi : MainAPI() {
             0
         }
 
-        val recommendations = document.select("div.benzerler li").mapNotNull { it.toRecommendResult() }
+        val recommendations = document.select("div.hidden-mobile li").mapNotNull { it.toRecommendResult() }
         val actors          = document.selectFirst("dt:contains(Oyuncular:) + dd")?.text()?.split(", ")?.map {
             Actor(it.trim())
         }
@@ -121,8 +121,26 @@ class FilmMakinesi : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("FLMM", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.player-div iframe")?.attr("src") ?: return false
+        val iframe   = document.selectFirst("div.player-div iframe")?.attr("data-src") ?: return false
         Log.d("FLMM", "iframe » ${iframe}")
+
+        val i_source = app.get("${iframe}", referer="${mainUrl}/").text
+        val m3u_link = Regex("""contentUrl\": \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+        if (m3u_link != null) {
+            Log.d("FLMM", "i_source » ${i_source}")
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = m3u_link,
+                    referer = "${mainUrl}/",
+                    quality = Qualities.Unknown.value,
+                    type    = INFER_TYPE
+                )
+            )
+
+        }
 
         return true
     }
