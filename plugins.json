@@ -2,7 +2,7 @@
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=tr.canlitv.team&sz=%size%",
         "apiVersion": 1,
-        "repositoryUrl": "https://github.com/keyiflerolsun/Kekik-cloudstream",
+        "repositoryUrl": "https://github.com/egglercraftdev/Kekik-cloudstream",
         "fileSize": 17113,
         "status": 1,
         "language": "tr",
@@ -16,7 +16,7 @@
         "version": 1,
         "internalName": "CanliTV",
         "description": "Canl\u0131 TV",
-        "url": "https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/builds/CanliTV.cs3",
+        "url": "https://raw.githubusercontent.com/egglercraftdev/Kekik-cloudstream/builds/CanliTV.cs3",
         "name": "CanliTV"
     },
 ]
