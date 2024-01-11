@@ -27,7 +27,7 @@ open class CloseLoad : ExtractorApi() {
             )
         }
 
-        val atob       = Regex("""(?<=atob\|result\|)[a-zA-Z0-9+\/=]+""").find(i_source.text)?.groupValues?.get(1) ?: throw ErrorLoadingException("atob not found")
+        val atob       = Regex("""aHR0[0-9a-zA-Z+\/=]*""").find(i_source.text)?.groupValues?.get(1) ?: throw ErrorLoadingException("atob not found")
         // * Padding kontrolü ve ekleme
         val padding    = 4 - atob.length % 4
         val atobPadded = if (padding < 4) atob.padEnd(atob.length + padding, '=') else atob

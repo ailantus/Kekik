@@ -9,7 +9,7 @@ from base64       import b64decode
 oturum  = CloudScraper()
 oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://filmmakinesi.film/"})
 
-film_link = "https://filmmakinesi.film/film/blizzard-of-souls-izle-2019-fm3/"
+film_link = "https://filmmakinesi.film/film/uc-silahsorler-milady-izle-2023/"
 
 istek   = oturum.get(film_link)
 secici  = Selector(istek.text)
@@ -17,7 +17,7 @@ iframe  = secici.css("div.player-div iframe::attr(data-src)").get()
 konsol.print(iframe)
 
 i_source = oturum.get(iframe)
-atob     = findall(r"""(?<=atob\|result\|)[a-zA-Z0-9+\/=]+""", i_source.text)[0]
+atob     = findall(r"""aHR0[0-9a-zA-Z+\/=]*""", i_source.text)[0]
 if padding_needed := len(atob) % 4:
     atob += "=" * (4 - padding_needed)
 
