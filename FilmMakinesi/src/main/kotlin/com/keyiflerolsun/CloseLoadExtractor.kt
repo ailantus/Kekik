@@ -18,7 +18,7 @@ open class CloseLoad : ExtractorApi() {
         val i_source = app.get(url, referer=ext_ref).text
         val m3u_link = Regex("""contentUrl\": \"([^\"]+)""").find(i_source)?.groupValues?.get(1)
         if (m3u_link != null) {
-            Log.d("FLMM", "m3u_link » ${m3u_link}")
+            Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
 
             callback.invoke(
                 ExtractorLink(
