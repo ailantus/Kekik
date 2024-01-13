@@ -2,7 +2,7 @@
     "name": "Türkçe yayın",
     "description": "Türkçe içerikli eklenti havuzu",
     "manifestVersion": 1,
-    "pluginLists": [
-      "https://raw.githubusercontent.com/admayz/Cloudstream/builds/plugins.json"
-    ]
+  "pluginLists": [
+    "https://raw.githubusercontent.com/admayz/Cloudstream/master/builds/plugins.json"
+  ]
 }
