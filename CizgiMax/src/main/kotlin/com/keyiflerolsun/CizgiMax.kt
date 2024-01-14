@@ -46,7 +46,7 @@ class CizgiMax : MainAPI() {
         val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${query}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
 
         return response.mapNotNull { result ->
-            val poster = fixUrlNull(result.s_image) ?: return@mapNotNull
+            val poster = fixUrlNull(result.s_image) ?: return@mapNotNull null
 
             newTvSeriesSearchResponse(
                 result.s_name,
