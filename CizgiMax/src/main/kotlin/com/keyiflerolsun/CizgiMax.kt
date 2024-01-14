@@ -43,17 +43,7 @@ class CizgiMax : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        var sorgu = query
-
-        // if (sorgu == "iron") { // ! Test Provider
-        //     sorgu = "dede"
-        // }
-
-        // if (sorgu == "over") {
-        //     sorgu = "ikimiz"
-        // }
-
-        val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${sorgu}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
+        val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${query}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
 
         return response.mapNotNull { result ->
             if (result.s_name.contains(".Bölüm") || result.s_name.contains(".Sezon") || result.s_name.contains("-Sezon") || result.s_name.contains("-izle")) {
