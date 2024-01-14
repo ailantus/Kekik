@@ -18,27 +18,24 @@ class CizgiMax : MainAPI() {
     override val supportedTypes       = setOf(TvType.Cartoon)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/category/genel/aile/page/"        to "Aile",
-        "${mainUrl}/category/genel/aksyion/page/"     to "Aksyion",
-        "${mainUrl}/category/genel/bilim-kurgu/page/" to "Bilim Kurgu",
-        "${mainUrl}/category/genel/fantastik/page/"   to "Fantastik",
-        "${mainUrl}/category/genel/komedi/page/"      to "Komedi",
-        "${mainUrl}/category/genel/korku/page/"       to "Korku",
-        "${mainUrl}/category/genel/macera/page/"      to "Macera",
-        "${mainUrl}/category/genel/tarih/page/"       to "Tarih"
+        "?s_type&tur[0]=aile&orderby=date&order=DESC"                to "Aile",
+        "?s_type&tur[0]=aksiyon-macera&orderby=date&order=DESC"      to "Aksyion",
+        "?s_type&tur[0]=bilim-kurgu-fantazi&orderby=date&order=DESC" to "Bilim Kurgu",
+        "?s_type&tur[0]=komedi&orderby=date&order=DESC"              to "Komedi",
+        "?s_type&tur[0]=suc&orderby=date&order=DESC"                 to "Suç",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}/?sort=views").document
-        val home     = document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
+        val document = app.get("${mainUrl}/diziler/page/${page}${request.data}").document
+        val home     = document.select("ul.filter-results li").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("span.movie-title")?.text()?.substringBefore(" Türkçe İzle") ?: return null
-        val href      = fixUrlNull(this.selectFirst("span.movie-title a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("div.movie-poster img")?.attr("src"))
+        val title     = this.selectFirst("h2.truncate")?.text()?.trim() ?: return null
+        val href      = fixUrlNull(this.selectFirst("div.poster-subject a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("div.poster-media img")?.attr("data-src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.Cartoon) { this.posterUrl = posterUrl }
     }
