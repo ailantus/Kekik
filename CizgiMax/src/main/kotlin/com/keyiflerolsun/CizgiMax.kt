@@ -12,7 +12,7 @@ class CizgiMax : MainAPI() {
     override var name                 = "CizgiMax"
     override val hasMainPage          = true
     override var lang                 = "tr"
-    override val hasQuickSearch       = false
+    override val hasQuickSearch       = true
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
     override val supportedTypes       = setOf(TvType.Cartoon)
@@ -43,9 +43,17 @@ class CizgiMax : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("${mainUrl}/?s=${query}").document
+        val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${query}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
 
-        return document.select("div.movie-preview-content").mapNotNull { it.toSearchResult() }
+        return response.mapNotNull { result ->
+            newTvSeriesSearchResponse(
+                result.s_name,
+                fixUrl(result.s_link),
+                TvType.Cartoon
+            ) {
+                this.posterUrl = fixUrlNull(result.s_image)
+            }
+        }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
