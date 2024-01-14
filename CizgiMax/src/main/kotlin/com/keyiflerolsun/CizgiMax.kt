@@ -56,7 +56,7 @@ class CizgiMax : MainAPI() {
         val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${sorgu}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
 
         return response.mapNotNull { result ->
-            if (result.s_name.contains(".Bölüm") || result.s_name.contains(".Sezon")) {
+            if (result.s_name.contains(".Bölüm") || result.s_name.contains(".Sezon") || result.s_name.contains("-Sezon") || result.s_name.contains("-izle")) {
                 return@mapNotNull null
             }
 
