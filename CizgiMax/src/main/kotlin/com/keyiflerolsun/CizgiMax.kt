@@ -64,7 +64,7 @@ class CizgiMax : MainAPI() {
             val ep_name     = it.selectFirst("span.episode-names")?.text()?.trim() ?: return@mapNotNull null
             val ep_href     = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
             val ep_episode  = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val season_name = it.selectFirst("season-name")?.text()?.trim()
+            val season_name = it.selectFirst("season-name")?.text()?.trim() ?: ""
             val ep_season   = Regex("""(\d+)\.Sezon""").find(season_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
@@ -88,7 +88,7 @@ class CizgiMax : MainAPI() {
         val document = app.get(data).document
 
         document.select("ul.linkler li").forEach {
-            var iframe   = fixUrlNull(it.selectFirst("a")?.attr("data-frame")) ?: return@forEach
+            var iframe = fixUrlNull(it.selectFirst("a")?.attr("data-frame")) ?: return@forEach
             Log.d("CZGM", "iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
