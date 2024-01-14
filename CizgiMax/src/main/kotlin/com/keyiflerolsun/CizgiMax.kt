@@ -45,17 +45,21 @@ class CizgiMax : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         var sorgu = query
 
-        if (sorgu == "iron") { // ! Test Provider
-            sorgu = "dede"
-        }
+        // if (sorgu == "iron") { // ! Test Provider
+        //     sorgu = "dede"
+        // }
 
-        if (sorgu == "over") {
-            sorgu = "ikimiz"
-        }
+        // if (sorgu == "over") {
+        //     sorgu = "ikimiz"
+        // }
 
         val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${sorgu}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
 
         return response.mapNotNull { result ->
+            if (result.s_name.contains(".Bölüm") || result.s_name.contains(".Sezon")) {
+                return@mapNotNull null
+            }
+
             newTvSeriesSearchResponse(
                 result.s_name,
                 fixUrl(result.s_link),
@@ -74,7 +78,7 @@ class CizgiMax : MainAPI() {
         val title       = document.selectFirst("h1.page-title")?.text() ?: return null
         val poster      = fixUrlNull(document.selectFirst("img.series-profile-thumb")?.attr("src")) ?: return null
         val description = document.selectFirst("p#tv-series-desc")?.text()?.trim()
-        val tags        = document.select("div.genre-item a").mapNotNull { it?.text()?.trim() }
+        val tags        = document.select("div.genre-item a").mapNotNull { it.text().trim() }
         val rating      = document.selectFirst("div.color-imdb")?.text()?.trim()?.toRatingInt()
 
 
