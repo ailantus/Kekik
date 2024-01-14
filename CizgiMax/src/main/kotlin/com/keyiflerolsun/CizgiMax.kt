@@ -44,10 +44,13 @@ class CizgiMax : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         var sorgu = query
+
         if (sorgu == "iron") { // ! Test Provider
             sorgu = "dede"
-        } else if (sorgu == "over") {
-            sorgu "ikimiz"
+        }
+
+        if (sorgu == "over") {
+            sorgu = "ikimiz"
         }
 
         val response = app.get("${mainUrl}/ajaxservice/index.php?qr=${sorgu}").parsedSafe<SearchResult>()?.data?.result ?: return listOf<SearchResponse>()
