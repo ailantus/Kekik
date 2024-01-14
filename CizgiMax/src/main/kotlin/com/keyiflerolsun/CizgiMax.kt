@@ -18,11 +18,13 @@ class CizgiMax : MainAPI() {
     override val supportedTypes       = setOf(TvType.Cartoon)
 
     override val mainPage = mainPageOf(
+        "?orderby=date&order=DESC"                                   to "Son Eklenenler",
         "?s_type&tur[0]=aile&orderby=date&order=DESC"                to "Aile",
         "?s_type&tur[0]=aksiyon-macera&orderby=date&order=DESC"      to "Aksyion",
+        "?s_type&tur[0]=animasyon&orderby=date&order=DESC"           to "Animasyon",
         "?s_type&tur[0]=bilim-kurgu-fantazi&orderby=date&order=DESC" to "Bilim Kurgu",
+        "?s_type&tur[0]=cocuklar&orderby=date&order=DESC"            to "Çocuklar",
         "?s_type&tur[0]=komedi&orderby=date&order=DESC"              to "Komedi",
-        "?s_type&tur[0]=suc&orderby=date&order=DESC"                 to "Suç",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -51,25 +53,19 @@ class CizgiMax : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("div.title h1")?.text()?.substringBefore(" Türkçe İzle") ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.poster img")?.attr("src")) ?: return null
-        val description = document.selectFirst("div.excerpt")?.text()?.trim()
-        val tags        = document.select("div.categories a").mapNotNull { it?.text()?.trim() }
-        val rating      = document.selectFirst("span.imdb-rating")?.text()?.substringBefore("IMDB Puanı")?.trim()?.toRatingInt()
+        val title       = document.selectFirst("h1.page-title")?.text() ?: return null
+        val poster      = fixUrlNull(document.selectFirst("img.series-profile-thumb")?.attr("src")) ?: return null
+        val description = document.selectFirst("p#tv-series-desc")?.text()?.trim()
+        val tags        = document.select("div.genre-item a").mapNotNull { it?.text()?.trim() }
+        val rating      = document.selectFirst("div.color-imdb")?.text()?.trim()?.toRatingInt()
 
 
-        val first_ep_name  = document.selectFirst("div.active div.part-name")?.text()?.trim() ?: "Filmi İzle"
-        val first_episode  = Episode(
-            data    = url,
-            name    = first_ep_name,
-            season  = Regex("""S(\d+) BÖLÜM""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1,
-            episode = Regex("""BÖLÜM (\d+)""").find(first_ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
-        )
-        val other_episodes = document.select("a.post-page-numbers").mapNotNull {
-            val ep_name    = it.selectFirst("div.part-name")?.text()?.trim() ?: return@mapNotNull null
-            val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
-            val ep_episode = Regex("""BÖLÜM (\d+)""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val ep_season  = Regex("""S(\d+) BÖLÜM""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+        val episodes = document.select("div.asisotope div.ajax_post").mapNotNull {
+            val ep_name     = it.selectFirst("span.episode-names")?.text()?.trim() ?: return@mapNotNull null
+            val ep_href     = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+            val ep_episode  = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
+            val season_name = it.selectFirst("season-name")?.text()?.trim()
+            val ep_season   = Regex("""(\d+)\.Sezon""").find(season_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
                 data    = ep_href,
@@ -78,9 +74,6 @@ class CizgiMax : MainAPI() {
                 episode = ep_episode
             )
         }
-        val episodes       = mutableListOf(first_episode)
-        episodes.addAll(other_episodes)
-
 
         return newTvSeriesLoadResponse(title, url, TvType.Cartoon, episodes) {
             this.posterUrl = poster
@@ -93,10 +86,13 @@ class CizgiMax : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("CZGM", "data » ${data}")
         val document = app.get(data).document
-        var iframe   = fixUrlNull(document.selectFirst("div.video-content iframe")?.attr("src")) ?: return false
-        Log.d("CZGM", "iframe » ${iframe}")
 
-        loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        document.select("ul.linkler li").forEach {
+            var iframe   = fixUrlNull(it.selectFirst("a")?.attr("data-frame")) ?: return@forEach
+            Log.d("CZGM", "iframe » ${iframe}")
+
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        }
 
         return true
     }
