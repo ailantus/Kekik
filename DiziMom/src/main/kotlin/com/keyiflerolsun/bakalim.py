@@ -19,11 +19,11 @@ oturum.post(
     }
 )
 
-istek  = oturum.get("https://www.dizimom.de/pokemon-pokemon-ustasi-olmak-1-sezon-3-bolum-izle/")
+istek  = oturum.get("https://www.dizimom.de/modern-dogu-masallari-1-sezon-7-bolum-izle/")
 konsol.print(istek.url)
 
 secici = Selector(istek.text)
-iframe = secici.css("div#vast iframe::attr(src)").get()
+iframe = secici.css("div.video iframe::attr(src)").get()
 konsol.print(iframe)
 
 oturum.headers.update({"Referer": "https://www.dizimom.de/"})
