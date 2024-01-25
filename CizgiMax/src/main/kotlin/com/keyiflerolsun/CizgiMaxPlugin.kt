@@ -9,5 +9,6 @@ class CizgiMaxPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(CizgiMax())
         registerExtractorAPI(SibNet())
+        registerExtractorAPI(CizgiDuo())
     }
 }
