@@ -7,7 +7,7 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 
 class UncutMaza : MainAPI() {
-    override var mainUrl              = "https://uncutmaza.com"
+    override var mainUrl              = "https://uncutmaza.cc/"
     override var name                 = "UncutMaza"
     override val hasMainPage          = true
     override var lang                 = "hi"
