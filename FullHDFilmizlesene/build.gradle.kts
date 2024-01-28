@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 cloudstream {
     authors     = listOf("keyiflerolsun")
@@ -14,5 +14,5 @@ cloudstream {
     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Movie")
-    iconUrl = "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.pw&sz=%size%"
+    iconUrl = "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.de&sz=%size%"
 }
