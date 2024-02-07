@@ -127,6 +127,21 @@ class FullPorner : MainAPI() {
                     quality = Regex("(\\d+.)").find(res.attr("title"))?.groupValues?.get(1).let { getQualityFromName(it) }
                 )) 
             }
+        } else if (iframeUrl.contains("xiaoshenke")) {
+            val iframeDocument = app.get(iframeUrl).document
+            val videoID        = Regex("""var id = \"(.+?)\"""").find(iframeDocument.html())?.groupValues?.get(1)
+
+            val pornTrexDocument = app.get("https://www.porntrex.com/embed/${videoID}").document
+            val video_url = fixUrlNull(Regex("""video_url: \'(.+?)\',""").find(pornTrexDocument.html())?.groupValues?.get(1))
+            if (video_url != null) {
+                extlinkList.add(ExtractorLink(
+                    name,
+                    name,
+                    video_url,
+                    referer = data,
+                    quality = Qualities.Unknown.value
+                ))
+            }
         } else {
             val iframeDocument = app.get(iframeUrl).document
             val videoDocument  = Jsoup.parse("<video" + iframeDocument.selectXpath("//script[contains(text(),'\$(\"#jw\").html(')]").first()?.toString()?.replace("\\", "")?.substringAfter("<video")?.substringBefore("</video>") + "</video>")
