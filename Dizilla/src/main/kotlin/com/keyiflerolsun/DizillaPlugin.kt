@@ -11,6 +11,7 @@ class DizillaPlugin: Plugin() {
         registerExtractorAPI(ContentX())
         registerExtractorAPI(Hotlinger())
         registerExtractorAPI(FourCX())
+        registerExtractorAPI(PlayRu())
         registerExtractorAPI(FourPlayRu())
     }
 }
