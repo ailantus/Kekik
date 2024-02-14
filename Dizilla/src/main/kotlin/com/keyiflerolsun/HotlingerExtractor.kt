@@ -11,3 +11,8 @@ class FourCX : ContentX() {
     override var name    = "FourCX"
     override var mainUrl = "https://four.contentx.me"
 }
+
+class FourPlayRu : ContentX() {
+    override var name    = "FourPlayRu"
+    override var mainUrl = "https://four.playru.net"
+}
