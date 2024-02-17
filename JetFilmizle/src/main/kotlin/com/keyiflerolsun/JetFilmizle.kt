@@ -2,6 +2,8 @@
 
 package com.keyiflerolsun
 
+package com.keyiflerolsun
+
 import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
@@ -9,8 +11,8 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class JetFilmizle : MainAPI() {
-    override var mainUrl              = "https://jetfilmizle.film"
-    override var name                 = "JetFilmizle"
+    override var mainUrl              = "https://sinefy3.com/"
+    override var name                 = "Sinefy3"
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
