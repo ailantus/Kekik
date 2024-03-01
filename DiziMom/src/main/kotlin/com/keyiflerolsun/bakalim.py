@@ -10,23 +10,23 @@ oturum.headers.update({"User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWe
 # oturum.cookies.update({"wordpress_logged_in_7e0a80686bffd7035218d41e8240d65f": "keyiflerolsun|1704461004|TJh8nQRYrqZ9xlAyO7rO5QgiqTQiw7op8I6LKkSvytX|0dc654883fad5f0301df32e6465aa676a3f235288dd9c8a73260d9c8a20b19ae"})
 
 oturum.post(
-    url  = "https://www.dizimom.de/wp-login.php",
+    url  = "https://www.dizimom.tv/wp-login.php",
     data = {
         "log"         : "keyiflerolsun",
         "pwd"         : "12345",
         "rememberme"  : "forever",
-        "redirect_to" : "https://www.dizimom.de",
+        "redirect_to" : "https://www.dizimom.tv",
     }
 )
 
-istek  = oturum.get("https://www.dizimom.de/modern-dogu-masallari-1-sezon-7-bolum-izle/")
+istek  = oturum.get("https://www.dizimom.tv/modern-dogu-masallari-1-sezon-7-bolum-izle/")
 konsol.print(istek.url)
 
 secici = Selector(istek.text)
 iframe = secici.css("div.video iframe::attr(src)").get()
 konsol.print(iframe)
 
-oturum.headers.update({"Referer": "https://www.dizimom.de/"})
+oturum.headers.update({"Referer": "https://www.dizimom.tv/"})
 i_source = oturum.get(iframe).text
 
 be_player = search(r"bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);", i_source).groups()
