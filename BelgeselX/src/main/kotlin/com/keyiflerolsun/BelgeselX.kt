@@ -101,13 +101,14 @@ class BelgeselX : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("BLX", "data » ${data}")
-        val i_source = app.get(data)
+        val source = app.get(data)
 
-        Regex("""<iframe\s+[^>]*src=\\\"([^\\\"']+)\\\"""").findAll(i_source.text).forEach { matchResult ->
-            val iframe = matchResult.groupValues[1]
-            Log.d("BLX", "iframe » ${iframe}")
+        Regex("""<iframe\s+[^>]*src=\\\"([^\\\"']+)\\\"""").findAll(source.text).forEach { alternatif ->
+            val alternatif_url = alternatif.groupValues[1]
+            Log.d("BLX", "alternatif_url » ${alternatif_url}")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+
+            loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
