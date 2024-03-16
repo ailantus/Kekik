@@ -47,8 +47,14 @@ class BelgeselX : MainAPI() {
         return newHomePageResponse(request.name, home)
     }
 
+    private fun String.toTitleCase(): String {
+        return this.split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("h3 a")?.text()?.trim() ?: return null
+        val title     = this.selectFirst("h3 a")?.text()?.trim()?.toTitleCase() ?: return null
         val href      = fixUrlNull(this.selectFirst("h3 a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
@@ -64,12 +70,12 @@ class BelgeselX : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("h2.gen-title")?.text()?.trim() ?: return null
+        val title       = document.selectFirst("h2.gen-title")?.text()?.trim()?.toTitleCase() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.gen-tv-show-top img")?.attr("src")) ?: return null
         val description = document.selectFirst("div.gen-single-tv-show-info p")?.text()?.trim()
 
 
-        val episodes = document.select("div.tab-pane").mapNotNull {
+        val episodes = document.select("div.gen-movie-contain").mapNotNull {
             val ep_name     = it.selectFirst("div.gen-movie-info h3 a")?.text()?.trim() ?: return@mapNotNull null
             val ep_href     = fixUrlNull(it.selectFirst("div.gen-movie-info h3 a")?.attr("href")) ?: return@mapNotNull null
 
