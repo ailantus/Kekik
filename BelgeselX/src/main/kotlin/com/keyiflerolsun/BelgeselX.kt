@@ -2,6 +2,7 @@
 
 package com.keyiflerolsun
 
+import java.util.Locale
 import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
@@ -48,8 +49,9 @@ class BelgeselX : MainAPI() {
     }
 
     private fun String.toTitleCase(): String {
+        val locale = Locale("tr", "TR")
         return this.split(" ").joinToString(" ") { word ->
-            word.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            word.lowercase(locale).replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
         }
     }
 
