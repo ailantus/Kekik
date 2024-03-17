@@ -110,15 +110,20 @@ class BelgeselX : MainAPI() {
 
             if (alternatif_url.contains("new4.php")) {
                 Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(alternatif_resp.text).forEach {
-                    val video_url = it.groupValues[1]
-                    val quality   = it.groupValues[2]
+                    var this_name = this.name
+                    var video_url = it.groupValues[1]
+                    var quality   = it.groupValues[2]
+                    if (quality == "FULL") {
+                        quality   = "1080p"
+                        this_name = "Google"
+                    }
                     Log.d("BLX", "quality » ${quality}")
                     Log.d("BLX", "video_url » ${video_url}")
 
                     callback.invoke(
                         ExtractorLink(
-                            source  = this.name,
-                            name    = this.name,
+                            source  = this_name,
+                            name    = this_name,
                             url     = video_url,
                             referer = data,
                             quality = getQualityFromName(quality),
