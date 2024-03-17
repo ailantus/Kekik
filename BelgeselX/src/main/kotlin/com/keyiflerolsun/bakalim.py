@@ -5,7 +5,7 @@ from requests  import get
 from parsel    import Selector
 from re        import findall, search
 
-bolum_lik = "https://belgeselx.com/belgesel/uzaylilar-ve-kutsal-mekanlar-antik-uzaylilar"
+bolum_lik = "https://belgeselx.com/belgesel/cifte-hayatlara-onculuk-etmek-aciklanamayanlar-william-shatner"
 istek     = get(bolum_lik)
 
 alternatifler = findall(r"""<iframe\s+[^>]*src=\\\"([^\\\"']+)\\\"""", istek.text)
@@ -19,3 +19,6 @@ for alternatif in alternatifler:
             video_url = kaynak[0]
             quality   = kaynak[1]
             konsol.print(f"video_url » {video_url}\nquality » {quality}\n-------\n")
+    else:
+        secici = Selector(iframe_istek.text)
+        konsol.print(secici.css("iframe::attr(src)").get())

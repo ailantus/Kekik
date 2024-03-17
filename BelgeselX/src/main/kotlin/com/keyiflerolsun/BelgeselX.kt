@@ -104,13 +104,12 @@ class BelgeselX : MainAPI() {
         val source = app.get(data)
 
         Regex("""<iframe\s+[^>]*src=\\\"([^\\\"']+)\\\"""").findAll(source.text).forEach { alternatif ->
-            val alternatif_url = alternatif.groupValues[1]
+            val alternatif_url  = alternatif.groupValues[1]
             Log.d("BLX", "alternatif_url » ${alternatif_url}")
+            val alternatif_resp = app.get(alternatif_url, referer=data)
 
             if (alternatif_url.contains("new4.php")) {
-                val new4_source = app.get(alternatif_url).text
-
-                Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(new4_source).forEach {
+                Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(alternatif_resp.text).forEach {
                     val video_url = it.groupValues[1]
                     val quality   = it.groupValues[2]
                     Log.d("BLX", "quality » ${quality}")
@@ -128,8 +127,7 @@ class BelgeselX : MainAPI() {
                     )
                 }
             } else {
-                val alt_document = app.get(alternatif_url).document
-                val iframe       = fixUrlNull(alt_document.selectFirst("iframe")?.attr("src"))
+                val iframe = fixUrlNull(alternatif_resp.document.selectFirst("iframe")?.attr("src"))
                 Log.d("BLX", "iframe » ${iframe}")
 
                 loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
