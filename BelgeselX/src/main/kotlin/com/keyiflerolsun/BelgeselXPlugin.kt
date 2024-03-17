@@ -8,5 +8,6 @@ import android.content.Context
 class BelgeselXPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(BelgeselX())
+        registerExtractorAPI(Odnoklassniki())
     }
 }
