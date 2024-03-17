@@ -16,7 +16,7 @@ class BelgeselX : MainAPI() {
     override val hasQuickSearch       = false
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.TvSeries)
+    override val supportedTypes       = setOf(TvType.Documentary)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/konu/turk-tarihi-belgeselleri&page=" to "Türk Tarihi",
@@ -59,7 +59,7 @@ class BelgeselX : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("h3 a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
-        return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        return newTvSeriesSearchResponse(title, href, TvType.Documentary) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -97,7 +97,7 @@ class BelgeselX : MainAPI() {
             )
         }
 
-        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+        return newTvSeriesLoadResponse(title, url, TvType.Documentary, episodes) {
             this.posterUrl = poster
             this.plot      = description
             this.tags      = tags
