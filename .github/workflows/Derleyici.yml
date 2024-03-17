@@ -37,8 +37,7 @@ jobs:
       - name: JDK 11 Ayarla
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          cache: gradle
+          distribution: adopt
           java-version: 11
 
       - name: Android SDK Ayarla
