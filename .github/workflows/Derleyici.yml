@@ -35,14 +35,14 @@ jobs:
         run: rm $GITHUB_WORKSPACE/builds/*.cs3 || true
 
       - name: JDK 11 Ayarla
-        uses: actions/setup-java@main
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           cache: gradle
           java-version: 11
 
       - name: Android SDK Ayarla
-        uses: android-actions/setup-android@main
+        uses: android-actions/setup-android@v3
 
       - name: Eklentileri Derle
         run: |
