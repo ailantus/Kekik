@@ -13,6 +13,9 @@ konsol.print(alternatifler)
 
 for alternatif in alternatifler:
     iframe_istek = get(alternatif, headers={"Referer": bolum_lik})
+
     if "new4.php" in alternatif:
         for kaynak in findall(r"""file:\"([^\"]+)\", label: \"([^\"]+)""", iframe_istek.text):
-            konsol.print(f"iframe » {kaynak[0]}\nkalite » {kaynak[1]}\n-------\n")
+            video_url = kaynak[0]
+            quality   = kaynak[1]
+            konsol.print(f"video_url » {video_url}\nquality » {quality}\n-------\n")

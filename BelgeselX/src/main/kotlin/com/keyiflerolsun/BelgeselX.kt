@@ -19,26 +19,25 @@ class BelgeselX : MainAPI() {
     override val supportedTypes       = setOf(TvType.TvSeries)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/konu/turk-tarihi-belgeselleri&page=" to "Türk Tarihi Belgeselleri",
-        "${mainUrl}/konu/tarih-belgeselleri&page="		 to "Tarih Belgeselleri",
-        "${mainUrl}/konu/seyehat-belgeselleri&page="	 to "Seyehat Belgeselleri",
-        "${mainUrl}/konu/seri-belgeseller&page="		 to "Seri Belgeseller",
-        "${mainUrl}/konu/savas-belgeselleri&page="		 to "Savaş Belgeselleri",
-        "${mainUrl}/konu/sanat-belgeselleri&page="		 to "Sanat Belgeselleri",
-        "${mainUrl}/konu/psikoloji-belgeselleri&page="	 to "Psikoloji Belgeselleri",
-        "${mainUrl}/konu/polisiye-belgeselleri&page="	 to "Polisiye Belgeselleri",
-        "${mainUrl}/konu/otomobil-belgeselleri&page="	 to "Otomobil Belgeselleri",
-        "${mainUrl}/konu/nazi-belgeselleri&page="		 to "Nazi Belgeselleri",
-        "${mainUrl}/konu/muhendislik-belgeselleri&page=" to "Mühendislik Belgeselleri",
-        "${mainUrl}/konu/kultur-din-belgeselleri&page="	 to "Kültür Din Belgeselleri",
-        "${mainUrl}/konu/kozmik-belgeseller&page="		 to "Kozmik Belgeseller",
-        "${mainUrl}/konu/hayvan-belgeselleri&page="		 to "Hayvan Belgeselleri",
-        "${mainUrl}/konu/eski-tarih-belgeselleri&page="	 to "Eski Tarih Belgeselleri",
-        "${mainUrl}/konu/egitim-belgeselleri&page="		 to "Eğitim Belgeselleri",
-        "${mainUrl}/konu/dunya-belgeselleri&page="		 to "Dünya Belgeselleri",
-        "${mainUrl}/konu/doga-belgeselleri&page="		 to "Doğa Belgeselleri",
-        "${mainUrl}/konu/cizgi-film&page="				 to "Çizgi Film",
-        "${mainUrl}/konu/bilim-belgeselleri&page="		 to "Bilim Belgeselleri"
+        "${mainUrl}/konu/turk-tarihi-belgeselleri&page=" to "Türk Tarihi",
+        "${mainUrl}/konu/tarih-belgeselleri&page="		 to "Tarih",
+        "${mainUrl}/konu/seyehat-belgeselleri&page="	 to "Seyahat",
+        "${mainUrl}/konu/seri-belgeseller&page="		 to "Seri",
+        "${mainUrl}/konu/savas-belgeselleri&page="		 to "Savaş",
+        "${mainUrl}/konu/sanat-belgeselleri&page="		 to "Sanat",
+        "${mainUrl}/konu/psikoloji-belgeselleri&page="	 to "Psikoloji",
+        "${mainUrl}/konu/polisiye-belgeselleri&page="	 to "Polisiye",
+        "${mainUrl}/konu/otomobil-belgeselleri&page="	 to "Otomobil",
+        "${mainUrl}/konu/nazi-belgeselleri&page="		 to "Nazi",
+        "${mainUrl}/konu/muhendislik-belgeselleri&page=" to "Mühendislik",
+        "${mainUrl}/konu/kultur-din-belgeselleri&page="	 to "Kültür Din",
+        "${mainUrl}/konu/kozmik-belgeseller&page="		 to "Kozmik",
+        "${mainUrl}/konu/hayvan-belgeselleri&page="		 to "Hayvan",
+        "${mainUrl}/konu/eski-tarih-belgeselleri&page="	 to "Eski Tarih",
+        "${mainUrl}/konu/egitim-belgeselleri&page="		 to "Eğitim",
+        "${mainUrl}/konu/dunya-belgeselleri&page="		 to "Dünya",
+        "${mainUrl}/konu/doga-belgeselleri&page="		 to "Doğa",
+        "${mainUrl}/konu/bilim-belgeselleri&page="		 to "Bilim"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -114,6 +113,8 @@ class BelgeselX : MainAPI() {
                 Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(new4_source).forEach {
                     val video_url = it.groupValues[1]
                     val quality   = it.groupValues[2].replace("FULL",   "1080p")
+                    Log.d("BLX", "video_url » ${video_url}")
+                    Log.d("BLX", "quality » ${quality}")
 
                     callback.invoke(
                         ExtractorLink(
@@ -126,9 +127,13 @@ class BelgeselX : MainAPI() {
                         )
                     )
                 }
-            }
+            } else {
+                val alt_document = app.get(alternatif_url).document
+                val iframe       = fixUrlNull(alt_document.selectFirst("iframe")?.attr("src"))
+                Log.d("BLX", "iframe » ${iframe}")
 
-            // loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
+                loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
+            }
         }
 
         return true
