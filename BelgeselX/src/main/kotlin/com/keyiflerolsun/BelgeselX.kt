@@ -75,7 +75,7 @@ class BelgeselX : MainAPI() {
         val title       = document.selectFirst("h2.gen-title")?.text()?.trim()?.toTitleCase() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.gen-tv-show-top img")?.attr("src")) ?: return null
         val description = document.selectFirst("div.gen-single-tv-show-info p")?.text()?.trim()
-
+        val tags        = document.select("div.gen-socail-share a[href*='belgeselkanali']").map { it.attr("href").split("/").last().replace("-", " ").toTitleCase() }
 
         val episodes = document.select("div.gen-movie-contain").mapNotNull {
             val ep_name     = it.selectFirst("div.gen-movie-info h3 a")?.text()?.trim() ?: return@mapNotNull null
@@ -96,6 +96,7 @@ class BelgeselX : MainAPI() {
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl = poster
             this.plot      = description
+            this.tags      = tags
         }
     }
 
@@ -107,8 +108,27 @@ class BelgeselX : MainAPI() {
             val alternatif_url = alternatif.groupValues[1]
             Log.d("BLX", "alternatif_url » ${alternatif_url}")
 
+            if (alternatif_url.contains("new4.php")) {
+                val new4_source = app.get(alternatif_url).text
 
-            loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
+                Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(new4_source).forEach {
+                    val video_url = it.groupValues[1]
+                    val quality   = it.groupValues[2].replace("FULL",   "1080p")
+
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = this.name,
+                            name    = this.name,
+                            url     = video_url,
+                            referer = data,
+                            quality = getQualityFromName(quality),
+                            type    = INFER_TYPE
+                        )
+                    )
+                }
+            }
+
+            // loadExtractor(alternatif_url, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
