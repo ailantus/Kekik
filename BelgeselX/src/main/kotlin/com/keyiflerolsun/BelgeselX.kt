@@ -112,9 +112,9 @@ class BelgeselX : MainAPI() {
 
                 Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(new4_source).forEach {
                     val video_url = it.groupValues[1]
-                    val quality   = it.groupValues[2].replace("FULL",   "1080p")
-                    Log.d("BLX", "video_url » ${video_url}")
+                    val quality   = it.groupValues[2]
                     Log.d("BLX", "quality » ${quality}")
+                    Log.d("BLX", "video_url » ${video_url}")
 
                     callback.invoke(
                         ExtractorLink(
