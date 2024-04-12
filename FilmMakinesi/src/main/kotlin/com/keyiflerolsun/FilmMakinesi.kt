@@ -36,7 +36,7 @@ class FilmMakinesi : MainAPI() {
         "${mainUrl}/film-izle/fantastik-filmler-izle/page/"       to "Fantastik",
         "${mainUrl}/film-izle/polisiye-filmleri-izle/page/"       to "Polisiye Suç",
         "${mainUrl}/film-izle/korku-filmleri-izle-hd/page/"       to "Korku",
-        // "${mainUrl}/film-izle/savas/page/"                        to "Tarihi ve Savaş",
+        "${mainUrl}/film-izle/seri-filmler-izle/page/"                        to "Boxset Seri Filmler",
         // "${mainUrl}/film-izle/gerilim-filmleri-izle/page/"        to "Gerilim Heyecan",
         // "${mainUrl}/film-izle/gizemli/page/"                      to "Gizem",
         // "${mainUrl}/film-izle/aile-filmleri/page/"                to "Aile",
