@@ -39,7 +39,7 @@ class JetFilmizle : MainAPI() {
         title = title.substringBefore(" izle")
 
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
@@ -75,7 +75,7 @@ class JetFilmizle : MainAPI() {
             recName          = recName.substringBefore(" izle")
 
             val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("src"))
+            val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("data-src"))
 
             newMovieSearchResponse(recName, recHref, TvType.Movie) {
                 this.posterUrl = recPosterUrl
