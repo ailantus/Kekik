@@ -9,5 +9,6 @@ class KultFilmlerPlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(KultFilmler())
         registerExtractorAPI(YildizKisaFilm())
+        registerExtractorAPI(VidMoly())
     }
 }

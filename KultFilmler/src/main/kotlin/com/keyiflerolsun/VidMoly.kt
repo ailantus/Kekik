@@ -5,7 +5,6 @@ package com.keyiflerolsun
 import android.util.Log
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import com.fasterxml.jackson.annotation.JsonProperty
 
 open class VidMoly : ExtractorApi() {
     override val name            = "VidMoly"
