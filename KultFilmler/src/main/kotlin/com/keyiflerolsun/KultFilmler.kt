@@ -108,9 +108,9 @@ class KultFilmler : MainAPI() {
         val padding    = 4 - atob.length % 4
         val atobPadded = if (padding < 4) atob.padEnd(atob.length + padding, '=') else atob
 
-        val iframe   = Jsoup.parse(String(Base64.decode(atobPadded, Base64.DEFAULT), charset("UTF-8")))
+        val iframe = Jsoup.parse(String(Base64.decode(atobPadded, Base64.DEFAULT), charset("UTF-8")))
 
-        return iframe.selectFirst("iframe")?.attr("src") ?: ""
+        return fixUrlNull(iframe.selectFirst("iframe")?.attr("src")) ?: ""
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
@@ -118,9 +118,8 @@ class KultFilmler : MainAPI() {
         val document = app.get(data).document
         val iframes  = mutableSetOf<String>()
 
-        val main_frame = fixUrlNull(getIframe(document.html()))
+        val main_frame = getIframe(document.html())
         if (main_frame != null) {
-            Log.d("KLT", "main_frame » ${main_frame}")
             iframes.add(main_frame)
         }
 
@@ -128,9 +127,8 @@ class KultFilmler : MainAPI() {
             val alternatif = it.selectFirst("a")?.attr("href")
             if (alternatif != null) {
                 val alternatif_document = app.get(alternatif).document
-                val alternatif_frame    = fixUrlNull(getIframe(alternatif_document.html()))
+                val alternatif_frame    = getIframe(alternatif_document.html())
                 if (alternatif_frame != null) {
-                Log.d("KLT", "alternatif_frame » ${alternatif_frame}")
                     iframes.add(alternatif_frame)
                 }
             }
