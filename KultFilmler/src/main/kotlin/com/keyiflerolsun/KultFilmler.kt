@@ -99,7 +99,7 @@ class KultFilmler : MainAPI() {
     }
 
     private fun getIframe(source_code: String): String {
-        val atob_key = Regex("""atob\("(.*)"\)""").find(source_code)?.groupValues?.get(1) ?: return ""
+        val atob_key = Regex("""PHA\+[0-9a-zA-Z+\/=]*""").find(source_code)?.groupValues?.get(1) ?: return ""
 
         return Jsoup.parse(String(Base64.decode(atob_key, Base64.DEFAULT))).selectFirst("iframe")?.attr("src") ?: ""
     }
