@@ -31,5 +31,11 @@ for bak in secici.css("div.parts-middle"):
     iframeler.append(get_iframe(alternatif_istek.text))
 
 konsol.print(iframeler)
-
-
+for iframe in iframeler:
+    if "vidmoly" in iframe:
+        oturum.headers.update({
+            "User-Agent"     : "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+            "Sec-Fetch-Dest" : "iframe"
+        })
+        istek = oturum.get(f"https:{iframe}")
+        konsol.print(findall(r"file:\"([^\"]+)", istek.text)[0])

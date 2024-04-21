@@ -13,9 +13,12 @@ open class VidMoly : ExtractorApi() {
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
         val ext_ref  = referer ?: ""
-        val i_source = app.get(url, referer=ext_ref).document
-
-        var m3u_link = i_source.select("body > script").map { it.data() }.first { it.contains("sources") }.substringAfter("sources: [{file:\"").substringBefore("\"}],")
+        val headers  = mapOf(
+            "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+            "Sec-Fetch-Dest" to "iframe"
+        )
+        val i_source = app.get(url, headers=headers, referer=ext_ref).text
+        var m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
 
         Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
 
