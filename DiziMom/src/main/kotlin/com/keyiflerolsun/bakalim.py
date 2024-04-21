@@ -23,7 +23,7 @@ istek  = oturum.get("https://www.dizimom.tv/modern-dogu-masallari-1-sezon-7-bolu
 konsol.print(istek.url)
 
 secici = Selector(istek.text)
-iframe = secici.css("div.video iframe::attr(src)").get()
+iframe = secici.css("div.video p iframe::attr(src)").get()
 konsol.print(iframe)
 
 oturum.headers.update({"Referer": "https://www.dizimom.tv/"})
