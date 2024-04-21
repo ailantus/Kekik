@@ -136,7 +136,29 @@ class KultFilmler : MainAPI() {
 
         for (iframe in iframes) {
             Log.d("KLT", "iframe » ${iframe}")
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            if (iframe.contains("vidmoly")) {
+                val headers  = mapOf(
+                    "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                    "Sec-Fetch-Dest" to "iframe"
+                )
+                val i_source = app.get(iframe, headers=headers, referer="${mainUrl}/").text
+                var m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
+
+                Log.d("Kekik_VidMoly", "m3u_link » ${m3u_link}")
+
+                callback.invoke(
+                    ExtractorLink(
+                        source  = "VidMoly",
+                        name    = "VidMoly",
+                        url     = m3u_link,
+                        referer = "https://vidmoly.to/",
+                        quality = Qualities.Unknown.value,
+                        type    = INFER_TYPE
+                    )
+                )
+            } else {
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            }
         }
 
         return true
