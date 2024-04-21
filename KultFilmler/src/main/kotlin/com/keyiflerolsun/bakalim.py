@@ -6,13 +6,6 @@ from parsel       import Selector
 from re           import findall
 from base64       import b64decode
 
-oturum  = CloudScraper()
-oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://kultfilmler.com/"})
-
-film_link = "https://kultfilmler.com/perfume-the-story-of-a-murderer-koku-bir-katilin-hikayesi/2/"
-
-istek = oturum.get(film_link)
-
 def get_iframe(source_code):
     atob = findall(r"""PHA\+[0-9a-zA-Z+\/=]*""", source_code)[0]
     if padding_needed := len(atob) % 4:
@@ -21,4 +14,22 @@ def get_iframe(source_code):
     iframe = b64decode(atob).decode("utf-8")
     return Selector(iframe).css("iframe::attr(src)").get()
 
-konsol.print(get_iframe(istek.text))
+oturum  = CloudScraper()
+oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://kultfilmler.com/"})
+
+film_link = "https://kultfilmler.com/perfume-the-story-of-a-murderer-koku-bir-katilin-hikayesi/"
+
+istek  = oturum.get(film_link)
+secici = Selector(istek.text)
+
+iframeler = [get_iframe(istek.text)]
+
+for bak in secici.css("div.parts-middle"):
+    alternatif_link  = bak.css("a::attr(href)").get()
+    alternatif_istek = oturum.get(alternatif_link)
+
+    iframeler.append(get_iframe(alternatif_istek.text))
+
+konsol.print(iframeler)
+
+

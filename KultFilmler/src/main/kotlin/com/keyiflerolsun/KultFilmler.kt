@@ -107,37 +107,25 @@ class KultFilmler : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("KLT", "data » ${data}")
         val document = app.get(data).document
+        val iframes  = mutableSetOf<String>()
 
-        if (document.selectFirst("div#action-parts a") != null) {
-            document.select("div#action-parts div.part").forEach {
-                var sub_iframe:String
-                val sub_url = fixUrlNull(it.parent()?.attr("href"))
+        val main_frame = fixUrlNull(getIframe(document.html()))
+        if (main_frame != null) {
+            iframes.add(main_frame)
+        }
 
-                if (sub_url == null) {
-                    sub_iframe  = fixUrlNull(getIframe(document.html())) ?: return@forEach
-                } else {
-                    val sub_doc = app.get(sub_url).document
-                    sub_iframe  = fixUrlNull(getIframe(sub_doc.html())) ?: return@forEach
-                }
-
-                Log.d("KLT", "sub_iframe » ${sub_iframe}")
-                loadExtractor(sub_iframe, "${mainUrl}/", subtitleCallback) { link ->
-                    callback.invoke(
-                        ExtractorLink(
-                            source        = "${it.selectFirst("div.part-lang span")?.attr("title")?.trim()} - ${link.name}",
-                            name          = "${it.selectFirst("div.part-lang span")?.attr("title")?.trim()} - ${link.name}",
-                            url           = link.url,
-                            referer       = link.referer,
-                            quality       = link.quality,
-                            headers       = link.headers,
-                            extractorData = link.extractorData,
-                            type          = link.type
-                        )
-                    )
+        document.select("div.parts-middle").forEach {
+            val alternatif = it.selectFirst("a")?.attr("href")
+            if (alternatif != null) {
+                val alternatif_document = app.get(alternatif).document
+                val alternatif_frame    = fixUrlNull(getIframe(alternatif_document.html()))
+                if (alternatif_frame != null) {
+                    iframes.add(alternatif_frame)
                 }
             }
-        } else {
-            val iframe = fixUrlNull(getIframe(document.html())) ?: return false
+        }
+
+        for (iframe in iframes) {
             Log.d("KLT", "iframe » ${iframe}")
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
