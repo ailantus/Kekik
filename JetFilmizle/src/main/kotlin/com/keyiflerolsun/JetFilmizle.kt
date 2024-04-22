@@ -60,14 +60,14 @@ class JetFilmizle : MainAPI() {
         val document = app.get(url).document
 
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
-        val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
+        val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("data-src"))
         val yearDiv     = document.selectXpath("//div[@class='yap' and contains(strong, 'Vizyon') or contains(strong, 'Yapım')]").text().trim()
         val year        = Regex("""(\d{4})""").find(yearDiv)?.groupValues?.get(1)?.toIntOrNull()
         val description = document.selectFirst("section.movie-exp p.aciklama")?.text()?.trim()
         val tags        = document.select("section.movie-exp div.catss a").map { it.text() }
         val rating      = document.selectFirst("section.movie-exp div.imdb_puan span")?.text()?.split(" ")?.last()?.toRatingInt()
         val actors      = document.select("section.movie-exp div.oyuncu").map {
-            Actor(it.selectFirst("div.name")!!.text(), fixUrlNull(it.selectFirst("img")!!.attr("src")))
+            Actor(it.selectFirst("div.name")!!.text(), fixUrlNull(it.selectFirst("img")!!.attr("data-src")))
         }
 
         val recommendations = document.select("div#benzers article").mapNotNull {
@@ -102,7 +102,7 @@ class JetFilmizle : MainAPI() {
             if (source.lowercase().contains("fragman")) return@forEach
 
             val movDoc = app.get(it.attr("href")).document
-            var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))
+            var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src")) ?: fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data-src"))
 
             if (iframe != null) {
                 Log.d("JTF", "iframe » ${iframe}")
