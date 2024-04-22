@@ -39,8 +39,8 @@ class JetFilmizle : MainAPI() {
         title = title.substringBefore(" izle")
 
         val href       = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val imgElement = this.selectFirst("img")
-        val posterUrl  = fixUrlNull(imgElement?.attr("data-src") ?: imgElement?.attr("src"))
+        val imgElement = this.selectFirst("img")?.attr("data-src") ?: this.selectFirst("img")?.attr("src")
+        val posterUrl  = fixUrlNull(imgElement)
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
