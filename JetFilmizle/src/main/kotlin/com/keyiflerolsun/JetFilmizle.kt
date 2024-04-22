@@ -100,7 +100,6 @@ class JetFilmizle : MainAPI() {
         val iframes     = mutableListOf<String>()
         val main_iframe = fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data"))
         if (main_iframe != null) {
-            Log.d("JTF", "main_iframe » ${main_iframe}")
             iframes.add(main_iframe)
         }
 
@@ -112,19 +111,27 @@ class JetFilmizle : MainAPI() {
             var iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data"))
 
             if (iframe != null) {
-                Log.d("JTF", "iframe » ${iframe}")
                 iframes.add(iframe)
             } else {
                 movDoc.select("div#movie p a").forEach { link ->
                     var downloadLink = fixUrlNull(link.attr("href")) ?: return@forEach
-                    Log.d("JTF", "downloadLink » ${downloadLink}")
                     iframes.add(downloadLink)
                 }
             }
         }
 
         for (iframe in iframes) {
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            if (iframe.contains("jetv.xyz")) {
+                Log.d("JTF", "jetv » ${iframe}")
+                val jetvDoc    = app.get(iframe).document
+                val jetvIframe = fixUrlNull(jetvDoc.selectFirst("iframe")?.attr("src")) ?: continue
+                Log.d("JTF", "jetvIframe » ${jetvIframe}")
+
+                loadExtractor(jetvIframe, "${mainUrl}/", subtitleCallback, callback)
+            } else {
+                Log.d("JTF", "iframe » ${iframe}")
+                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+            }
         }
 
         return true
