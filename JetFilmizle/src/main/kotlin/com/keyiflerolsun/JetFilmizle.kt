@@ -41,7 +41,7 @@ class JetFilmizle : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
 
         val poster_src = this.selectFirst("img")?.attr("src") ?: ""
-        if (poster_src.contains("base64,")) {
+        if (poster_src.contains(";base64,")) {
             val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
         } else {
             val posterUrl = fixUrlNull(poster_src)
