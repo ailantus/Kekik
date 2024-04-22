@@ -38,9 +38,8 @@ class JetFilmizle : MainAPI() {
         var title = this.selectFirst("h2 a")?.text() ?: this.selectFirst("h3 a")?.text() ?: this.selectFirst("h4 a")?.text() ?: this.selectFirst("h5 a")?.text() ?: this.selectFirst("h6 a")?.text() ?: return null
         title = title.substringBefore(" izle")
 
-        val href       = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val imgElement = this.selectFirst("img")?.attr("data-src") ?: this.selectFirst("img")?.attr("src")
-        val posterUrl  = fixUrlNull(imgElement)
+        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src") ?: this.selectFirst("img")?.attr("data-src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
