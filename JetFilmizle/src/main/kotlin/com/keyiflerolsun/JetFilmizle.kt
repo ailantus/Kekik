@@ -97,6 +97,13 @@ class JetFilmizle : MainAPI() {
         Log.d("JTF", "data » ${data}")
         val document = app.get(data).document
 
+        val iframes     = mutableListOf<String>()
+        val main_iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src")) ?: fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data-src"))
+        if (main_iframe != null) {
+            Log.d("JTF", "main_iframe » ${main_iframe}")
+            iframes.add(main_iframe)
+        }
+
         document.select("div.film_part a").forEach {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
             if (source.lowercase().contains("fragman")) return@forEach
@@ -106,16 +113,18 @@ class JetFilmizle : MainAPI() {
 
             if (iframe != null) {
                 Log.d("JTF", "iframe » ${iframe}")
-
-                loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+                iframes.add(iframe)
             } else {
                 movDoc.select("div#movie p a").forEach { link ->
                     var downloadLink = fixUrlNull(link.attr("href")) ?: return@forEach
                     Log.d("JTF", "downloadLink » ${downloadLink}")
-
-                    loadExtractor(downloadLink, "${mainUrl}/", subtitleCallback, callback)
+                    iframes.add(downloadLink)
                 }
             }
+        }
+
+        for (iframe in iframes) {
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
