@@ -105,10 +105,8 @@ class HDFilmCehennemi : MainAPI() {
             val episodes = document.select("div.seasons-tab-content a").map {
                 val href    = it.attr("href")
                 val name    = it.select("h4").text().trim()
-                val episode = it.select("h4").text().let { num ->
-                    Regex("Sezon\\s?([0-9]+).").find(num)?.groupValues?.getOrNull(1)?.toIntOrNull()
-                }
-                val season = it.parents()[1].attr("id").substringAfter("-").toIntOrNull()
+                val episode = Regex("""(\d+)\.Bölüm""").find(name)?.groupValues?.get(1)?.toIntOrNull()
+                val season  = Regex("""(\d+)\.Sezon""").find(name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
                 Episode(
                     href,
