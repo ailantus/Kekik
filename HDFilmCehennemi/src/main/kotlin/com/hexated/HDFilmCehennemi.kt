@@ -163,7 +163,7 @@ class HDFilmCehennemi : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
         Log.d("HDF", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.video-container iframe")?.attr("src") ?: return false
+        val iframe   = document.selectFirst("div.video-container iframe")?.attr("data-src") ?: return false
         Log.d("HDF", "iframe » ${iframe}")
 
         val source = document.selectFirst("div.video-container iframe")?.attr("class") ?: "${name}"
