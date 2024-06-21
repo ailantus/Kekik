@@ -35,18 +35,14 @@ class HDFilmCehennemi : MainAPI() {
 
         val home: List<SearchResponse>?
 
-        if (request.data == "${mainUrl}") {
-            home = document.select("div.tab-content div.poster").mapNotNull { it.toSearchResult() }
-        } else {
-            home = document.select("div.card-body div.poster").mapNotNull { it.toSearchResult() }
-        }
+        home = document.select("div.section-content a.poster").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("h2.title")?.text() ?: return null
-        val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
+        val title     = this.selectFirst("strong.poster-title")?.text() ?: return null
+        val href      = fixUrlNull(this.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
