@@ -48,30 +48,25 @@ class HDFilmCehennemi : MainAPI() {
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
-    private fun Media.toSearchResponse(): SearchResponse? {
-        return newMovieSearchResponse(
-            title ?: return null,
-            "${mainUrl}/$slugPrefix$slug",
-            TvType.TvSeries,
-        ) {
-            this.posterUrl = "${mainUrl}/uploads/poster/$poster"
-        }
-    }
-
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun search(query: String): List<SearchResponse> {
-        return app.post(
-            "${mainUrl}/search/",
-            data    = mapOf("query" to query),
-            referer = "${mainUrl}/",
-            headers = mapOf(
-                "Accept" to "application/json, text/javascript, */*; q=0.01",
-                "X-Requested-With" to "XMLHttpRequest"
+        val response      = app.get("${mainUrl}/search?q=${query}").parsedSafe<Results>() ?: return emptyList()
+        val searchResults = mutableListOf<SearchResponse>()
+
+        response.results.forEach { resultHtml ->
+            val document = Jsoup.parse(resultHtml)
+
+            val title     = document.selectFirst("h4.title")?.text() ?: return@forEach
+            val href      = fixUrlNull(document.selectFirst("a")?.attr("href")) ?: return@forEach
+            val posterUrl = fixUrlNull(document.selectFirst("img")?.attr("src")) ?: fixUrlNull(document.selectFirst("img")?.attr("data-src"))
+
+            searchResults.add(
+                newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
             )
-        ).parsedSafe<Result>()?.result?.mapNotNull {
-            media -> media.toSearchResponse()
-        } ?: throw ErrorLoadingException("Invalid Json reponse")
+        }
+
+        return searchResults
     }
 
     override suspend fun load(url: String): LoadResponse? {
@@ -91,7 +86,7 @@ class HDFilmCehennemi : MainAPI() {
         val recommendations = document.select("div.section-slider-container div.slider-slide").mapNotNull {
                 val recName      = it.selectFirst("a")?.attr("title") ?: return@mapNotNull null
                 val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-                val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("data-src"))
+                val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("data-src")) ?: fixUrlNull(it.selectFirst("img")?.attr("src"))
 
                 newTvSeriesSearchResponse(recName, recHref, TvType.TvSeries) {
                     this.posterUrl = recPosterUrl
@@ -166,7 +161,7 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
-        app.get(data).document.select("nav.nav.card-nav.nav-slider a.nav-link").map {
+        app.get(data).document.select("button.alternative-link").map {
             Pair(it.attr("href"), it.text())
         }.apmap { (url, source) ->
             safeApiCall {
@@ -203,14 +198,7 @@ class HDFilmCehennemi : MainAPI() {
         @JsonProperty("kind")  val kind: String?  = null
     )
 
-    data class Result(
-        @JsonProperty("result") val result: ArrayList<Media>? = arrayListOf()
-    )
-
-    data class Media(
-        @JsonProperty("title")       val title: String?      = null,
-        @JsonProperty("poster")      val poster: String?     = null,
-        @JsonProperty("slug")        val slug: String?       = null,
-        @JsonProperty("slug_prefix") val slugPrefix: String? = null
+    data class Results(
+        @JsonProperty("results") val results: List<String> = arrayListOf()
     )
 }
