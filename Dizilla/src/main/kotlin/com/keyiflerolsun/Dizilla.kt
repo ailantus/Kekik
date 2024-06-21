@@ -20,8 +20,8 @@ class Dizilla : MainAPI() {
 
     // ! CloudFlare bypass
     override var sequentialMainPage = true        // * https://recloudstream.github.io/dokka/-cloudstream/com.lagradost.cloudstream3/-main-a-p-i/index.html#-2049735995%2FProperties%2F101969414
-    override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
-    override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
+    // override var sequentialMainPageDelay       = 250L // ? 0.25 saniye
+    // override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
 
     override val mainPage = mainPageOf(
         "${mainUrl}/tum-bolumler"          to "Altyazılı Bölümler",
@@ -35,8 +35,8 @@ class Dizilla : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}").document
-        val home     = if (request.data.contains("arsiv?")) { 
-            document.select("span.watchlistitem-").mapNotNull { it.diziler() }
+        val home     = if (request.data.contains("dizi-turu")) { 
+            document.select("div.new-added-list a").mapNotNull { it.diziler() }
         } else {
             document.select("div.grid a").mapNotNull { it.sonBolumler() }
         }
@@ -45,9 +45,9 @@ class Dizilla : MainAPI() {
     }
 
     private fun Element.diziler(): SearchResponse? {
-        val title     = this.selectFirst("span.font-normal")?.text() ?: return null
-        val href      = fixUrlNull(this.selectFirst("a[href*='/dizi/']")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';"))
+        val title     = this.selectFirst("h2")?.text() ?: return null
+        val href      = fixUrlNull(this.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
