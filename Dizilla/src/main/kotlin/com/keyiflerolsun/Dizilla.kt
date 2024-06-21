@@ -47,7 +47,7 @@ class Dizilla : MainAPI() {
     private fun Element.diziler(): SearchResponse? {
         val title     = this.selectFirst("h2")?.text() ?: return null
         val href      = fixUrlNull(this.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
+        val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src")) ?: fixUrlNull(this.selectFirst("img")?.attr("src"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -122,7 +122,7 @@ class Dizilla : MainAPI() {
         val document = app.get(url).document
 
         val title       = document.selectFirst("div.page-top h1")?.text() ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.page-top img")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';")) ?: return null
+        val poster      = fixUrlNull(document.selectFirst("div.page-top img")?.attr("src")) ?: fixUrlNull(document.selectFirst("div.page-top img")?.attr("data-src"))
         val year        = document.selectXpath("//span[text()='Yayın tarihi']//following-sibling::span").text().trim().split(" ").last().toIntOrNull()
         val description = document.selectFirst("div.mv-det-p")?.text()?.trim() ?: document.selectFirst("div.w-full div.text-base")?.text()?.trim()
         val tags        = document.select("[href*='dizi-turu']").map { it.text() }
@@ -140,6 +140,7 @@ class Dizilla : MainAPI() {
                 val ep_name        = episodeElement.select("a").last()?.text()?.trim() ?: return@ep
                 val ep_href        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep
                 val ep_description = episodeElement.selectFirst("span.t-content")?.text()?.trim()
+                val ep_poster      = ep_doc.selectFirst("img.object-cover")?.attr("src")
                 val ep_episode     = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
                 val parent_div   = episodeElement.parent()
@@ -151,7 +152,8 @@ class Dizilla : MainAPI() {
                     name        = ep_name,
                     season      = ep_season,
                     episode     = ep_episode,
-                    description = ep_description
+                    description = ep_description,
+                    posterUrl   = ep_poster
                 ))
             }
         
@@ -159,6 +161,7 @@ class Dizilla : MainAPI() {
                 val ep_name        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@ep_dub
                 val ep_href        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep_dub
                 val ep_description = dubEpisodeElement.selectFirst("span.t-content")?.text()?.trim()
+                val ep_poster      = ep_doc.selectFirst("img.object-cover")?.attr("src")
                 val ep_episode     = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
                 val parent_div   = dubEpisodeElement.parent()
@@ -170,7 +173,8 @@ class Dizilla : MainAPI() {
                     name        = "${ep_name} Dublaj",
                     season      = ep_season,
                     episode     = ep_episode,
-                    description = ep_description
+                    description = ep_description,
+                    posterUrl   = ep_poster
                 ))
             }
         }
