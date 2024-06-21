@@ -166,7 +166,7 @@ class HDFilmCehennemi : MainAPI() {
         val iframe   = document.selectFirst("div.video-container iframe")?.attr("data-src") ?: return false
         Log.d("HDF", "iframe » ${iframe}")
 
-        val source = document.selectFirst("div.video-container iframe")?.attr("class") ?: "${name}"
+        val source = document.selectFirst("div.video-container iframe")?.attr("class")?.capitalize() ?: "${name}"
         invokeLocalSource(source, iframe, subtitleCallback, callback)
 
         return true
