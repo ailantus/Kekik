@@ -2,14 +2,13 @@
 
 package com.hexated
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import android.util.Log
+import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
-import com.lagradost.cloudstream3.mvvm.safeApiCall
-import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
-import org.jsoup.nodes.Element
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.jsoup.Jsoup
 
 class HDFilmCehennemi : MainAPI() {
@@ -81,7 +80,7 @@ class HDFilmCehennemi : MainAPI() {
         val description = document.selectFirst("article.post-info-content > p")?.text()?.trim()
         val rating      = document.selectFirst("div.post-info-imdb-rating span")?.text()?.toRatingInt()
         val actors      = document.select("div.post-info-cast a").map {
-            Actor(it.text(), it.select("img").attr("data-src"))
+            Actor(it.selectFirst("strong").text(), it.select("img").attr("data-src"))
         }
 
         val recommendations = document.select("div.section-slider-container div.slider-slide").mapNotNull {
@@ -154,7 +153,7 @@ class HDFilmCehennemi : MainAPI() {
             )
         )
 
-        tryParseJson<List<SubSource>>("[${subData}]")?.filter { it.kind == "captions" }?.map {
+        AppUtils.tryParseJson<List<SubSource>>("[${subData}]")?.filter { it.kind == "captions" }?.map {
             subtitleCallback.invoke(
                 SubtitleFile(it.label.toString(), fixUrl(it.file.toString()))
             )
@@ -162,33 +161,13 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
-        app.get(data).document.select("button.alternative-link").map {
-            Pair(it.attr("href"), it.text())
-        }.apmap { (url, source) ->
-            safeApiCall {
-                app.get(url).document.select("div.card-video > iframe").attr("data-src").let {
-                    url ->
-                    if (url.startsWith(mainUrl)) {
-                        invokeLocalSource(source, url, subtitleCallback, callback)
-                    } else {
-                        loadExtractor(url, "${mainUrl}/", subtitleCallback) { link ->
-                            callback.invoke(
-                                ExtractorLink(
-                                    source,
-                                    source,
-                                    link.url,
-                                    link.referer,
-                                    link.quality,
-                                    link.type,
-                                    link.headers,
-                                    link.extractorData
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        Log.d("HDF", "data » ${data}")
+        val document = app.get(data).document
+        val iframe   = document.selectFirst("div.video-container iframe")?.attr("src") ?: return false
+        Log.d("HDF", "iframe » ${iframe}")
+
+        val source = document.selectFirst("div.video-container iframe")?.attr("class") ?: "${name}"
+        invokeLocalSource(source, iframe, subtitleCallback, callback)
 
         return true
     }
