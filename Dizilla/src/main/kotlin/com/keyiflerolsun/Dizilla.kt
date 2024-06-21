@@ -24,22 +24,17 @@ class Dizilla : MainAPI() {
     override var sequentialMainPageScrollDelay = 250L // ? 0.25 saniye
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/tum-bolumler?page="    to "Altyazılı Bölümler",
-        "${mainUrl}/dublaj-bolumler?page=" to "Dublaj Bölümler",
-        "${mainUrl}/arsiv?s=&ulke=&tur=9&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Aksiyon",
-        "${mainUrl}/arsiv?s=&ulke=&tur=5&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Bilim Kurgu",
-        "${mainUrl}/arsiv?s=&ulke=&tur=4&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Komedi",
-        "${mainUrl}/arsiv?s=&ulke=&tur=7&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Romantik",
-        "${mainUrl}/arsiv?s=&ulke=&tur=12&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Fantastik",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=15&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Aile",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=6&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Biyografi",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=2&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Dram",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=18&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="  to "Gerilim",
-        // "${mainUrl}/arsiv?s=&ulke=&tur=8&year_start=&year_end=&imdb_start=&imdb_end=&language=&orders=desc&orderby=tarih&page="   to "Korku",
+        "${mainUrl}/tum-bolumler"          to "Altyazılı Bölümler",
+        "${mainUrl}/dublaj-bolumler"       to "Dublaj Bölümler",
+        "${mainUrl}/dizi-turu/aile"        to "Aile",
+        "${mainUrl}/dizi-turu/aksiyon"     to "Aksiyon",
+        "${mainUrl}/dizi-turu/bilim-kurgu" to "Bilim Kurgu",
+        "${mainUrl}/dizi-turu/romantik"    to "Romantik",
+        "${mainUrl}/dizi-turu/komedi"      to "Komedi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val document = app.get("${request.data}").document
         val home     = if (request.data.contains("arsiv?")) { 
             document.select("span.watchlistitem-").mapNotNull { it.diziler() }
         } else {
