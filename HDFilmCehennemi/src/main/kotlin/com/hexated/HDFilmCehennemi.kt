@@ -77,19 +77,19 @@ class HDFilmCehennemi : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("div.card-header > h1, div.card-header > h2")?.text()?.removeSuffix("Filminin Bilgileri")?.trim() ?: return null
-        val poster      = fixUrlNull(document.select("img.img-fluid").lastOrNull()?.attr("src"))
-        val tags        = document.select("div.mb-0.lh-lg div:nth-child(5) a").map { it.text() }
-        val year        = document.selectFirst("div.mb-0.lh-lg div:nth-child(4) a")?.text()?.trim()?.toIntOrNull()
-        val tvType      = if (document.select("nav#seasonsTabs").isNullOrEmpty()) TvType.Movie else TvType.TvSeries
-        val description = document.selectFirst("article.text-white > p")?.text()?.trim()
-        val rating      = document.selectFirst("div.rating-votes div.rate span")?.text()?.toRatingInt()
-        val actors      = document.select("div.mb-0.lh-lg div:last-child a.chip").map {
-            Actor(it.text(), it.select("img").attr("src"))
+        val title       = document.selectFirst("h1.section-title")?.text()?.substringBefore(" izle") ?: return null
+        val poster      = fixUrlNull(document.select("aside.post-info-poster img.lazyload").lastOrNull()?.attr("data-src"))
+        val tags        = document.select("div.post-info-genres a").map { it.text() }
+        val year        = document.selectFirst("div.post-info-year-country a")?.text()?.trim()?.toIntOrNull()
+        val tvType      = if (document.select("div.seasons").isNullOrEmpty()) TvType.Movie else TvType.TvSeries
+        val description = document.selectFirst("article.post-info-content > p")?.text()?.trim()
+        val rating      = document.selectFirst("div.post-info-imdb-rating span")?.text()?.toRatingInt()
+        val actors      = document.select("div.post-info-cast a").map {
+            Actor(it.text(), it.select("img").attr("data-src"))
         }
 
-        val recommendations = document.select("div.swiper-wrapper div.poster.poster-pop").mapNotNull {
-                val recName      = it.selectFirst("h2.title")?.text() ?: return@mapNotNull null
+        val recommendations = document.select("div.section-slider-container div.slider-slide").mapNotNull {
+                val recName      = it.selectFirst("a")?.attr("title") ?: return@mapNotNull null
                 val recHref      = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
                 val recPosterUrl = fixUrlNull(it.selectFirst("img")?.attr("data-src"))
 
@@ -99,11 +99,11 @@ class HDFilmCehennemi : MainAPI() {
             }
 
         return if (tvType == TvType.TvSeries) {
-            val trailer  = document.selectFirst("button.btn.btn-fragman.btn-danger")?.attr("data-trailer")?.let { "https://www.youtube.com/embed/$it" }
-            val episodes = document.select("div#seasonsTabs-tabContent div.card-list-item").map {
-                val href    = it.select("a").attr("href")
-                val name    = it.select("h3").text().trim()
-                val episode = it.select("h3").text().let { num ->
+            val trailer  = document.selectFirst("div.post-info-trailer button")?.attr("data-modal")?.substringAfter("trailer/")?.let { "https://www.youtube.com/embed/$it" }
+            val episodes = document.select("div.seasons-tab-content a").map {
+                val href    = it.attr("href")
+                val name    = it.select("h4").text().trim()
+                val episode = it.select("h4").text().let { num ->
                     Regex("Sezon\\s?([0-9]+).").find(num)?.groupValues?.getOrNull(1)?.toIntOrNull()
                 }
                 val season = it.parents()[1].attr("id").substringAfter("-").toIntOrNull()
@@ -127,7 +127,7 @@ class HDFilmCehennemi : MainAPI() {
                 addTrailer(trailer)
             }
         } else {
-            val trailer = document.selectFirst("nav.nav.card-nav.nav-slider a[data-bs-toggle=\"modal\"]")?.attr("data-trailer")?.let { "https://www.youtube.com/embed/$it" }
+            val trailer = document.selectFirst("div.post-info-trailer button")?.attr("data-modal")?.substringAfter("trailer/")?.let { "https://www.youtube.com/embed/$it" }
 
             newMovieLoadResponse(title, url, TvType.Movie, url) {
                 this.posterUrl       = poster
