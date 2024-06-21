@@ -102,17 +102,17 @@ class HDFilmCehennemi : MainAPI() {
 
         return if (tvType == TvType.TvSeries) {
             val trailer  = document.selectFirst("div.post-info-trailer button")?.attr("data-modal")?.substringAfter("trailer/")?.let { "https://www.youtube.com/embed/$it" }
-            val episodes = document.select("div.seasons-tab-content a").map {
-                val href    = it.attr("href")
-                val name    = it.select("h4").text().trim()
-                val episode = Regex("""(\d+)\.Bölüm""").find(name)?.groupValues?.get(1)?.toIntOrNull()
-                val season  = Regex("""(\d+)\.Sezon""").find(name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+            val episodes = document.select("div.seasons-tab-content a").mapNotNull {
+                val ep_name    = it.selectFirst("h4")?.text()?.trim() ?: return@mapNotNull null
+                val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
+                val ep_episode = Regex("""(\d+)\. ?Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
+                val ep_season  = Regex("""(\d+)\. ?Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
                 Episode(
-                    href,
-                    name,
-                    season,
-                    episode,
+                    data    = ep_href,
+                    name    = ep_name,
+                    season  = ep_season,
+                    episode = ep_episode
                 )
             }
 
