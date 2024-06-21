@@ -22,20 +22,20 @@ class HDFilmCehennemi : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/page/"                                to "Yeni Eklenen Filmler",
-        "${mainUrl}/yabancidiziizle-1/page/"              to "Yeni Eklenen Diziler",
-        "${mainUrl}/category/tavsiye-filmler-izle2/page/" to "Tavsiye Filmler",
-        "${mainUrl}/imdb-7-puan-uzeri-filmler/page/"      to "IMDB 7+ Filmler",
-        "${mainUrl}/en-cok-yorumlananlar/page/"           to "En Çok Yorumlananlar",
-        "${mainUrl}/en-cok-begenilen-filmleri-izle/page/" to "En Çok Beğenilenler",
+        "${mainUrl}"                                to "Yeni Eklenen Filmler",
+        "${mainUrl}/yabancidiziizle-1"              to "Yeni Eklenen Diziler",
+        "${mainUrl}/category/tavsiye-filmler-izle2" to "Tavsiye Filmler",
+        "${mainUrl}/imdb-7-puan-uzeri-filmler"      to "IMDB 7+ Filmler",
+        "${mainUrl}/en-cok-yorumlananlar"           to "En Çok Yorumlananlar",
+        "${mainUrl}/en-cok-begenilen-filmleri-izle" to "En Çok Beğenilenler",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page).document
+        val document = app.get(request.data).document
 
         val home: List<SearchResponse>?
 
-        if (request.data == "${mainUrl}/page/") {
+        if (request.data == "${mainUrl}") {
             home = document.select("div.tab-content div.poster").mapNotNull { it.toSearchResult() }
         } else {
             home = document.select("div.card-body div.poster").mapNotNull { it.toSearchResult() }
