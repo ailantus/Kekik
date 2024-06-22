@@ -1,4 +1,5 @@
 // ! https://codeberg.org/coxju/cs-ext-coxju/src/branch/master/FullPorner/src/main/kotlin/com/coxju/FullPorner.kt
+// ! https://github.com/SaurabhKaperwan/CSX/blob/master/FullPorner/src/main/kotlin/com/megix/FullPorner.kt
 
 package com.coxju
 
@@ -75,25 +76,15 @@ class FullPorner : MainAPI() {
         val title     = document.selectFirst("div.video-block div.single-video-left div.single-video-title h2")?.text()?.trim().toString()
         val iframeUrl = fixUrlNull(document.selectFirst("div.video-block div.single-video-left div.single-video iframe")?.attr("src")) ?: ""
 
-        val poster: String?
-        val posterHeaders: Map<String, String>
-        if (iframeUrl.contains("videoh")) {
-            val iframeDocument = app.get(iframeUrl, interceptor = WebViewResolver(Regex("""mydaddy"""))).document
+        val iframeDocument = app.get(iframeUrl).document
 
-            val videoHtml = iframeDocument.selectXpath("//script[contains(text(),'poster')]").first()?.html()?.substringAfter("else{ \$(\"#jw\").html(\"")?.substringBefore("\");}if(hasAdblock)")?.replace("\\", "")
-            val video     = Jsoup.parse(videoHtml.toString()).selectFirst("video")
+        val videoID          = Regex("""var id = \"(.+?)\"""").find(iframeDocument.html())?.groupValues?.get(1)
+        val pornTrexDocument = app.get("https://www.porntrex.com/embed/${videoID}").document
+        val matchResult      = Regex("""preview_url:\s*'([^']+)'""").find(pornTrexDocument.html())
+        val poster           = matchResult?.groupValues?.get(1)
+        val posterUrl        = fixUrlNull("https:$poster")
 
-            poster        = fixUrlNull(video?.attr("poster"))
-            posterHeaders = mapOf(Pair("referer", "https://mydaddy.cc/"))
-        } else {
-            val iframeDocument = app.get(iframeUrl).document
-            val videoDocument  = Jsoup.parse("<video" + iframeDocument.selectXpath("//script[contains(text(),'\$(\"#jw\").html(')]")[0]?.toString()?.replace("\\", "")?.substringAfter("<video")?.substringBefore("</video>") + "</video>")
-
-            poster        = fixUrlNull(videoDocument.selectFirst("video")?.attr("poster").toString())
-            posterHeaders = mapOf(Pair("referer", "https://xiaoshenke.net/"))
-        }
-
-        val tags            = document.select("div.video-blockdiv.single-video-left div.single-video-title p.tag-link span a").map { it.text() }
+        val tags            = document.select("div.video-block div.single-video-left div.single-video-title p.tag-link span a").map { it.text() }
         val description     = document.selectFirst("div.video-block div.single-video-left div.single-video-title h2")?.text()?.trim().toString()
         val actors          = document.select("div.video-block div.single-video-left div.single-video-info-content p a").map { it.text() }
         val recommendations = document.select("div.video-block div.video-recommendation div.video-card").mapNotNull { it.toSearchResult() }
@@ -109,51 +100,30 @@ class FullPorner : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        val document    = app.get(data).document
+        val document       = app.get(data).document
+        val iframeUrl      = fixUrlNull(document.selectFirst("div.video-block div.single-video-left div.single-video iframe")?.attr("src")) ?: ""
+        val iframeDocument = app.get(iframeUrl).document
+        val videoID        = Regex("""var id = \"(.+?)\"""").find(iframeDocument.html())?.groupValues?.getOrNull(1)
 
-        val iframeUrl   = fixUrlNull(document.selectFirst("div.video-block div.single-video-left div.single-video iframe")?.attr("src")) ?: ""
+        val extlinkList    = mutableListOf<ExtractorLink>()
 
-        val extlinkList = mutableListOf<ExtractorLink>()
-        if (iframeUrl.contains("videoh")) {
-            val iframeDocument = app.get(iframeUrl, interceptor = WebViewResolver(Regex("""mydaddy"""))).document
-            val videoDocument  = Jsoup.parse("<video" + iframeDocument.selectXpath("//script[contains(text(),'\$(\"#jw\").html(')]").first()?.toString()?.replace("\\", "")?.substringAfter("<video")?.substringAfter("<video")?.substringBefore("</video>") + "</video>")
-
-            videoDocument.select("source").map { res -> 
-                extlinkList.add(ExtractorLink(
-                    name,
-                    name,
-                    fixUrl(res.attr("src")),
-                    referer = data,
-                    quality = Regex("(\\d+.)").find(res.attr("title"))?.groupValues?.get(1).let { getQualityFromName(it) }
-                )) 
-            }
-        } else if (iframeUrl.contains("xiaoshenke")) {
-            val iframeDocument = app.get(iframeUrl).document
-            val videoID        = Regex("""var id = \"(.+?)\"""").find(iframeDocument.html())?.groupValues?.get(1)
-
+        if (videoID != null) {
             val pornTrexDocument = app.get("https://www.porntrex.com/embed/${videoID}").document
-            val video_url = fixUrlNull(Regex("""video_url: \'(.+?)\',""").find(pornTrexDocument.html())?.groupValues?.get(1))
-            if (video_url != null) {
-                extlinkList.add(ExtractorLink(
-                    name,
-                    name,
-                    video_url,
-                    referer = data,
-                    quality = Qualities.Unknown.value
-                ))
-            }
-        } else {
-            val iframeDocument = app.get(iframeUrl).document
-            val videoDocument  = Jsoup.parse("<video" + iframeDocument.selectXpath("//script[contains(text(),'\$(\"#jw\").html(')]").first()?.toString()?.replace("\\", "")?.substringAfter("<video")?.substringBefore("</video>") + "</video>")
+            val videoUrlsRegex   = Regex("""(?:video_url|video_alt_url2|video_alt_url3): \'(.+?)\',""")
+            val matchResults     = videoUrlsRegex.findAll(pornTrexDocument.html())
 
-            videoDocument.select("source").map { res -> 
-                extlinkList.add(ExtractorLink(
-                    this.name,
-                    this.name,
-                    fixUrl(res.attr("src")),
-                    referer = mainUrl,
-                    quality = Regex("(\\d+.)").find(res.attr("title"))?.groupValues?.get(1).let { getQualityFromName(it) }
-                )) 
+            val videoUrls = matchResults.map { it.groupValues[1] }.toList()
+
+            videoUrls.forEach { videoUrl ->
+                extlinkList.add(
+                    ExtractorLink(
+                        name,
+                        name,
+                        videoUrl,
+                        referer = "",
+                        quality = Regex("""_(1080|720|480|360)p\.mp4""").find(videoUrl)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: Qualities.Unknown.value,
+                    )
+                )
             }
         }
 
