@@ -23,6 +23,7 @@ class FullPorner : MainAPI() {
 
     override val mainPage = mainPageOf(
         "${mainUrl}/home/"                to "Featured",
+        "${mainUrl}/category/hd-porn/"    to "HD",
         "${mainUrl}/category/amateur/"    to "Amateur",
         "${mainUrl}/category/teen/"       to "Teen",
         "${mainUrl}/category/cumshot/"    to "CumShot",
@@ -47,8 +48,8 @@ class FullPorner : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title = this.selectFirst("div.video-card div.video-card-body div.video-title a")?.text() ?: return null
-        val href = fixUrl(this.selectFirst("div.video-card div.video-card-body div.video-title a")!!.attr("href"))
+        val title     = this.selectFirst("div.video-card div.video-card-body div.video-title a")?.text() ?: return null
+        val href      = fixUrl(this.selectFirst("div.video-card div.video-card-body div.video-title a")!!.attr("href"))
         val posterUrl = fixUrlNull(this.select("div.video-card div.video-card-image a img").attr("data-src"))
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
@@ -90,8 +91,7 @@ class FullPorner : MainAPI() {
         val recommendations = document.select("div.video-block div.video-recommendation div.video-card").mapNotNull { it.toSearchResult() }
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
-            this.posterUrl       = poster
-            this.posterHeaders   = posterHeaders
+            this.posterUrl       = posterUrl
             this.plot            = description
             this.tags            = tags
             this.recommendations = recommendations
@@ -117,11 +117,12 @@ class FullPorner : MainAPI() {
             videoUrls.forEach { videoUrl ->
                 extlinkList.add(
                     ExtractorLink(
-                        name,
-                        name,
-                        videoUrl,
+                        source  = name,
+                        name    = name,
+                        url     = videoUrl,
                         referer = "",
                         quality = Regex("""_(1080|720|480|360)p\.mp4""").find(videoUrl)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: Qualities.Unknown.value,
+                        type    = INFER_TYPE
                     )
                 )
             }
