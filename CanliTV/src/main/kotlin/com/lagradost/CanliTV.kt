@@ -127,7 +127,7 @@ class CanliTV : MainAPI() {
         Log.d("IPTV", "loadData » ${loadData}")
 
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
-        val kanal    = kanallar.items.first { loadData.url == data }
+        val kanal    = kanallar.items.first { it.url == loadData.url }
         Log.d("IPTV", "kanal » ${kanal}")
 
         callback.invoke(
