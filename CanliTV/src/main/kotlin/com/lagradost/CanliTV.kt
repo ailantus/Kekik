@@ -135,7 +135,7 @@ class CanliTV : MainAPI() {
                 source  = this.name,
                 name    = this.name,
                 url     = loadData.url,
-                referer = "",
+                referer = kanal.headers["referrer"] ?: "",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
             )
