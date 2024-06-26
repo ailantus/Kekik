@@ -148,6 +148,7 @@ class CanliTV : MainAPI() {
         } else {
             val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
             val kanal    = kanallar.items.first { it.url == data }
+            Log.d("IPTV", "kanal » ${kanal}")
 
             val streamurl   = kanal.url.toString()
             val channelname = kanal.title.toString()
