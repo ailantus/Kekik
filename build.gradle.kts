@@ -78,8 +78,8 @@ subprojects {
         implementation(kotlin("stdlib"))                                              // Kotlin'in temel kütüphanesi
         implementation("com.github.Blatzar:NiceHttp:0.4.11")                          // HTTP kütüphanesi
         implementation("org.jsoup:jsoup:1.17.2")                                      // HTML ayrıştırıcı
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")   // Kotlin için Jackson JSON kütüphanesi
-        implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")          // JSON-nesne dönüştürme kütüphanesi
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")   // Kotlin için Jackson JSON kütüphanesi
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")          // JSON-nesne dönüştürme kütüphanesi
     }
 }
 
