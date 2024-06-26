@@ -38,7 +38,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: adopt
-          java-version: 11
+          java-version: 17
 
       - name: Android SDK Ayarla
         uses: android-actions/setup-android@v2
