@@ -124,6 +124,7 @@ class CanliTV : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         val loadData = fetchDataFromUrlOrJson(data)
+        Log.d("IPTV", "loadData » ${loadData}")
 
         callback.invoke(
             ExtractorLink(
