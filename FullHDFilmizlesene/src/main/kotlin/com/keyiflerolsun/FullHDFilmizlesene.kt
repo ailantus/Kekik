@@ -136,7 +136,11 @@ class FullHDFilmizlesene : MainAPI() {
         val script_content = script_element?.data()?.trim() ?: return emptyList()
 
         val scx_data = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return emptyList()
+        Log.d("FHD", "scx_data » ${scx_data}")
+
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
+        Log.d("FHD", "scx_map » ${scx_map}")
+
         val keys = listOf("atom", "advid", "advidprox", "proton")
 
         val linkList = mutableListOf<Map<String, String>>()
