@@ -137,7 +137,7 @@ class FullHDFilmizlesene : MainAPI() {
 
         val scx_data         = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return emptyList()
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
-        val keys             = listOf("atom", "advid", "advidprox", "proton", "fast")
+        val keys             = listOf("atom", "advid", "advidprox", "proton", "fast", "tr", "en")
 
         val linkList = mutableListOf<Map<String, String>>()
 
@@ -148,6 +148,8 @@ class FullHDFilmizlesene : MainAPI() {
                 "advidprox" -> scx_map.advidprox?.sx?.t
                 "proton"    -> scx_map.proton?.sx?.t
                 "fast"      -> scx_map.fast?.sx?.t
+                "tr"        -> scx_map.tr?.sx?.t
+                "en"        -> scx_map.en?.sx?.t
                 else        -> null
             }
 
@@ -180,9 +182,13 @@ class FullHDFilmizlesene : MainAPI() {
 
 
         for (video_map in video_links) {
-            for ((_, value) in video_map) {
+            for ((key, value) in video_map) {
                 val video_url = fixUrlNull(value) ?: continue
-                loadExtractor(video_url, "${mainUrl}/", subtitleCallback, callback)
+                if (video_url.contains("turbo.imgz.me")) {
+                    loadExtractor("${key}||${video_url}", "${mainUrl}/", subtitleCallback, callback)
+                } else {
+                    loadExtractor(video_url, "${mainUrl}/", subtitleCallback, callback)
+                }
             }
         }
 
@@ -196,6 +202,8 @@ class FullHDFilmizlesene : MainAPI() {
         @JsonProperty("advidprox") val advidprox: AtomData? = null,
         @JsonProperty("proton")    val proton: AtomData?    = null,
         @JsonProperty("fast")      val fast: AtomData?      = null,
+        @JsonProperty("tr")        val tr: AtomData?        = null,
+        @JsonProperty("en")        val en: AtomData?        = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
