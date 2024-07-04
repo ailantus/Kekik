@@ -141,7 +141,7 @@ class FullHDFilmizlesene : MainAPI() {
         val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
         Log.d("FHD", "scx_map » ${scx_map}")
 
-        val keys = listOf("atom", "advid", "advidprox", "proton")
+        val keys = listOf("atom", "advid", "advidprox", "proton", "fast")
 
         val linkList = mutableListOf<Map<String, String>>()
 
@@ -198,6 +198,7 @@ class FullHDFilmizlesene : MainAPI() {
         @JsonProperty("advid")     val advid: AtomData?     = null,
         @JsonProperty("advidprox") val advidprox: AtomData? = null,
         @JsonProperty("proton")    val proton: AtomData?    = null,
+        @JsonProperty("fast")      val fast: AtomData?      = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
