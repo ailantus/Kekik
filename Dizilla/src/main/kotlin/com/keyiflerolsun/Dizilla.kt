@@ -82,8 +82,6 @@ class Dizilla : MainAPI() {
 
         val veriler   = mutableListOf<SearchResponse>()
 
-        Log.d("DZL", "query » ${query}")
-
         val search_req = app.post(
             "${mainUrl}/bg/searchcontent",
             data = mapOf(
@@ -102,14 +100,11 @@ class Dizilla : MainAPI() {
             )
         ).parsedSafe<SearchResult>()
 
-        Log.d("DZL", "search_req » ${search_req}")
-
         if (search_req?.data?.state != true) {
             throw ErrorLoadingException("Invalid Json response")
         }
 
         search_req.data.result?.forEach { search_item ->
-            Log.d("DZL", "search_item » ${search_item}")
             veriler.add(search_item.toSearchResponse() ?: return@forEach)
         }
 
