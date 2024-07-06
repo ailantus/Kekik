@@ -87,22 +87,24 @@ class SuperFilmGeldi : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title       = document.selectFirst("div.title h1")?.text()?.trim()?.substringBefore(" izle") ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.poster img")?.attr("src"))
-        val year        = document.selectFirst("div.release a")?.text()?.toIntOrNull()
-        val description = document.selectFirst("div.excerpt p")?.text()?.trim()
-        val tags        = document.select("div.categories a").map { it.text() }
-        val rating      = document.selectFirst("span.imdb-rating")?.text()?.trim()?.split(" ")?.first()?.toRatingInt()
-        val actors      = document.select("div.actor a").map {
+        val title           = document.selectFirst("div.title h1")?.text()?.trim()?.substringBefore(" izle") ?: return null
+        val poster          = fixUrlNull(document.selectFirst("div.poster img")?.attr("src"))
+        val year            = document.selectFirst("div.release a")?.text()?.toIntOrNull()
+        val description     = document.selectFirst("div.excerpt p")?.text()?.trim()
+        val tags            = document.select("div.categories a").map { it.text() }
+        val rating          = document.selectFirst("span.imdb-rating")?.text()?.trim()?.split(" ")?.first()?.toRatingInt()
+        val recommendations = document.select("div.film-content div.existing_item").mapNotNull { it.toSearchResult() }
+        val actors          = document.select("div.actor a").map {
             Actor(it.text())
         }
 
         return newMovieLoadResponse(removeUnnecessarySuffixes(title), url, TvType.Movie, url) {
-            this.posterUrl = poster
-            this.year      = year
-            this.plot      = description
-            this.tags      = tags
-            this.rating    = rating
+            this.posterUrl       = poster
+            this.year            = year
+            this.plot            = description
+            this.tags            = tags
+            this.rating          = rating
+            this.recommendations = recommendations
             addActors(actors)
         }
     }
