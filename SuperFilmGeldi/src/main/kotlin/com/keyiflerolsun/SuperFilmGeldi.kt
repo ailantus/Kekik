@@ -19,6 +19,7 @@ class SuperFilmGeldi : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
+        "${mainUrl}/page/"  			                        to "Son Eklenenler",
         "${mainUrl}/hdizle/category/aksiyon/page/"  			to "Aksiyon",
         "${mainUrl}/hdizle/category/animasyon/page/"  			to "Animasyon",
         "${mainUrl}/hdizle/category/belgesel/page/"  			to "Belgesel",
