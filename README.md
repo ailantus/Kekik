@@ -8,7 +8,7 @@
 
 _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
-[Resmi Site](https://dweb.link/ipns/cloudstream.on.fleek.co/) **━** [Wiki](https://cloudstream.miraheze.org/wiki/Main_Page)
+[Döküman](https://recloudstream.github.io/csdocs/) **-** [Resmi Site](https://dweb.link/ipns/cloudstream.on.fleek.co/) **━** [Wiki](https://cloudstream.miraheze.org/wiki/Main_Page)
 
 [![ForTheBadge made-with-kotlin](https://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
 [![ForTheBadge built-with-love](https://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
@@ -33,10 +33,6 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 ## 📱 Repo İçeriği
 
 [![Repo](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/Repo.jpg?raw=True)](https://raw.githubusercontent.com/keyiflerolsun/Kekik-cloudstream/master/repo.json)
-
----
-
-### 📄 » [Döküman](https://recloudstream.github.io/csdocs/devs/scraping/devtools_detectors/)
 
 ---
 
