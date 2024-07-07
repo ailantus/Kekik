@@ -67,7 +67,7 @@ class SinemaCX : MainAPI() {
         val document = app.get(url).document
 
         val title       = document.selectFirst("div.f-bilgi h1")?.text()?.trim() ?: return null
-        val poster      = fixUrlNull(document.selectFirst("div.t-ic div.resim img")?.attr("src")) ?: fixUrlNull(document.selectFirst("div.t-ic div.resim img")?.attr("data-src"))
+        val poster      = fixUrlNull(document.selectFirst("link[rel='image_src']")?.attr("href"))
         val year        = document.selectFirst("div.f-bilgi ul.detay a[href*='yapim']")?.text()?.toIntOrNull()
         val description = document.selectFirst("div.f-bilgi div.ackl")?.text()?.trim()
         val tags        = document.select("div.f-bilgi div.tur a").map { it.text() }
@@ -117,23 +117,26 @@ class SinemaCX : MainAPI() {
             }
         }
 
+        if (iframe.contains("panel.sinema.cx")){
+            val vidUrl = app.post(
+                "https://panel.sinema.cx/player/index.php?data=" + iframe.split("/").last() + "&do=getVideo",
+                headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
+                referer = "${mainUrl}/"
+            ).parsedSafe<Panel>()?.securedLink ?: return false
 
-        val vidUrl = app.post(
-            "https://panel.sinema.cx/player/index.php?data=" + iframe.split("/").last() + "&do=getVideo",
-            headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
-            referer = "${mainUrl}/"
-        ).parsedSafe<Panel>()?.securedLink ?: return false
-
-        callback.invoke(
-            ExtractorLink(
-                source  = this.name,
-                name    = this.name,
-                url     = vidUrl,
-                referer = iframe,
-                quality = Qualities.Unknown.value,
-                isM3u8  = true
+            callback.invoke(
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = vidUrl,
+                    referer = iframe,
+                    quality = Qualities.Unknown.value,
+                    isM3u8  = true
+                )
             )
-        )
+        } else {
+            loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        }
 
         return true
     }
