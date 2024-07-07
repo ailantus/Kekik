@@ -10,8 +10,8 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 [Resmi Site](https://dweb.link/ipns/cloudstream.on.fleek.co/) **━** [Wiki](https://cloudstream.miraheze.org/wiki/Main_Page)
 
-[![ForTheBadge made-with-kotlin](http://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
+[![ForTheBadge made-with-kotlin](https://ForTheBadge.com/images/badges/made-with-kotlin.svg)](https://kotlinlang.org/)
+[![ForTheBadge built-with-love](https://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/keyiflerolsun/)
 
 ## 💾 Kurulum
 
@@ -22,7 +22,7 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ## 📼 Video Anlatım
 
-[![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/embed/39x9FDTG9QA)
+[![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/embed/giht5QSPbOE)
 
 ---
 
