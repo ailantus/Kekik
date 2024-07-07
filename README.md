@@ -22,7 +22,7 @@ _CloudStream için Türkçe yayın yapan sitelere ait eklentiler_
 
 ## 📼 Video Anlatım
 
-[![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/embed/giht5QSPbOE)
+[![Video](https://github.com/keyiflerolsun/Kekik-cloudstream/raw/master/.github/icons/KisaKod.png?raw=True)](https://www.youtube.com/watch?v=giht5QSPbOE)
 
 ---
 
