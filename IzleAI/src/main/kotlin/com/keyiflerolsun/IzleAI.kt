@@ -111,7 +111,7 @@ class IzleAI : MainAPI() {
         val rating      = document.selectFirst("a[href*='imdb.com'] span.font-bold")?.text()?.trim().toRatingInt()
         val duration    = document.selectXpath("//div[contains(text(), ' Dakika')]")?.text()?.trim()?.split(" ")?.first()?.toIntOrNull()
         val actors      = document.select("div.flex.overflow-auto [href*='oyuncu']").map {
-            Actor(it.text(), it.selectFirst("img")?.attr("data-srcset")?.split(" ")?.first())
+            Actor(it.selectFirst("span span")!!.text(), it.selectFirst("img")?.attr("data-srcset")?.split(" ")?.first())
         }
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
