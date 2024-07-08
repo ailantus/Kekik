@@ -111,10 +111,10 @@ class IzleAI : MainAPI() {
         val tags        = document.select("[href*='kategori']").map { it.text() }
         val rating      = document.selectFirst("a[href*='imdb.com'] span.font-bold")?.text()?.trim().toRatingInt()
         val duration    = document.selectXpath("//div[contains(text(), ' Dakika')]")?.text()?.trim()?.split(" ")?.first()?.toIntOrNull()
+        val trailer     = document.selectFirst("iframe[data-src*='youtube.com/embed/']")?.attr("data-src")
         val actors      = document.select("div.flex.overflow-auto [href*='oyuncu']").map {
             Actor(it.selectFirst("span span")!!.text(), it.selectFirst("img")?.attr("data-srcset")?.split(" ")?.first())
         }
-        val trailer     = document.selectFirst("iframe[data-src*='youtube.com/embed/']")?.attr("data-src")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl = poster
@@ -123,8 +123,8 @@ class IzleAI : MainAPI() {
             this.tags      = tags
             this.rating    = rating
             this.duration  = duration
-            addActors(actors)
             addTrailer(trailer)
+            addActors(actors)
         }
     }
 
