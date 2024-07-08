@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class IzleAI : MainAPI() {
     override var mainUrl              = "https://720pizle.ai"
@@ -113,6 +114,7 @@ class IzleAI : MainAPI() {
         val actors      = document.select("div.flex.overflow-auto [href*='oyuncu']").map {
             Actor(it.selectFirst("span span")!!.text(), it.selectFirst("img")?.attr("data-srcset")?.split(" ")?.first())
         }
+        val trailer     = document.selectFirst("iframe[data-src*='youtube.com/embed/']")?.attr("data-src")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl = poster
@@ -122,6 +124,7 @@ class IzleAI : MainAPI() {
             this.rating    = rating
             this.duration  = duration
             addActors(actors)
+            addTrailer(trailer)
         }
     }
 
