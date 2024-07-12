@@ -135,6 +135,7 @@ class CanliTV : MainAPI() {
                 source  = this.name,
                 name    = this.name,
                 url     = loadData.url,
+                headers = kanal.headers,
                 referer = kanal.headers["referrer"] ?: "",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
@@ -216,9 +217,18 @@ class IptvPlaylistParser {
                     playlistItems.add(PlaylistItem(title, attributes))
                 } else if (line.startsWith(EXT_VLC_OPT)) {
                     val item      = playlistItems[currentIndex]
-                    val userAgent = line.getTagValue("http-user-agent")
+                    val userAgent = item.userAgent ?: line.getTagValue("http-user-agent")
                     val referrer  = line.getTagValue("http-referrer")
-                    val headers   = if (referrer != null) {item.headers + mapOf("referrer" to referrer)} else item.headers
+
+                    val headers = mutableMapOf<String, String>()
+
+                    if (userAgent != null) {
+                        headers["user-agent"] = userAgent
+                    }
+
+                    if (referrer != null) {
+                        headers["referrer"] = referrer
+                    }
 
                     playlistItems[currentIndex] = item.copy(
                         userAgent = userAgent,
@@ -235,7 +245,7 @@ class IptvPlaylistParser {
                         playlistItems[currentIndex] = item.copy(
                             url       = url,
                             headers   = item.headers + urlHeaders,
-                            userAgent = userAgent
+                            userAgent = userAgent ?: item.userAgent
                         )
                         currentIndex++
                     }
