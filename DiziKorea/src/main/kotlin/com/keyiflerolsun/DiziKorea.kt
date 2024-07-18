@@ -11,7 +11,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import org.jsoup.Jsoup
 
 class DiziKorea : MainAPI() {
-    override var mainUrl              = "https://dizikorea.vip"
+    override var mainUrl              = "https://dizikorea.info"
     override var name                 = "DiziKorea"
     override val hasMainPage          = true
     override var lang                 = "tr"
