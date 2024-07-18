@@ -12,7 +12,7 @@ on:
     - cron: 00 00 * * *
 
 jobs:
-  kontrol:
+  DomainKontrol:
     runs-on: ubuntu-latest
 
     env:

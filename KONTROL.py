@@ -70,8 +70,10 @@ class MainUrlUpdater:
 
     def guncelle(self):
         for dosya, mainurl in self.mainurl_listesi.items():
+            eklenti_adi = dosya.split("/")[0]
+
             print("\n")
-            konsol.log(f"[~] Kontrol Ediliyor : {mainurl}")
+            konsol.log(f"[~] Kontrol Ediliyor : {eklenti_adi}")
             try:
                 istek = self.oturum.get(mainurl, allow_redirects=True)
                 konsol.log(f"[+] Kontrol Edildi : {mainurl}")
@@ -87,7 +89,7 @@ class MainUrlUpdater:
 
             self._mainurl_guncelle(dosya, mainurl, final_url)
 
-            if self._versiyonu_artir(f"{dosya.split('/')[0]}/build.gradle.kts"):
+            if self._versiyonu_artir(f"{eklenti_adi}/build.gradle.kts"):
                 konsol.log(f"[»] {mainurl} -> {final_url}")
 
 
