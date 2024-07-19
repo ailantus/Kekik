@@ -75,7 +75,7 @@ class MainUrlUpdater:
             print("\n")
             konsol.log(f"[~] Kontrol Ediliyor : {eklenti_adi}")
             try:
-                istek = self.oturum.get(mainurl, verify=False, allow_redirects=True)
+                istek = self.oturum.get(mainurl, allow_redirects=True)
                 konsol.log(f"[+] Kontrol Edildi : {mainurl}")
             except Exception as hata:
                 konsol.log(f"[!] Kontrol Edilemedi : {mainurl}")
