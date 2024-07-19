@@ -9,11 +9,12 @@ concurrency:
 on: 
   workflow_dispatch:
   schedule:
-    - cron: 00 00 * * *
+    - cron: 00 21 * * *
 
 jobs:
   DomainKontrol:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
