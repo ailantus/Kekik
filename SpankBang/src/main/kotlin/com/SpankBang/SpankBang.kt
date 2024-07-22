@@ -3,7 +3,7 @@
 package com.coxju
 
 import android.util.Log
-import org.jsoup.nodes.Element
+import org.jsoup.nodes.*
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
@@ -20,9 +20,9 @@ class SpankBang : MainAPI() {
     override val vpnStatus            = VPNStatus.MightBeNeeded
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/trending_videos/"           to "Trend",
-        "${mainUrl}/upcoming/"                  to "Upcoming",
         "${mainUrl}/new_videos/"                to "New",
+        "${mainUrl}/upcoming/"                  to "Upcoming",
+        "${mainUrl}/trending_videos/"           to "Trend",
         "${mainUrl}/most_popular/"              to "Popular",
         "${mainUrl}/ja/channel/teen+erotica/"   to "Teen Erotica",
         "${mainUrl}/7u/channel/21+naturals/"    to "21 Naturals",
@@ -45,7 +45,7 @@ class SpankBang : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}/?o=popular&p=w&d=10").document      
+        val document = app.get("${request.data}${page}/?o=popular&p=w&d=10").document
         val home     = document.select("div.main_results div.video-item").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(
@@ -115,22 +115,19 @@ class SpankBang : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("SkBg", "data » ${data}")
         val document = app.get(data).document
+        val videoUrl = Regex("""'m3u8': \['([^\'\]]+)""").find(document.html())?.groupValues?.get(1) ?: return false
+        Log.d("SkBg", "videoUrl » ${videoUrl}")
 
-        document.select("div#video_container").map { res ->
-            val video_url = fixUrl(res.selectFirst("video > source")?.attr("src")?.trim().toString())
-            Log.d("SkBg", "video_url » ${video_url}")
-
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = video_url,
-                    referer = data,
-                    quality = Qualities.Unknown.value,
-                    type    = INFER_TYPE
-                )
+        callback.invoke(
+            ExtractorLink(
+                source  = this.name,
+                name    = this.name,
+                url     = fixUrl(videoUrl),
+                referer = data,
+                quality = Qualities.Unknown.value,
+                type    = INFER_TYPE
             )
-        }
+        )
 
         return true
     }
