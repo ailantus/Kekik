@@ -80,10 +80,10 @@ class SpankBang : MainAPI() {
         return searchResponse
     }
 
-    override suspend fun load(url: String): LoadResponse {
+    override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("meta[property=og:title]")?.attr("content")?.trim()
+        val title           = document.selectFirst("meta[property=og:title]")?.attr("content")?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("meta[property='og:image']")?.attr("content"))
         val description     = document.selectFirst("meta[property=og:description]")?.attr("content")?.trim()
         val year            = Regex("""\"uploadDate\":\s*\"(\d{4})""").find(document.html())?.groupValues?.get(1)?.toIntOrNull()
