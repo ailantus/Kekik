@@ -88,9 +88,9 @@ class SpankBang : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("meta[property=og:title]")?.attr("content")?.trim() ?: return null
+        val title           = document.selectFirst("div#video h1")?.text()?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("meta[property='og:image']")?.attr("content"))
-        val description     = document.selectFirst("meta[property=og:description]")?.attr("content")?.trim()
+        val description     = document.selectFirst("a[href*='join']")?.text()?.trim() ?: title
         val year            = Regex("""\"uploadDate\":\s*\"(\d{4})""").find(document.html())?.groupValues?.get(1)?.toIntOrNull()
         val tags            = document.select("div.searches a").map { it.text() }
         val rating          = document.selectFirst("span.rate")?.text()?.trim()?.substringBefore("%")?.toRatingInt()?.div(10)
