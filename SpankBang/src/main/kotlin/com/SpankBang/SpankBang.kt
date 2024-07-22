@@ -30,11 +30,17 @@ class SpankBang : MainAPI() {
         "${mainUrl}/j3/channel/hot+wife+xxx/"   to "Hot Wife XXX",
         "${mainUrl}/d6/channel/my+family+pies/" to "My Family Pies",
         "${mainUrl}/6l/channel/mylf/"           to "MYLF",
-        "${mainUrl}/9n/channel/evil+angel/"     to "Evil Angel"
+        "${mainUrl}/6d/channel/family+strokes/" to "Family Strokes",
+        "${mainUrl}/6c/channel/teamskeet/"      to "TeamSkeet",
+        "${mainUrl}/co/channel/moms+teach+sex/" to "Moms Teach",
+        "${mainUrl}/np/channel/facials4k/"      to "FACIALS4K",
+        "${mainUrl}/1q/channel/daddy4k/"        to "Daddy4K",
+        "${mainUrl}/4w/channel/letsdoeit/"      to "LETSDOEIT",
+        "${mainUrl}/o4/channel/touch+my+wife/"  to "Touch My Wife"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data + page + "/?period=week").document      
+        val document = app.get("${request.data}${page}/?o=popular&p=w&d=10").document      
         val home     = document.select("div.main_results div.video-item").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(
@@ -58,9 +64,9 @@ class SpankBang : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val searchResponse = mutableListOf<SearchResponse>()
 
-        for (i in 1..5) {
-            val document = app.get("${mainUrl}/s/$query/$i/?o=all").document
-            val results  = document.select("div.video-list-with-ads > div.video-item").mapNotNull { it.toSearchResult() }
+        for (say in 1..5) {
+            val document = app.get("${mainUrl}/s/${query}/${say}/?o=new&d=10").document
+            val results  = document.select("div.main_results div.video-item").mapNotNull { it.toSearchResult() }
 
             if (!searchResponse.containsAll(results)) {
                 searchResponse.addAll(results)
@@ -77,7 +83,7 @@ class SpankBang : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("meta[property=og:title]")?.attr("content")?.trim().toString()
+        val title           = document.selectFirst("meta[property=og:title]")?.attr("content")?.trim()
         val poster          = fixUrlNull(document.selectFirst("meta[property='og:image']")?.attr("content"))
         val description     = document.selectFirst("meta[property=og:description]")?.attr("content")?.trim()
         val year            = Regex("""\"uploadDate\":\s*\"(\d{4})""").find(document.html())?.groupValues?.get(1)?.toIntOrNull()
@@ -88,7 +94,6 @@ class SpankBang : MainAPI() {
         val actors          = document.select("li.primary_actions_container").map {
             Actor(it.selectFirst("span.name")!!.text(), fixUrlNull(it.selectFirst("img")?.attr("src")))
         }
-
 
         return newMovieLoadResponse(title, url, TvType.NSFW, url) {
             this.posterUrl       = poster
