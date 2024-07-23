@@ -1,7 +1,7 @@
 version = 3
 
 cloudstream {
-    authors     = listOf("Coxju", "SaurabhKaperwan")
+    authors     = listOf("coxju", "SaurabhKaperwan")
     language    = "en"
     description = "FullPorner is the best free full length porn video site. Choose from millions of hardcore videos that stream quickly and in high quality and only full length"
 

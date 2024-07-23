@@ -1,4 +1,4 @@
-package com.coxjud
+package com.coxju
 
 import android.content.Context
 import com.coxju.FullPorner
