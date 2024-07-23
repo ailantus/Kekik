@@ -187,7 +187,6 @@ class HDFilmCehennemi : MainAPI() {
                 var iframe = Regex("""data-src=\\"([^\"]+)""").find(apiGet)?.groupValues?.get(1)!!.replace("\\", "")
                 if (iframe.contains("?rapidrame_id=")) {
                     iframe = "${mainUrl}/playerr/" + iframe.substringAfter("?rapidrame_id=")
-                    Log.d("HDF", "iframe » $iframe")
                 }
 
                 Log.d("HDF", "$source » $videoID » $iframe")
