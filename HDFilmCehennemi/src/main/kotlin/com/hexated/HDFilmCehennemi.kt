@@ -149,12 +149,13 @@ class HDFilmCehennemi : MainAPI() {
 
         callback.invoke(
             ExtractorLink(
-                source,
-                source,
-                base64Decode(videoData),
-                "${mainUrl}/",
-                Qualities.Unknown.value,
-                true
+                source  = source,
+                name    = source,
+                url     = base64Decode(videoData),
+                referer = "${mainUrl}/",
+                quality = Qualities.Unknown.value,
+                type    = INFER_TYPE
+                // isM3u8  = true
             )
         )
 
