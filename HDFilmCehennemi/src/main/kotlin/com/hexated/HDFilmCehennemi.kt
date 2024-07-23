@@ -19,7 +19,7 @@ class HDFilmCehennemi : MainAPI() {
     override val hasQuickSearch       = true
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.Movie)
+    override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}"                                      to "Yeni Eklenen Filmler",
@@ -178,7 +178,7 @@ class HDFilmCehennemi : MainAPI() {
                 val apiGet = app.get(
                     "${mainUrl}/video/$videoID/",
                     headers = mapOf(
-                        "Content-Type" to "application/json",
+                        "Content-Type"     to "application/json",
                         "X-Requested-With" to "fetch"
                     ),
                     referer = data
