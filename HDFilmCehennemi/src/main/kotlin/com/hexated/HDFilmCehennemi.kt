@@ -166,7 +166,7 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
-        Log.d("HDF", "data » ${data}")
+        Log.d("HDCH", "data » ${data}")
         val document = app.get(data).document
 
         document.select("div.alternative-links").map { element ->
@@ -189,7 +189,7 @@ class HDFilmCehennemi : MainAPI() {
                     iframe = "${mainUrl}/playerr/" + iframe.substringAfter("?rapidrame_id=")
                 }
 
-                Log.d("HDF", "${source} » ${videoID} » ${iframe}")
+                Log.d("HDCH", "${source} » ${videoID} » ${iframe}")
                 invokeLocalSource(source, iframe, subtitleCallback, callback)
             }
         }
