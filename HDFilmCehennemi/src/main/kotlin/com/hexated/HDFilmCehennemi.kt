@@ -168,11 +168,32 @@ class HDFilmCehennemi : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
         Log.d("HDF", "data » ${data}")
         val document = app.get(data).document
-        val iframe   = document.selectFirst("div.video-container iframe")?.attr("data-src") ?: return false
-        Log.d("HDF", "iframe » ${iframe}")
 
-        val source = document.selectFirst("div.video-container iframe")?.attr("class")?.capitalize() ?: "${name}"
-        invokeLocalSource(source, iframe, subtitleCallback, callback)
+        document.select("div.alternative-links").map { element ->
+            element to element.attr("data-lang").uppercase()
+        }.forEach { (element, langCode) ->
+            element.select("button.alternative-link").map { button ->
+                button!!.text().replace("(HDrip Xbet)", "").trim() + " $langCode" to button.attr("data-video")
+            }.forEach { (source, videoID) ->
+                val apiGet = app.get(
+                    "${mainUrl}/video/$videoID/",
+                    headers = mapOf(
+                        "Content-Type" to "application/json",
+                        "X-Requested-With" to "fetch"
+                    ),
+                    referer = data
+                ).text
+
+                var iframe = Regex("""data-src=\\"([^\"]+)""").find(apiGet)?.groupValues?.get(1)!!.replace("\\", "")
+                if (iframe.contains("hdfilmcehennemi.mobi")) {
+                    iframe = "https://www.hdfilmcehennemi.sh/playerr/" + iframe.substringAfter("?rapidrame_id=")
+                    Log.d("HDF", "iframe » $iframe")
+                }
+
+                Log.d("HDF", "$source » $videoID » $iframe")
+                invokeLocalSource(source, iframe, subtitleCallback, callback)
+            }
+        }
 
         return true
     }
