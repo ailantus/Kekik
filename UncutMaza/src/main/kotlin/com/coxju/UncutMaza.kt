@@ -36,14 +36,12 @@ class UncutMaza : MainAPI() {
         )
     }
 
-    private fun Element.toSearchResult(): SearchResponse {
-        val title     = fixTitle(this.select("a").attr("title"))
-        val href      = fixUrl(this.select("a").attr("href"))
+    private fun Element.toSearchResult(): SearchResponse? {
+        val title     = fixTitle(this.select("a").attr("title")) ?: return null
+        val href      = fixUrlNull(this.select("a").attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.select("a > div.post-thumbnail>div.post-thumbnail-container>img").attr("data-src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) {
-            this.posterUrl = posterUrl
-        }
+        return newMovieSearchResponse(title, href, TvType.NSFW) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -84,13 +82,14 @@ class UncutMaza : MainAPI() {
 
         document.select("div.video-player").map { res ->
             callback.invoke(
-                    ExtractorLink(
-                        source  = this.name,
-                        name    = this.name,
-                        url     = fixUrl(res.selectFirst("meta[itemprop=contentURL]")?.attr("content")?.trim().toString()),
-                        referer = data,
-                        quality = Qualities.Unknown.value
-                    )
+                ExtractorLink(
+                    source  = this.name,
+                    name    = this.name,
+                    url     = fixUrl(res.selectFirst("meta[itemprop=contentURL]")?.attr("content")?.trim().toString()),
+                    referer = data,
+                    quality = Qualities.Unknown.value,
+                    type    = INFER_TYPE
+                )
             )
         }
 
