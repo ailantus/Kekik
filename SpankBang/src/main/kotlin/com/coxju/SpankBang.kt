@@ -25,7 +25,7 @@ class SpankBang : MainAPI() {
         "${mainUrl}/trending_videos/"           to "Trend",
         "${mainUrl}/most_popular/"              to "Popular",
         "${mainUrl}/s/onlyfans/"                to "OnlyFans",
-        "${mainUrl}/s/onlyfans/"                to "OnlyFans",
+        "${mainUrl}/7i/channel/girlsway/"       to "Girlsway",
         "${mainUrl}/jg/channel/met+art+x/"      to "Met Art X",
         "${mainUrl}/je/channel/sex+art/"        to "Sex Art",
         "${mainUrl}/ja/channel/teen+erotica/"   to "Teen Erotica",
