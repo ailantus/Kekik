@@ -12,7 +12,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
 class WebteIzle : MainAPI() {
-    override var mainUrl              = "https://webteizle2.com"
+    override var mainUrl              = "https://webteizle3.com"
     override var name                 = "WebteIzle"
     override val hasMainPage          = true
     override var lang                 = "tr"
