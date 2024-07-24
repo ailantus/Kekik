@@ -2,13 +2,12 @@
 name: CloudStream Derleyici
 
 concurrency:
-  group: CloudStreamDerleyici
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - master
     paths-ignore:
       - "**/*.md"
       - "**/*.yml"
