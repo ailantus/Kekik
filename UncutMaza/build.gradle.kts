@@ -3,7 +3,7 @@ version = 3
 cloudstream {
     authors     = listOf("coxju")
     language    = "hi"
-    description = "We Provide Huge Colocation of Hindi Porn (Uncut) Web Series"
+    description = "(VPN) We Provide Huge Colocation of Hindi Porn (Uncut) Web Series"
 
     /**
      * Status int as the following:
