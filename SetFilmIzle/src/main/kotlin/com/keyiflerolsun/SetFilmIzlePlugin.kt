@@ -8,5 +8,7 @@ import android.content.Context
 class SetFilmIzlePlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(SetFilmIzle())
+        registerExtractorAPI(SetPlay())
+        registerExtractorAPI(ExPlay())
     }
 }

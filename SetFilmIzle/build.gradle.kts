@@ -1,10 +1,9 @@
-version = 0
+version = 1
 
 cloudstream {
     authors     = listOf("keyiflerolsun")
     language    = "tr"
-    description = "!!! Yapım Aşamasında !!!"
-    // description = "Setfilmizle sitemizde, donma yaşamadan Türkçe dublaj ve altyazılı filmleri ile dizileri muhteşem 1080p full HD kalitesinde izleyebilirsiniz."
+    description = "Setfilmizle sitemizde, donma yaşamadan Türkçe dublaj ve altyazılı filmleri ile dizileri muhteşem 1080p full HD kalitesinde izleyebilirsiniz."
 
     /**
      * Status int as the following:
@@ -13,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 3 // will be 3 if unspecified
+    status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Movie")
     iconUrl = "https://www.google.com/s2/favicons?domain=www.setfilmizle.de&sz=%size%"
 }
