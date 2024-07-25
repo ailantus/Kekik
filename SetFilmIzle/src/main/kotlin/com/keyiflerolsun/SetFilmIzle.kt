@@ -117,15 +117,13 @@ class SetFilmIzle : MainAPI() {
         val document = app.get(data).document
 
         document.select("nav.player a").map { element ->
-            val title       = element.attr("title")
-            val onclick     = element.attr("onclick")
-            val sourceParts = onclick.substringAfter("Change_Source('").substringBefore("');").split("','")
+            val sourceParts = element.attr("onclick").substringAfter("Change_Source('").substringBefore("');").split("','")
 
             val sourceId = sourceParts.getOrNull(0) ?: ""
             val name     = sourceParts.getOrNull(1) ?: ""
             val partKey  = sourceParts.getOrNull(2) ?: ""
 
-            Triple(title, sourceId, partKey)
+            Triple(name, sourceId, partKey)
         }.forEach { (name, sourceId, partKey) ->
             if (sourceId.contains("event")) return@forEach
 
