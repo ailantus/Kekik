@@ -80,7 +80,7 @@ class SetFilmIzle : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("h1")?.text()?.trim() ?: return null
+        val title           = document.selectFirst("h1")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("div.poster img")?.attr("src"))
         val description     = document.selectFirst("div.wp-content p")?.text()?.trim()
         val year            = document.selectFirst("div.extra span.C a")?.text()?.trim()?.toIntOrNull()
