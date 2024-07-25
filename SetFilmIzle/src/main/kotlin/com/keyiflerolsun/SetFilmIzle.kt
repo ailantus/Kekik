@@ -3,10 +3,11 @@
 package com.keyiflerolsun
 
 import android.util.Log
-import org.jsoup.nodes.*
+import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class SetFilmIzle : MainAPI() {
     override var mainUrl              = "https://www.setfilmizle.lol"
