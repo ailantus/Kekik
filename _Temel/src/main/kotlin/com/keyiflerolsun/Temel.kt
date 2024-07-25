@@ -9,9 +9,9 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
-class SetFilmIzle : MainAPI() {
+class Temel : MainAPI() {
     override var mainUrl              = "https://www.setfilmizle.lol"
-    override var name                 = "SetFilmIzle"
+    override var name                 = "Temel"
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
@@ -20,30 +20,10 @@ class SetFilmIzle : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/tur/aile/"        to "Aile",
-        "${mainUrl}/tur/aksiyon/"     to "Aksiyon",
-        "${mainUrl}/tur/animasyon/"   to "Animasyon",
-        "${mainUrl}/tur/belgesel/"    to "Belgesel",
-        "${mainUrl}/tur/bilim-kurgu/" to "Bilim-Kurgu",
-        "${mainUrl}/tur/biyografi/"   to "Biyografi",
-        "${mainUrl}/tur/dini/"        to "Dini",
-        "${mainUrl}/tur/dram/"        to "Dram",
-        "${mainUrl}/tur/fantastik/"   to "Fantastik",
-        "${mainUrl}/tur/genclik/"     to "Gençlik",
-        "${mainUrl}/tur/gerilim/"     to "Gerilim",
-        "${mainUrl}/tur/gizem/"       to "Gizem",
-        "${mainUrl}/tur/komedi/"      to "Komedi",
-        "${mainUrl}/tur/korku/"       to "Korku",
-        "${mainUrl}/tur/macera/"      to "Macera",
-        "${mainUrl}/tur/mini-dizi/"   to "Mini Dizi",
-        "${mainUrl}/tur/muzik/"       to "Müzik",
-        "${mainUrl}/tur/program/"     to "Program",
-        "${mainUrl}/tur/romantik/"    to "Romantik",
-        "${mainUrl}/tur/savas/"       to "Savaş",
-        "${mainUrl}/tur/spor/"        to "Spor",
-        "${mainUrl}/tur/suc/"         to "Suç",
-        "${mainUrl}/tur/tarih/"       to "Tarih",
-        "${mainUrl}/tur/western/"     to "Western"
+        "${mainUrl}/tur/aile/"      to "Aile",
+        "${mainUrl}/tur/aksiyon/"   to "Aksiyon",
+        "${mainUrl}/tur/animasyon/" to "Animasyon",
+        "${mainUrl}/tur/belgesel/"  to "Belgesel"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
