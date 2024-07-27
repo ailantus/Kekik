@@ -13,7 +13,9 @@ open class SetPlay : ExtractorApi() {
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
         val ext_ref   = referer ?: ""
-        val i_source  = app.post(url.replace("embed?i=", "embed/get?i="), referer=ext_ref).text
+        val partKey   = url.substringAfter("?partKey=")?.substringAfter("turkce")?.uppercase()
+        val url       = url.substringBefore("?partKey=")
+        val i_source  = app.post(url.replace("embed?i=", "embed/get?i="), referer=url).text
 
         val links = Regex("""Links\":\[\"([^\"\]]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("Links not found")
         if (!links.startsWith("/")) {
@@ -26,7 +28,7 @@ open class SetPlay : ExtractorApi() {
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
-                name    = this.name,
+                name    = if (partKey != "") "${this.name} - ${partKey}" else this.name,
                 url     = m3u_link,
                 referer = url,
                 quality = Qualities.Unknown.value,
