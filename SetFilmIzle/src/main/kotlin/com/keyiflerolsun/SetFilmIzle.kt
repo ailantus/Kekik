@@ -17,7 +17,7 @@ class SetFilmIzle : MainAPI() {
     override val hasQuickSearch       = false
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.Movie)
+    override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/tur/aile/"        to "Aile",
@@ -58,7 +58,11 @@ class SetFilmIzle : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("data-src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        if (href.contains("/dizi/")) {
+            return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        } else {
+            return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -72,7 +76,11 @@ class SetFilmIzle : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("div.title a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("img")?.attr("src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        if (href.contains("/dizi/")) {
+            return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        } else {
+            return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -83,15 +91,47 @@ class SetFilmIzle : MainAPI() {
         val title           = document.selectFirst("h1")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("div.poster img")?.attr("src"))
         val description     = document.selectFirst("div.wp-content p")?.text()?.trim()
-        val year            = document.selectFirst("div.extra span.C a")?.text()?.trim()?.toIntOrNull()
+        var year            = document.selectFirst("div.extra span.C a")?.text()?.trim()?.toIntOrNull()
         val tags            = document.select("div.sgeneros a").map { it.text() }
         val rating          = document.selectFirst("span.dt_rating_vgs")?.text()?.trim()?.toRatingInt()
-        val duration        = document.selectFirst("span.runtime")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
+        var duration        = document.selectFirst("span.runtime")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
         val recommendations = document.select("div.srelacionados article").mapNotNull { it.toRecommendationResult() }
         val actors          = document.select("span.valor a").map { Actor(it.text()) }
         val trailer         = Regex("""embed\/(.*)\?rel""").find(document.html())?.groupValues?.get(1)?.let { "https://www.youtube.com/embed/$it" }
 
-        return newMovieLoadResponse(title, url, TvType.Movie, url) {
+        if (!url.contains("/dizi/")) {
+            return newMovieLoadResponse(title, url, TvType.Movie, url) {
+                this.posterUrl       = poster
+                this.plot            = description
+                this.year            = year
+                this.tags            = tags
+                this.rating          = rating
+                this.duration        = duration
+                this.recommendations = recommendations
+                addActors(actors)
+                addTrailer(trailer)
+            }
+        }
+
+        year     = document.selectFirst("a[href*='/yil/']")?.text()?.trim()?.toIntOrNull()
+        duration = document.selectFirst("div#info span:containsOwn(Dakika)")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
+
+        val episodes = document.select("div#episodes ul.episodios li").mapNotNull {
+            val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
+            val ep_href    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
+            val ep_detail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
+            val ep_episode = ep_detail.last()?.toIntOrNull()
+            val ep_season  = ep_detail.first()?.toIntOrNull()
+
+            Episode(
+                data    = ep_href,
+                name    = ep_name,
+                season  = ep_season,
+                episode = ep_episode
+            )
+        }
+
+        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             this.posterUrl       = poster
             this.plot            = description
             this.year            = year
@@ -109,7 +149,11 @@ class SetFilmIzle : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("a img")?.attr("data-src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        if (href.contains("/dizi/")) {
+            return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        } else {
+            return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        }
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
