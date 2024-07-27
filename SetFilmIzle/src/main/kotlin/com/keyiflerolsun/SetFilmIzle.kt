@@ -104,11 +104,11 @@ class SetFilmIzle : MainAPI() {
             duration = document.selectFirst("div#info span:containsOwn(Dakika)")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
 
             val episodes = document.select("div#episodes ul.episodios li").mapNotNull {
-                val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
                 val ep_href    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
+                val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
                 val ep_detail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
-                val ep_episode = ep_detail.last()?.toIntOrNull()
                 val ep_season  = ep_detail.first()?.toIntOrNull()
+                val ep_episode = ep_detail.last()?.toIntOrNull()
 
                 Episode(
                     data    = ep_href,
