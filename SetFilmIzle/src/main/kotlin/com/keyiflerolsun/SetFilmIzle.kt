@@ -99,8 +99,26 @@ class SetFilmIzle : MainAPI() {
         val actors          = document.select("span.valor a").map { Actor(it.text()) }
         val trailer         = Regex("""embed\/(.*)\?rel""").find(document.html())?.groupValues?.get(1)?.let { "https://www.youtube.com/embed/$it" }
 
-        if (!url.contains("/dizi/")) {
-            return newMovieLoadResponse(title, url, TvType.Movie, url) {
+        if (url.contains("/dizi/")) {
+            year     = document.selectFirst("a[href*='/yil/']")?.text()?.trim()?.toIntOrNull()
+            duration = document.selectFirst("div#info span:containsOwn(Dakika)")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
+
+            val episodes = document.select("div#episodes ul.episodios li").mapNotNull {
+                val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
+                val ep_href    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
+                val ep_detail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
+                val ep_episode = ep_detail.last()?.toIntOrNull()
+                val ep_season  = ep_detail.first()?.toIntOrNull()
+
+                Episode(
+                    data    = ep_href,
+                    name    = ep_name,
+                    season  = ep_season,
+                    episode = ep_episode
+                )
+            }
+
+            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl       = poster
                 this.plot            = description
                 this.year            = year
@@ -113,25 +131,7 @@ class SetFilmIzle : MainAPI() {
             }
         }
 
-        year     = document.selectFirst("a[href*='/yil/']")?.text()?.trim()?.toIntOrNull()
-        duration = document.selectFirst("div#info span:containsOwn(Dakika)")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
-
-        val episodes = document.select("div#episodes ul.episodios li").mapNotNull {
-            val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
-            val ep_href    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
-            val ep_detail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
-            val ep_episode = ep_detail.last()?.toIntOrNull()
-            val ep_season  = ep_detail.first()?.toIntOrNull()
-
-            Episode(
-                data    = ep_href,
-                name    = ep_name,
-                season  = ep_season,
-                episode = ep_episode
-            )
-        }
-
-        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+        return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl       = poster
             this.plot            = description
             this.year            = year
