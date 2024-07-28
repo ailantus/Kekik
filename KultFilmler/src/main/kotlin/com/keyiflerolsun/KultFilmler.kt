@@ -18,7 +18,7 @@ class KultFilmler : MainAPI() {
     override val hasQuickSearch       = false
     override val hasChromecastSupport = true
     override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.Movie)
+    override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/page/"                                      to "Son Filmler",
@@ -60,7 +60,11 @@ class KultFilmler : MainAPI() {
         val href      = fixUrlNull(this.selectFirst("div.name a")?.attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.selectFirst("div.img img")?.attr("src"))
 
-        return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        if (href.contains("/dizi/")) {
+            return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
+        } else {
+            return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -74,16 +78,47 @@ class KultFilmler : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
 
-        val title           = document.selectFirst("div.film h1")?.text()?.trim() ?: return null
+        val title           = document.selectFirst("div.film h1")?.text()?.trim() ?: document.selectFirst("h1.film")?.text()?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val description     = document.selectFirst("div.description")?.text()?.trim()
-        val tags            = document.select("ul.post-categories a").map { it.text() }
+        var tags            = document.select("ul.post-categories a").map { it.text() }
         val rating          = document.selectFirst("div.imdb-count")?.text()?.trim()?.split(" ")?.first()?.toRatingInt()
         val year            = Regex("""(\d+)""").find(document.selectFirst("li.release")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
         val duration        = Regex("""(\d+)""").find(document.selectFirst("li.time")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
         val recommendations = document.select("div.movie-box").mapNotNull { it.toSearchResult() }
         val actors          = document.select("[href*='oyuncular']").map {
             Actor(it.text())
+        }
+
+        if (url.contains("/dizi/")) {
+            tags  = document.select("div.category a").map { it.text() }
+
+            val episodes = document.select("div.episode-box").mapNotNull {
+                val ep_href    = fixUrlNull(it.selectFirst("div.name a")?.attr("href")) ?: return@mapNotNull null
+                val ssn_detail = it.selectFirst("span.episodetitle")?.ownText()?.trim() ?: return@mapNotNull null
+                val ep_detail  = it.selectFirst("span.episodetitle b")?.ownText()?.trim() ?: return@mapNotNull null
+                val ep_name    = "${ssn_detail} - ${ep_detail}"
+                val ep_season  = ssn_detail.substringBefore(". ")?.toIntOrNull()
+                val ep_episode = ep_detail.substringBefore(". ")?.toIntOrNull()
+
+                Episode(
+                    data    = ep_href,
+                    name    = ep_name,
+                    season  = ep_season,
+                    episode = ep_episode
+                )
+            }
+
+            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+                this.posterUrl       = poster
+                this.year            = year
+                this.plot            = description
+                this.tags            = tags
+                this.rating          = rating
+                this.duration        = duration
+                this.recommendations = recommendations
+                addActors(actors)
+            }
         }
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
