@@ -19,6 +19,8 @@ def rtt(s:str) -> str:
     return "".join(rot13_char(c) for c in s)
 
 def unpack_packer(source: str) -> str:
+    """https://github.com/beautifier/js-beautify/blob/main/python/jsbeautifier/unpackers/packer.py"""
+
     def clean_escape_sequences(source: str) -> str:
         source = re.sub(r'\\\\', r'\\', source)
         source = source.replace("\\'", "'")
@@ -64,9 +66,9 @@ def rapid2m3u8(url:str) -> str:
     try:
         escaped_hex = re.findall(r'file": "(.*)",', istek.text)[0]
     except Exception:
-        eval_jwSetup = re.compile(r'\};\s*(eval\(function[\s\S]*?)var played = \d+;').findall(istek.text)[0]
-        jwSetup      = unpack_packer(unpack_packer(eval_jwSetup))
-        escaped_hex  = re.findall(r'file":"(.*)","label', jwSetup)[0]
+        eval_jwsetup = re.compile(r'\};\s*(eval\(function[\s\S]*?)var played = \d+;').findall(istek.text)[0]
+        jwsetup      = unpack_packer(unpack_packer(eval_jwsetup))
+        escaped_hex  = re.findall(r'file":"(.*)","label', jwsetup)[0]
 
     return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
 
