@@ -51,12 +51,7 @@ class CanliTV : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)
 
-        var sorgu = query
-        if (sorgu == "guy") { // ! Test Provider
-            sorgu = "TRT"
-        }
-
-        return kanallar.items.filter { it.title.toString().lowercase().contains(sorgu.lowercase()) }.map { kanal ->
+        return kanallar.items.filter { it.title.toString().lowercase().contains(query.lowercase()) }.map { kanal ->
             val streamurl   = kanal.url.toString()
             val channelname = kanal.title.toString()
             val posterurl   = kanal.attributes["tvg-logo"].toString()
