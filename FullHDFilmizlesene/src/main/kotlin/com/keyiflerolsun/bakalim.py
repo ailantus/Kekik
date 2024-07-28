@@ -3,8 +3,7 @@
 from Kekik.cli import konsol
 from httpx     import Client as Session
 from parsel    import Selector
-from re        import findall
-import base64, json
+import re, base64, json
 
 def atob(s:str) -> str:
     return base64.b64decode(s).decode("utf-8")
@@ -19,12 +18,55 @@ def rtt(s:str) -> str:
 
     return "".join(rot13_char(c) for c in s)
 
+def unpack_packer(source: str) -> str:
+    def clean_escape_sequences(source: str) -> str:
+        source = re.sub(r'\\\\', r'\\', source)
+        source = source.replace("\\'", "'")
+        source = source.replace('\\"', '"')
+        return source
+
+    source = clean_escape_sequences(source)
+
+    def extract_arguments(source: str) -> tuple[str, list[str], int, int]:
+        match = re.search(r"}\('(.*)',(\d+),(\d+),'(.*)'\.split\('\|'\)", source, re.DOTALL)
+
+        if not match:
+            raise ValueError("Invalid P.A.C.K.E.R. source format.")
+
+        payload, radix, count, symtab = match.groups()
+
+        return payload, symtab.split("|"), int(radix), int(count)
+
+    def convert_base(s: str, base: int) -> int:
+        alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+        return sum(alphabet.index(char) * (base**idx) for idx, char in enumerate(reversed(s)))
+
+    payload, symtab, radix, count = extract_arguments(source)
+
+    if count != len(symtab):
+        raise ValueError("Malformed P.A.C.K.E.R. symtab.")
+
+    def lookup_symbol(match: re.Match) -> str:
+        word = match[0]
+
+        return symtab[convert_base(word, radix)] or word
+
+    unpacked_source = re.sub(r"\b\w+\b", lookup_symbol, payload)
+
+    return unpacked_source
+
 def rapid2m3u8(url:str) -> str:
     oturum = Session()
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
 
-    istek       = oturum.get(url)
-    escaped_hex = findall(r'file": "(.*)",', istek.text)[0]
+    istek = oturum.get(url)
+    try:
+        escaped_hex = re.findall(r'file": "(.*)",', istek.text)[0]
+    except Exception:
+        eval_jwSetup = re.compile(r'\};\s*(eval\(function[\s\S]*?)var played = \d+;').findall(istek.text)[0]
+        jwSetup      = unpack_packer(unpack_packer(eval_jwSetup))
+        escaped_hex  = re.findall(r'file":"(.*)","label', jwSetup)[0]
 
     return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
 
@@ -33,7 +75,7 @@ def trstx2m3u8(url:str) -> list[dict]:
     oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://www.fullhdfilmizlesene.de/"})
 
     istek     = oturum.get(url)
-    file      = findall(r"file\":\"([^\"]+)", istek.text)[0]
+    file      = re.findall(r"file\":\"([^\"]+)", istek.text)[0]
     post_link = file.replace("\\", "")
 
     post_istek = oturum.post(f"https://trstx.org/{post_link}").json()
@@ -50,7 +92,7 @@ def sobreatsesuyp2m3u8(url:str) -> list[dict]:
     oturum.headers.update({"User-Agent":"Mozilla/5.0", "Referer":"https://www.fullhdfilmizlesene.de/"})
 
     istek     = oturum.get(url)
-    file      = findall(r"file\":\"([^\"]+)", istek.text)[0]
+    file      = re.findall(r"file\":\"([^\"]+)", istek.text)[0]
     post_link = file.replace("\\", "")
 
     post_istek = oturum.post(f"https://sobreatsesuyp.com/{post_link}").json()
@@ -67,7 +109,7 @@ def turboimgz2m3u8(url:str) -> str:
     oturum.headers.update({"User-Agent":"Mozilla/5.0"})
 
     istek     = oturum.get(url)
-    video_url = findall(r'file: "(.*)",', istek.text)[0]
+    video_url = re.findall(r'file: "(.*)",', istek.text)[0]
 
     return video_url
 
@@ -80,7 +122,7 @@ def fullhdfilmizlesene(url:str) -> list:
     secici = Selector(istek.text)
 
     script   = secici.xpath("(//script)[1]").get()
-    scx_data = json.loads(findall(r'scx = (.*?);', script)[0])
+    scx_data = json.loads(re.findall(r'scx = (.*?);', script)[0])
     scx_keys = list(scx_data.keys())
 
     link_list = []
@@ -110,22 +152,23 @@ def fullhdfilmizlesene(url:str) -> list:
                 vid_links.append({key: turboimgz2m3u8(value)})
                 continue
 
+            if "vidmoxy.com" in value:
+                vid_links.append({key: rapid2m3u8(value)})
+                continue
+
             vid_links.extend(
                 {key: value}
                 for bidi in ("proton", "fast", "tr", "en")
                     if bidi in key
             )
-                    
-                    # if "vidmoxy.com" in value:
-                    #     vid_links.append({key: value})
 
 
     return vid_links
 
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/hizli-ve-ofkeli-10-fast-x-fhd4/"))
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/makine-2/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/bula-izle-1/"))
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/cilgin-cocuklar-oyun-bitti-izle-1/"))
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/suclu-den-skyldige/"))
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/vahsiler-hostiles/"))
-# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/satranc-oyuncusu/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/makine-2/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/iskence-okulu/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/yedi-yasam/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/cilgin-cocuklar-oyun-bitti-izle-1/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/suclu-den-skyldige/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/vahsiler-hostiles/"))
+konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/satranc-oyuncusu/"))
