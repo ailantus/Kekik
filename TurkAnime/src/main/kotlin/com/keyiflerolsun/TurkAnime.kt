@@ -146,9 +146,41 @@ class TurkAnime : MainAPI() {
         val document  = app.get(data).document
         val iframe    = fixUrlNull(document.selectFirst("iframe")?.attr("src")) ?: return false
         val mainVideo = iframe2AesLink(iframe)
+
         if (mainVideo != null) {
-            Log.d("TRANM", "mainVideo » ${mainVideo}")
-            loadExtractor(mainVideo, "${mainUrl}/", subtitleCallback, callback)
+            val mainKey = mainVideo.split("/").last()
+            val mainAPI = app.get(
+                "${mainUrl}/sources/${mainKey}/true",
+                headers = mapOf(
+                    "Content-Type"     to "application/json",
+                    "X-Requested-With" to "XMLHttpRequest",
+                    "Csrf-Token"       to "EqdGHqwZJvydjfbmuYsZeGvBxDxnQXeARRqUNbhRYnPEWqdDnYFEKVBaUPCAGTZA",
+                    "Connection"       to "keep-alive",
+                    "Sec-Fetch-Dest"   to "empty",
+                    "Sec-Fetch-Mode"   to "cors",
+                    "Sec-Fetch-Site"   to "same-origin",
+                    "Pragma"           to "no-cache",
+                    "Cache-Control"    to "no-cache",
+                ),
+                referer = mainVideo,
+                cookies = mapOf("yasOnay" to "1")
+            ).text
+
+            val m3uLink = fixUrlNull(Regex("""file\":\"([^\"]+)""").find(mainAPI)?.groupValues?.get(1)?.replace("\\", ""))
+            Log.d("TRANM", "m3uLink » ${m3uLink}")
+
+            if (m3uLink != null) {
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = m3uLink,
+                        referer = "${mainUrl}/",
+                        quality = Qualities.Unknown.value,
+                        isM3u8  = true
+                    )
+                )
+            }
         }
 
         document.select("button[onclick*='ajax/videosec']").forEach { button ->
