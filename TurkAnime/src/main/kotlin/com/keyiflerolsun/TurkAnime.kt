@@ -4,6 +4,7 @@ package com.keyiflerolsun
 
 import android.util.Log
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.Document
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import android.util.Base64
@@ -141,47 +142,43 @@ class TurkAnime : MainAPI() {
         return fixUrlNull(aesLink.replace("\"", ""))
     }
 
-    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        Log.d("TRANM", "data » ${data}")
-        val document  = app.get(data).document
-        val iframe    = fixUrlNull(document.selectFirst("iframe")?.attr("src")) ?: return false
-        val mainVideo = iframe2AesLink(iframe)
+    private suspend fun iframe2Load(document: Document, iframe: String, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        // val mainVideo = iframe2AesLink(iframe)
+        // if (mainVideo != null) {
+        //     val mainKey = mainVideo.split("/").last()
+        //     val mainAPI = app.get(
+        //         "${mainUrl}/sources/${mainKey}/true",
+        //         headers = mapOf(
+        //             "Content-Type"     to "application/json",
+        //             "X-Requested-With" to "XMLHttpRequest",
+        //             "Csrf-Token"       to "EqdGHqwZJvydjfbmuYsZeGvBxDxnQXeARRqUNbhRYnPEWqdDnYFEKVBaUPCAGTZA",
+        //             "Connection"       to "keep-alive",
+        //             "Sec-Fetch-Dest"   to "empty",
+        //             "Sec-Fetch-Mode"   to "cors",
+        //             "Sec-Fetch-Site"   to "same-origin",
+        //             "Pragma"           to "no-cache",
+        //             "Cache-Control"    to "no-cache",
+        //         ),
+        //         referer = mainVideo,
+        //         cookies = mapOf("yasOnay" to "1")
+        //     ).text
 
-        if (mainVideo != null) {
-            val mainKey = mainVideo.split("/").last()
-            val mainAPI = app.get(
-                "${mainUrl}/sources/${mainKey}/true",
-                headers = mapOf(
-                    "Content-Type"     to "application/json",
-                    "X-Requested-With" to "XMLHttpRequest",
-                    "Csrf-Token"       to "EqdGHqwZJvydjfbmuYsZeGvBxDxnQXeARRqUNbhRYnPEWqdDnYFEKVBaUPCAGTZA",
-                    "Connection"       to "keep-alive",
-                    "Sec-Fetch-Dest"   to "empty",
-                    "Sec-Fetch-Mode"   to "cors",
-                    "Sec-Fetch-Site"   to "same-origin",
-                    "Pragma"           to "no-cache",
-                    "Cache-Control"    to "no-cache",
-                ),
-                referer = mainVideo,
-                cookies = mapOf("yasOnay" to "1")
-            ).text
+        //     val m3uLink = fixUrlNull(Regex("""file\":\"([^\"]+)""").find(mainAPI)?.groupValues?.get(1)?.replace("\\", ""))
+        //     Log.d("TRANM", "m3uLink » ${m3uLink}")
 
-            val m3uLink = fixUrlNull(Regex("""file\":\"([^\"]+)""").find(mainAPI)?.groupValues?.get(1)?.replace("\\", ""))
-            Log.d("TRANM", "m3uLink » ${m3uLink}")
-
-            if (m3uLink != null) {
-                callback.invoke(
-                    ExtractorLink(
-                        source  = this.name,
-                        name    = this.name,
-                        url     = m3uLink,
-                        referer = "${mainUrl}/",
-                        quality = Qualities.Unknown.value,
-                        isM3u8  = true
-                    )
-                )
-            }
-        }
+        //     if (m3uLink != null) {
+        //         callback.invoke(
+        //             ExtractorLink(
+        //                 source  = this.name,
+        //                 name    = this.name,
+        //                 url     = m3uLink,
+        //                 referer = "${mainVideo}",
+        //                 quality = Qualities.Unknown.value,
+        //                 isM3u8  = true,
+        //             )
+        //         )
+        //     }
+        // }
 
         document.select("button[onclick*='ajax/videosec']").forEach { button ->
             val butonLink = fixUrlNull(button.attr("onclick").substringAfter("IndexIcerik('").substringBefore("'")) ?: return@forEach
@@ -193,6 +190,27 @@ class TurkAnime : MainAPI() {
             Log.d("TRANM", "${butonName} » ${subLink}")
 
             loadExtractor(subLink, "${mainUrl}/", subtitleCallback, callback)
+        }
+
+        return true
+    }
+
+    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
+        Log.d("TRANM", "data » ${data}")
+        val document  = app.get(data).document
+        val iframe    = fixUrlNull(document.selectFirst("iframe")?.attr("src")) ?: return false
+
+        if (iframe.contains("a-ads.com")) {
+            document.select("button[onclick*='ajax/videosec']").forEach { button ->
+                val butonLink = fixUrlNull(button.attr("onclick").substringAfter("IndexIcerik('").substringBefore("'")) ?: return@forEach
+                val butonName = button.ownText().trim()
+                val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest")).document
+
+                val subFrame  = fixUrlNull(subDoc.selectFirst("iframe")?.attr("src")) ?: return@forEach
+                iframe2Load(subDoc, subFrame, subtitleCallback, callback)
+            }
+        } else {
+            iframe2Load(document, iframe, subtitleCallback, callback)
         }
 
         return true
