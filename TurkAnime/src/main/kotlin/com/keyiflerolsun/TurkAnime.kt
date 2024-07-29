@@ -6,6 +6,8 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import android.util.Base64
+import com.lagradost.cloudstream3.extractors.helper.AesHelper
 
 class TurkAnime : MainAPI() {
     override var mainUrl              = "https://www.turkanime.co"
@@ -129,12 +131,37 @@ class TurkAnime : MainAPI() {
         }
     }
 
+    private fun iframe2AesLink(iframe: String): String? {
+        var aesData = iframe.substringAfter("embed/#/url/").substringBefore("?status")
+        aesData     = String(Base64.decode(aesData, Base64.DEFAULT))
+
+        val aesKey  = "710^8A@3@>T2}#zN5xK?kR7KNKb@-A!LzYL5~M1qU0UfdWsZoBm4UUat%}ueUv6E--*hDPPbH7K2bp9^3o41hw,khL:}Kx8080@M"
+        val aesLink = AesHelper.cryptoAESHandler(aesData, aesKey.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
+
+        return fixUrlNull(aesLink.replace("\"", ""))
+    }
+
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("TRANM", "data » ${data}")
-        val document = app.get(data).document
+        val document  = app.get(data).document
+        val iframe    = fixUrlNull(document.selectFirst("iframe")?.attr("src")) ?: return false
+        val mainVideo = iframe2AesLink(iframe)
+        if (mainVideo != null) {
+            Log.d("TRANM", "mainVideo » ${mainVideo}")
+            loadExtractor(mainVideo, "${mainUrl}/", subtitleCallback, callback)
+        }
 
-        // TODO:
-        // loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
+        document.select("button[onclick*='ajax/videosec']").forEach { button ->
+            val butonLink = fixUrlNull(button.attr("onclick").substringAfter("IndexIcerik('").substringBefore("'")) ?: return@forEach
+            val butonName = button.ownText().trim()
+            val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest")).document
+
+            val subFrame  = fixUrlNull(subDoc.selectFirst("iframe")?.attr("src")) ?: return@forEach
+            val subLink   = iframe2AesLink(subFrame) ?: return@forEach
+            Log.d("TRANM", "${butonName} » ${subLink}")
+
+            loadExtractor(subLink, "${mainUrl}/", subtitleCallback, callback)
+        }
 
         return true
     }
