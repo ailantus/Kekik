@@ -65,8 +65,8 @@ class SezonlukDizi : MainAPI() {
 
         val endpoint    = url.split("/").last()
 
-        val actors_req  = app.get("${mainUrl}/oyuncular/${endpoint}").document
-        val actors      = actors_req.select("div.doubling div.ui").map {
+        val actorsReq  = app.get("${mainUrl}/oyuncular/${endpoint}").document
+        val actors     = actorsReq.select("div.doubling div.ui").map {
             Actor(
                 it.selectFirst("div.header")!!.text().trim(),
                 fixUrlNull(it.selectFirst("img")?.attr("src"))
@@ -74,20 +74,20 @@ class SezonlukDizi : MainAPI() {
         }
 
 
-        val episodes_req = app.get("${mainUrl}/bolumler/${endpoint}").document
-        val episodes     = mutableListOf<Episode>()
-        for (sezon in episodes_req.select("table.unstackable")) {
+        val episodesReq = app.get("${mainUrl}/bolumler/${endpoint}").document
+        val episodes    = mutableListOf<Episode>()
+        for (sezon in episodesReq.select("table.unstackable")) {
             for (bolum in sezon.select("tbody tr")) {
-                val ep_name    = bolum.selectFirst("td:nth-of-type(4) a")?.text()?.trim() ?: continue
-                val ep_href    = fixUrlNull(bolum.selectFirst("td:nth-of-type(4) a")?.attr("href")) ?: continue
-                val ep_episode = bolum.selectFirst("td:nth-of-type(3)")?.text()?.substringBefore(".Bölüm")?.trim()?.toIntOrNull()
-                val ep_season  = bolum.selectFirst("td:nth-of-type(2)")?.text()?.substringBefore(".Sezon")?.trim()?.toIntOrNull()
+                val epName    = bolum.selectFirst("td:nth-of-type(4) a")?.text()?.trim() ?: continue
+                val epHref    = fixUrlNull(bolum.selectFirst("td:nth-of-type(4) a")?.attr("href")) ?: continue
+                val epEpisode = bolum.selectFirst("td:nth-of-type(3)")?.text()?.substringBefore(".Bölüm")?.trim()?.toIntOrNull()
+                val epSeason  = bolum.selectFirst("td:nth-of-type(2)")?.text()?.substringBefore(".Sezon")?.trim()?.toIntOrNull()
 
                 episodes.add(Episode(
-                    data    = ep_href,
-                    name    = ep_name,
-                    season  = ep_season,
-                    episode = ep_episode
+                    data    = epHref,
+                    name    = epName,
+                    season  = epSeason,
+                    episode = epEpisode
                 ))
             }
         }
@@ -110,7 +110,7 @@ class SezonlukDizi : MainAPI() {
         val bid      = document.selectFirst("div#dilsec")?.attr("data-id") ?: return false
         Log.d("SZD", "bid » ${bid}")
 
-        val altyazi_response = app.post(
+        val altyaziResponse = app.post(
             "${mainUrl}/ajax/dataAlternatif2.asp",
             headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
             data    = mapOf(
@@ -118,16 +118,16 @@ class SezonlukDizi : MainAPI() {
                 "dil" to "1"
             )
         ).parsedSafe<Kaynak>()
-        altyazi_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
+        altyaziResponse?.takeIf { it.status == "success" }?.data?.forEach { veri ->
             Log.d("SZD", "dil»1 | veri.baslik » ${veri.baslik}")
 
-            val veri_response = app.post(
+            val veriResponse = app.post(
                 "${mainUrl}/ajax/dataEmbed.asp",
                 headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
                 data    = mapOf("id" to "${veri.id}")
             ).document
 
-            var iframe = fixUrlNull(veri_response.selectFirst("iframe")?.attr("src")) ?: return@forEach
+            var iframe = fixUrlNull(veriResponse.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»1 | iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
@@ -146,7 +146,7 @@ class SezonlukDizi : MainAPI() {
             }
         }
 
-        val dublaj_response = app.post(
+        val dublajResponse = app.post(
             "${mainUrl}/ajax/dataAlternatif2.asp",
             headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
             data    = mapOf(
@@ -154,16 +154,16 @@ class SezonlukDizi : MainAPI() {
                 "dil" to "0"
             )
         ).parsedSafe<Kaynak>()
-        dublaj_response?.takeIf { it.status == "success" }?.data?.forEach { veri ->
+        dublajResponse?.takeIf { it.status == "success" }?.data?.forEach { veri ->
             Log.d("SZD", "dil»0 | veri.baslik » ${veri.baslik}")
 
-            val veri_response = app.post(
+            val veriResponse = app.post(
                 "${mainUrl}/ajax/dataEmbed.asp",
                 headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
                 data    = mapOf("id" to "${veri.id}")
             ).document
 
-            var iframe = fixUrlNull(veri_response.selectFirst("iframe")?.attr("src")) ?: return@forEach
+            var iframe = fixUrlNull(veriResponse.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»0 | iframe » ${iframe}")
 
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->

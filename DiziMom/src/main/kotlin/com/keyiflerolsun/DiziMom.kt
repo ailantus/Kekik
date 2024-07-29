@@ -44,9 +44,9 @@ class DiziMom : MainAPI() {
         val name      = this.selectFirst("div.episode-name a")?.text()?.substringBefore(" izle") ?: return null
         val title     = name.replace(".Sezon ", "x").replace(".Bölüm", "")
 
-        val ep_href   = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
-        val ep_doc    = app.get(ep_href).document
-        val href      = ep_doc.selectFirst("div#benzerli a")?.attr("href") ?: return null
+        val epHref   = fixUrlNull(this.selectFirst("div.episode-name a")?.attr("href")) ?: return null
+        val epDoc    = app.get(epHref).document
+        val href     = epDoc.selectFirst("div#benzerli a")?.attr("href") ?: return null
 
         val posterUrl = fixUrlNull(this.selectFirst("a img")?.attr("src"))
 
@@ -83,16 +83,16 @@ class DiziMom : MainAPI() {
         }
 
         val episodes    = document.select("div.bolumust").mapNotNull {
-            val ep_name    = it.selectFirst("div.baslik")?.text()?.trim() ?: return@mapNotNull null
-            val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val ep_episode = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+            val epName    = it.selectFirst("div.baslik")?.text()?.trim() ?: return@mapNotNull null
+            val epHref    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+            val epEpisode = Regex("""(\d+)\.Bölüm""").find(epName)?.groupValues?.get(1)?.toIntOrNull()
+            val epSeason  = Regex("""(\d+)\.Sezon""").find(epName)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
-                data    = ep_href,
-                name    = ep_name.substringBefore(" izle").replace(title, "").trim(),
-                season  = ep_season,
-                episode = ep_episode
+                data    = epHref,
+                name    = epName.substringBefore(" izle").replace(title, "").trim(),
+                season  = epSeason,
+                episode = epEpisode
             )
         }
 
@@ -126,14 +126,14 @@ class DiziMom : MainAPI() {
         val document = app.get(data, headers=ua).document
 
         val iframes     = mutableListOf<String>()
-        val main_iframe = document.selectFirst("div.video p iframe")?.attr("src") ?: return false
-        iframes.add(main_iframe)
+        val mainIframe = document.selectFirst("div.video p iframe")?.attr("src") ?: return false
+        iframes.add(mainIframe)
 
         document.select("div.sources a").forEach {
-            val sub_document = app.get(it.attr("href"), headers=ua).document
-            val sub_iframe   = sub_document.selectFirst("div.video p iframe")?.attr("src") ?: return@forEach
+            val subDocument = app.get(it.attr("href"), headers=ua).document
+            val subIframe   = subDocument.selectFirst("div.video p iframe")?.attr("src") ?: return@forEach
 
-            iframes.add(sub_iframe)
+            iframes.add(subIframe)
         }
 
         for (iframe in iframes) {

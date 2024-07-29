@@ -53,13 +53,13 @@ class Dizilla : MainAPI() {
     }
 
     private suspend fun Element.sonBolumler(): SearchResponse? {
-        val name     = this.selectFirst("h2")?.text() ?: return null
-        val ep_name  = this.selectFirst("div.opacity-80")!!.text().replace(". Sezon ", "x").replace(". Bölüm", "")
-        val title    = "${name} - ${ep_name}"
+        val name   = this.selectFirst("h2")?.text() ?: return null
+        val epName = this.selectFirst("div.opacity-80")!!.text().replace(". Sezon ", "x").replace(". Bölüm", "")
+        val title  = "${name} - ${epName}"
 
-        val ep_doc    = app.get(this.attr("href")).document
-        val href      = fixUrlNull(ep_doc.selectFirst("a.relative")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(ep_doc.selectFirst("img.imgt")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';"))
+        val epDoc     = app.get(this.attr("href")).document
+        val href      = fixUrlNull(epDoc.selectFirst("a.relative")?.attr("href")) ?: return null
+        val posterUrl = fixUrlNull(epDoc.selectFirst("img.imgt")?.attr("onerror")?.substringAfter("= '")?.substringBefore("';"))
 
         return newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
     }
@@ -75,18 +75,18 @@ class Dizilla : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val main_req  = app.get(mainUrl)
-        val main_page = main_req.document
-        val c_key     = main_page.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
-        val c_value   = main_page.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
+        val mainReq  = app.get(mainUrl)
+        val mainPage = mainReq.document
+        val cKey     = mainPage.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
+        val cValue   = mainPage.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
 
         val veriler   = mutableListOf<SearchResponse>()
 
-        val search_req = app.post(
+        val searchReq = app.post(
             "${mainUrl}/bg/searchcontent",
             data = mapOf(
-                "cKey"       to c_key,
-                "cValue"     to c_value,
+                "cKey"       to cKey,
+                "cValue"     to cValue,
                 "searchterm" to query
             ),
             headers = mapOf(
@@ -96,19 +96,19 @@ class Dizilla : MainAPI() {
             referer = "${mainUrl}/",
             cookies = mapOf(
                 "showAllDaFull"   to "true",
-                "PHPSESSID"       to main_req.cookies["PHPSESSID"].toString(),
+                "PHPSESSID"       to mainReq.cookies["PHPSESSID"].toString(),
             )
         ).parsedSafe<SearchResult>()
 
-        if (search_req?.data?.state != true) {
+        if (searchReq?.data?.state != true) {
             throw ErrorLoadingException("Invalid Json response")
         }
 
-        search_req.data.result?.forEach { search_item ->
-            veriler.add(search_item.toSearchResponse() ?: return@forEach)
+        searchReq.data.result?.forEach { searchItem ->
+            veriler.add(searchItem.toSearchResponse() ?: return@forEach)
         }
 
-        return veriler     
+        return veriler
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -127,54 +127,54 @@ class Dizilla : MainAPI() {
             Actor(it.text())
         }
 
-        val episode_list = mutableListOf<Episode>()
+        val episodeList = mutableListOf<Episode>()
         document.selectXpath("//div[contains(@class, 'gap-2')]/a[contains(@href, '-sezon')]").forEach {
-            val ep_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
+            val epDoc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
         
-            ep_doc.select("div.episodes div.cursor-pointer").forEach ep@ { episodeElement ->
-                val ep_name        = episodeElement.select("a").last()?.text()?.trim() ?: return@ep
-                val ep_href        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep
-                val ep_description = episodeElement.selectFirst("span.t-content")?.text()?.trim()
-                val ep_poster      = ep_doc.selectFirst("img.object-cover")?.attr("src")
-                val ep_episode     = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
+            epDoc.select("div.episodes div.cursor-pointer").forEach ep@ { episodeElement ->
+                val epName        = episodeElement.select("a").last()?.text()?.trim() ?: return@ep
+                val epHref        = fixUrlNull(episodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep
+                val epDescription = episodeElement.selectFirst("span.t-content")?.text()?.trim()
+                val epPoster      = epDoc.selectFirst("img.object-cover")?.attr("src")
+                val epEpisode     = episodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
-                val parent_div   = episodeElement.parent()
-                val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
-                val ep_season    = season_class?.substringAfter("szn")?.toIntOrNull()
+                val parentDiv   = episodeElement.parent()
+                val seasonClass = parentDiv?.className()?.split(" ")?.find { it.startsWith("szn") }
+                val epSeason    = seasonClass?.substringAfter("szn")?.toIntOrNull()
         
-                episode_list.add(Episode(
-                    data        = ep_href,
-                    name        = ep_name,
-                    season      = ep_season,
-                    episode     = ep_episode,
-                    description = ep_description,
-                    posterUrl   = ep_poster
+                episodeList.add(Episode(
+                    data        = epHref,
+                    name        = epName,
+                    season      = epSeason,
+                    episode     = epEpisode,
+                    description = epDescription,
+                    posterUrl   = epPoster
                 ))
             }
         
-            ep_doc.select("div.dub-episodes div.cursor-pointer").forEach ep_dub@ { dubEpisodeElement ->
-                val ep_name        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@ep_dub
-                val ep_href        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@ep_dub
-                val ep_description = dubEpisodeElement.selectFirst("span.t-content")?.text()?.trim()
-                val ep_poster      = ep_doc.selectFirst("img.object-cover")?.attr("src")
-                val ep_episode     = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
+            epDoc.select("div.dub-episodes div.cursor-pointer").forEach epDub@ { dubEpisodeElement ->
+                val epName        = dubEpisodeElement.select("a").last()?.text()?.trim() ?: return@epDub
+                val epHref        = fixUrlNull(dubEpisodeElement.selectFirst("a.opacity-60")?.attr("href")) ?: return@epDub
+                val epDescription = dubEpisodeElement.selectFirst("span.t-content")?.text()?.trim()
+                val epPoster      = epDoc.selectFirst("img.object-cover")?.attr("src")
+                val epEpisode     = dubEpisodeElement.selectFirst("a.opacity-60")?.text()?.toIntOrNull()
         
-                val parent_div   = dubEpisodeElement.parent()
-                val season_class = parent_div?.className()?.split(" ")?.find { it.startsWith("szn") }
-                val ep_season    = season_class?.substringAfter("szn")?.toIntOrNull()
+                val parentDiv   = dubEpisodeElement.parent()
+                val seasonClass = parentDiv?.className()?.split(" ")?.find { it.startsWith("szn") }
+                val epSeason    = seasonClass?.substringAfter("szn")?.toIntOrNull()
         
-                episode_list.add(Episode(
-                    data        = ep_href,
-                    name        = "${ep_name} Dublaj",
-                    season      = ep_season,
-                    episode     = ep_episode,
-                    description = ep_description,
-                    posterUrl   = ep_poster
+                episodeList.add(Episode(
+                    data        = epHref,
+                    name        = "${epName} Dublaj",
+                    season      = epSeason,
+                    episode     = epEpisode,
+                    description = epDescription,
+                    posterUrl   = epPoster
                 ))
             }
         }
 
-        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episode_list) {
+        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodeList) {
             this.posterUrl = poster
             this.year      = year
             this.plot      = description
@@ -199,8 +199,8 @@ class Dizilla : MainAPI() {
             loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         } else {
             alternatifler.forEach {
-                val player_doc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
-                val iframe     = fixUrlNull(player_doc.selectFirst("div#playerLsDizilla iframe")?.attr("src")) ?: return false
+                val playerDoc = app.get(fixUrlNull(it.attr("href")) ?: return@forEach).document
+                val iframe    = fixUrlNull(playerDoc.selectFirst("div#playerLsDizilla iframe")?.attr("src")) ?: return false
 
                 if (iframe in iframes) { return@forEach }
                 iframes.add(iframe)

@@ -78,22 +78,22 @@ class BelgeselX : MainAPI() {
 
         var counter  = 0
         val episodes = document.select("div.gen-movie-contain").mapNotNull {
-            val ep_name     = it.selectFirst("div.gen-movie-info h3 a")?.text()?.trim() ?: return@mapNotNull null
-            val ep_href     = fixUrlNull(it.selectFirst("div.gen-movie-info h3 a")?.attr("href")) ?: return@mapNotNull null
+            val epName     = it.selectFirst("div.gen-movie-info h3 a")?.text()?.trim() ?: return@mapNotNull null
+            val epHref     = fixUrlNull(it.selectFirst("div.gen-movie-info h3 a")?.attr("href")) ?: return@mapNotNull null
 
-            val season_name = it.selectFirst("div.gen-single-meta-holder ul li")?.text()?.trim() ?: ""
-            var ep_episode  = Regex("""Bölüm (\d+)""").find(season_name)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-            var ep_season   = Regex("""Sezon (\d+)""").find(season_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+            val seasonName = it.selectFirst("div.gen-single-meta-holder ul li")?.text()?.trim() ?: ""
+            var epEpisode  = Regex("""Bölüm (\d+)""").find(seasonName)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+            var epSeason   = Regex("""Sezon (\d+)""").find(seasonName)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
-            if (ep_episode == 0) {
-                ep_episode = counter++
+            if (epEpisode == 0) {
+                epEpisode = counter++
             }
 
             Episode(
-                data    = ep_href,
-                name    = ep_name,
-                season  = ep_season,
-                episode = ep_episode
+                data    = epHref,
+                name    = epName,
+                season  = epSeason,
+                episode = epEpisode
             )
         }
 
@@ -109,27 +109,27 @@ class BelgeselX : MainAPI() {
         val source = app.get(data)
 
         Regex("""<iframe\s+[^>]*src=\\\"([^\\\"']+)\\\"""").findAll(source.text).forEach {
-            val alternatif_url  = it.groupValues[1]
-            Log.d("BLX", "alternatif_url » ${alternatif_url}")
-            val alternatif_resp = app.get(alternatif_url, referer=data)
+            val alternatifUrl  = it.groupValues[1]
+            Log.d("BLX", "alternatifUrl » ${alternatifUrl}")
+            val alternatifResp = app.get(alternatifUrl, referer=data)
 
-            if (alternatif_url.contains("new4.php")) {
-                Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(alternatif_resp.text).forEach {
-                    var this_name = this.name
-                    var video_url = it.groupValues[1]
+            if (alternatifUrl.contains("new4.php")) {
+                Regex("""file:\"([^\"]+)\", label: \"([^\"]+)""").findAll(alternatifResp.text).forEach {
+                    var thisName  = this.name
+                    var videoUrl  = it.groupValues[1]
                     var quality   = it.groupValues[2]
                     if (quality == "FULL") {
                         quality   = "1080p"
-                        this_name = "Google"
+                        thisName  = "Google"
                     }
                     Log.d("BLX", "quality » ${quality}")
-                    Log.d("BLX", "video_url » ${video_url}")
+                    Log.d("BLX", "videoUrl » ${videoUrl}")
 
                     callback.invoke(
                         ExtractorLink(
-                            source  = this_name,
-                            name    = this_name,
-                            url     = video_url,
+                            source  = thisName,
+                            name    = thisName,
+                            url     = videoUrl,
                             referer = data,
                             quality = getQualityFromName(quality),
                             type    = INFER_TYPE
@@ -137,7 +137,7 @@ class BelgeselX : MainAPI() {
                     )
                 }
             } else {
-                val iframe = fixUrlNull(alternatif_resp.document.selectFirst("iframe")?.attr("src")) ?: return@forEach
+                val iframe = fixUrlNull(alternatifResp.document.selectFirst("iframe")?.attr("src")) ?: return@forEach
                 Log.d("BLX", "iframe » ${iframe}")
 
                 loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)

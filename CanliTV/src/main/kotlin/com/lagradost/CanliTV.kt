@@ -86,21 +86,21 @@ class CanliTV : MainAPI() {
 
         for (kanal in kanallar.items) {
             if (kanal.attributes["group-title"].toString() == loadData.group) {
-                val rc_streamurl   = kanal.url.toString()
-                val rc_channelname = kanal.title.toString()
-                if (rc_channelname == loadData.title) continue
+                val rcStreamUrl   = kanal.url.toString()
+                val rcChannelName = kanal.title.toString()
+                if (rcChannelName == loadData.title) continue
 
-                val rc_posterurl   = kanal.attributes["tvg-logo"].toString()
-                val rc_chGroup     = kanal.attributes["group-title"].toString()
-                val rc_nation      = kanal.attributes["tvg-country"].toString()
+                val rcPosterUrl   = kanal.attributes["tvg-logo"].toString()
+                val rcChGroup     = kanal.attributes["group-title"].toString()
+                val rcNation      = kanal.attributes["tvg-country"].toString()
 
                 recommendations.add(LiveSearchResponse(
-                    name      = rc_channelname,
-                    url       = LoadData(rc_streamurl, rc_channelname, rc_posterurl, rc_chGroup, rc_nation).toJson(),
+                    name      = rcChannelName,
+                    url       = LoadData(rcStreamUrl, rcChannelName, rcPosterUrl, rcChGroup, rcNation).toJson(),
                     apiName   = this@CanliTV.name,
                     type      = TvType.Live,
-                    posterUrl = rc_posterurl,
-                    lang      = rc_nation,
+                    posterUrl = rcPosterUrl,
+                    lang      = rcNation,
                 ))
             }
         }

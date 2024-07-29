@@ -127,14 +127,14 @@ class SuperFilmGeldi : MainAPI() {
                 endPoint = "?s=1&d="
             }
 
-            val m3u_link = iframe.substringBefore("/player") + mixPoint + endPoint
-            Log.d("SFG", "m3u_link » ${m3u_link}")
+            val m3uLink = iframe.substringBefore("/player") + mixPoint + endPoint
+            Log.d("SFG", "m3uLink » ${m3uLink}")
 
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
                     name    = this.name,
-                    url     = m3u_link,
+                    url     = m3uLink,
                     referer = iframe,
                     quality = Qualities.Unknown.value,
                     isM3u8  = true

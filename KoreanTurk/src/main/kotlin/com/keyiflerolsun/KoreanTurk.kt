@@ -110,16 +110,16 @@ class KoreanTurk : MainAPI() {
         val description = document.selectFirst("[property='og:description']")?.attr("content")?.trim()
 
         val episodes    = document.select("div.standartbox a").mapNotNull {
-            val ep_name    = it.selectFirst("h2")?.ownText()?.trim() ?: return@mapNotNull null
-            val ep_href    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
-            val ep_episode = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val ep_season  = Regex("""(\d+)\.Sezon""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+            val epName    = it.selectFirst("h2")?.ownText()?.trim() ?: return@mapNotNull null
+            val epHref    = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
+            val epEpisode = Regex("""(\d+)\.Bölüm""").find(epName)?.groupValues?.get(1)?.toIntOrNull()
+            val epSeason  = Regex("""(\d+)\.Sezon""").find(epName)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
-                data    = ep_href,
-                name    = ep_name,
-                season  = ep_season,
-                episode = ep_episode
+                data    = epHref,
+                name    = epName,
+                season  = epSeason,
+                episode = epEpisode
             )
         }
 

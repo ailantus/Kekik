@@ -12,17 +12,17 @@ open class PixelDrain : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val ext_ref      = referer ?: ""
-        val pixel_id     = Regex("""([^\/]+)(?=\?download)""").find(url)?.groupValues?.get(1)
-        val downloadLink = "${mainUrl}/api/file/${pixel_id}?download"
+        val extRef       = referer ?: ""
+        val pixelId      = Regex("""([^\/]+)(?=\?download)""").find(url)?.groupValues?.get(1)
+        val downloadLink = "${mainUrl}/api/file/${pixelId}?download"
         Log.d("Kekik_${this.name}", "downloadLink » ${downloadLink}")
 
         callback.invoke(
             ExtractorLink(
-                source  = "pixeldrain - ${pixel_id}",
-                name    = "pixeldrain - ${pixel_id}",
+                source  = "pixeldrain - ${pixelId}",
+                name    = "pixeldrain - ${pixelId}",
                 url     = downloadLink,
-                referer = "${mainUrl}/u/${pixel_id}?download",
+                referer = "${mainUrl}/u/${pixelId}?download",
                 quality = Qualities.Unknown.value,
                 type    = INFER_TYPE
             )

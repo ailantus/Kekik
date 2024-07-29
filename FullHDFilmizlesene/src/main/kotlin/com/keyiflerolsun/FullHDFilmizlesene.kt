@@ -132,25 +132,25 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun getVideoLinks(document: Document): List<Map<String, String>> {
-        val script_element = document.select("script").firstOrNull { it.data().isNotEmpty() }
-        val script_content = script_element?.data()?.trim() ?: return emptyList()
+        val scriptElement = document.select("script").firstOrNull { it.data().isNotEmpty() }
+        val scriptContent = scriptElement?.data()?.trim() ?: return emptyList()
 
-        val scx_data         = Regex("scx = (.*?);").find(script_content)?.groupValues?.get(1) ?: return emptyList()
-        val scx_map: SCXData = jacksonObjectMapper().readValue(scx_data)
+        val scxData         = Regex("scx = (.*?);").find(scriptContent)?.groupValues?.get(1) ?: return emptyList()
+        val scxMap: SCXData = jacksonObjectMapper().readValue(scxData)
         val keys             = listOf("atom", "advid", "advidprox", "proton", "fast", "fastly", "tr", "en")
 
         val linkList = mutableListOf<Map<String, String>>()
 
         for (key in keys) {
             val t = when (key) {
-                "atom"      -> scx_map.atom?.sx?.t
-                "advid"     -> scx_map.advid?.sx?.t
-                "advidprox" -> scx_map.advidprox?.sx?.t
-                "proton"    -> scx_map.proton?.sx?.t
-                "fast"      -> scx_map.fast?.sx?.t
-                "fastly"    -> scx_map.fastly?.sx?.t
-                "tr"        -> scx_map.tr?.sx?.t
-                "en"        -> scx_map.en?.sx?.t
+                "atom"      -> scxMap.atom?.sx?.t
+                "advid"     -> scxMap.advid?.sx?.t
+                "advidprox" -> scxMap.advidprox?.sx?.t
+                "proton"    -> scxMap.proton?.sx?.t
+                "fast"      -> scxMap.fast?.sx?.t
+                "fastly"    -> scxMap.fastly?.sx?.t
+                "tr"        -> scxMap.tr?.sx?.t
+                "en"        -> scxMap.en?.sx?.t
                 else        -> null
             }
 
@@ -177,18 +177,18 @@ class FullHDFilmizlesene : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("FHD", "data » ${data}")
         val document    = app.get(data).document
-        val video_links = getVideoLinks(document)
-        Log.d("FHD", "video_links » ${video_links}")
-        if (video_links.isEmpty()) return false
+        val videoLinks = getVideoLinks(document)
+        Log.d("FHD", "videoLinks » ${videoLinks}")
+        if (videoLinks.isEmpty()) return false
 
 
-        for (video_map in video_links) {
-            for ((key, value) in video_map) {
-                val video_url = fixUrlNull(value) ?: continue
-                if (video_url.contains("turbo.imgz.me")) {
-                    loadExtractor("${key}||${video_url}", "${mainUrl}/", subtitleCallback, callback)
+        for (videoMap in videoLinks) {
+            for ((key, value) in videoMap) {
+                val videoUrl = fixUrlNull(value) ?: continue
+                if (videoUrl.contains("turbo.imgz.me")) {
+                    loadExtractor("${key}||${videoUrl}", "${mainUrl}/", subtitleCallback, callback)
                 } else {
-                    loadExtractor(video_url, "${mainUrl}/", subtitleCallback, callback)
+                    loadExtractor(videoUrl, "${mainUrl}/", subtitleCallback, callback)
                 }
             }
         }

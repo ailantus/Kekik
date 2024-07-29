@@ -73,17 +73,17 @@ class CizgiMax : MainAPI() {
 
 
         val episodes = document.select("div.asisotope div.ajax_post").mapNotNull {
-            val ep_name     = it.selectFirst("span.episode-names")?.text()?.trim() ?: return@mapNotNull null
-            val ep_href     = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-            val ep_episode  = Regex("""(\d+)\.Bölüm""").find(ep_name)?.groupValues?.get(1)?.toIntOrNull()
-            val season_name = it.selectFirst("span.season-name")?.text()?.trim() ?: ""
-            val ep_season   = Regex("""(\d+)\.Sezon""").find(season_name)?.groupValues?.get(1)?.toIntOrNull() ?: 1
+            val epName     = it.selectFirst("span.episode-names")?.text()?.trim() ?: return@mapNotNull null
+            val epHref     = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+            val epEpisode  = Regex("""(\d+)\.Bölüm""").find(epName)?.groupValues?.get(1)?.toIntOrNull()
+            val seasonName = it.selectFirst("span.season-name")?.text()?.trim() ?: ""
+            val epSeason   = Regex("""(\d+)\.Sezon""").find(seasonName)?.groupValues?.get(1)?.toIntOrNull() ?: 1
 
             Episode(
-                data    = ep_href,
-                name    = ep_name,
-                season  = ep_season,
-                episode = ep_episode
+                data    = epHref,
+                name    = epName,
+                season  = epSeason,
+                episode = epEpisode
             )
         }
 

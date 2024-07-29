@@ -133,7 +133,7 @@ class DiziPal : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response_raw = app.post(
+        val responseRaw = app.post(
             "${mainUrl}/api/search-autocomplete",
             headers     = mapOf(
                 "Accept"           to "application/json, text/javascript, */*; q=0.01",
@@ -146,7 +146,7 @@ class DiziPal : MainAPI() {
             )
         )
 
-        val searchItemsMap = jacksonObjectMapper().readValue<Map<String, SearchItem>>(response_raw.text)
+        val searchItemsMap = jacksonObjectMapper().readValue<Map<String, SearchItem>>(responseRaw.text)
 
         val searchResponses = mutableListOf<SearchResponse>()
 
@@ -173,16 +173,16 @@ class DiziPal : MainAPI() {
             val title       = document.selectFirst("div.cover h5")?.text() ?: return null
 
             val episodes    = document.select("div.episode-item").mapNotNull {
-                val ep_name    = it.selectFirst("div.name")?.text()?.trim() ?: return@mapNotNull null
-                val ep_href    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
-                val ep_episode = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(2)?.replace(".", "")?.toIntOrNull()
-                val ep_season  = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(0)?.replace(".", "")?.toIntOrNull()
+                val epName    = it.selectFirst("div.name")?.text()?.trim() ?: return@mapNotNull null
+                val epHref    = fixUrlNull(it.selectFirst("a")?.attr("href")) ?: return@mapNotNull null
+                val epEpisode = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(2)?.replace(".", "")?.toIntOrNull()
+                val epSeason  = it.selectFirst("div.episode")?.text()?.trim()?.split(" ")?.get(0)?.replace(".", "")?.toIntOrNull()
 
                 Episode(
-                    data    = ep_href,
-                    name    = ep_name,
-                    season  = ep_season,
-                    episode = ep_episode
+                    data    = epHref,
+                    name    = epName,
+                    season  = epSeason,
+                    episode = epEpisode
                 )
             }
 
@@ -214,35 +214,35 @@ class DiziPal : MainAPI() {
         val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: document.selectFirst("div#vast_new iframe")?.attr("src") ?: return false
         Log.d("DZP", "iframe » ${iframe}")
 
-        val i_source = app.get("${iframe}", referer="${mainUrl}/").text
-        val m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
-        if (m3u_link == null) {
-            Log.d("DZP", "i_source » ${i_source}")
+        val iSource = app.get("${iframe}", referer="${mainUrl}/").text
+        val m3uLink = Regex("""file:\"([^\"]+)""").find(iSource)?.groupValues?.get(1)
+        if (m3uLink == null) {
+            Log.d("DZP", "iSource » ${iSource}")
             return loadExtractor(iframe, "${mainUrl}/", subtitleCallback, callback)
         }
 
-        val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(i_source)?.groupValues?.get(1)
+        val subtitles = Regex("""\"subtitle":\"([^\"]+)""").find(iSource)?.groupValues?.get(1)
         if (subtitles != null) {
             if (subtitles.contains(",")) {
                 subtitles.split(",").forEach {
-                    val sub_lang = it.substringAfter("[").substringBefore("]")
-                    val sub_url  = it.replace("[${sub_lang}]", "")
+                    val subLang = it.substringAfter("[").substringBefore("]")
+                    val subUrl  = it.replace("[${subLang}]", "")
 
                     subtitleCallback.invoke(
                         SubtitleFile(
-                            lang = sub_lang,
-                            url  = fixUrl(sub_url)
+                            lang = subLang,
+                            url  = fixUrl(subUrl)
                         )
                     )
                 }
             } else {
-                val sub_lang = subtitles.substringAfter("[").substringBefore("]")
-                val sub_url  = subtitles.replace("[${sub_lang}]", "")
+                val subLang = subtitles.substringAfter("[").substringBefore("]")
+                val subUrl  = subtitles.replace("[${subLang}]", "")
 
                 subtitleCallback.invoke(
                     SubtitleFile(
-                        lang = sub_lang,
-                        url  = fixUrl(sub_url)
+                        lang = subLang,
+                        url  = fixUrl(subUrl)
                     )
                 )
             }
@@ -252,7 +252,7 @@ class DiziPal : MainAPI() {
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
-                url     = m3u_link,
+                url     = m3uLink,
                 referer = "${mainUrl}/",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
@@ -262,7 +262,7 @@ class DiziPal : MainAPI() {
         // M3u8Helper.generateM3u8(
         //     source    = this.name,
         //     name      = this.name,
-        //     streamUrl = m3u_link,
+        //     streamUrl = m3uLink,
         //     referer   = "${mainUrl}/"
         // ).forEach(callback)
 

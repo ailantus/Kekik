@@ -13,23 +13,23 @@ class MixPlayHD : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val m3u_link:String?
-        val ext_ref  = referer ?: ""
-        val i_source = app.get(url, referer=ext_ref).text
+        val m3uLink:String?
+        val extRef  = referer ?: ""
+        val iSource = app.get(url, referer=extRef).text
 
-        val bePlayer     = Regex("""bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);""").find(i_source)?.groupValues ?: throw ErrorLoadingException("bePlayer not found")
+        val bePlayer     = Regex("""bePlayer\('([^']+)',\s*'(\{[^\}]+\})'\);""").find(iSource)?.groupValues ?: throw ErrorLoadingException("bePlayer not found")
         val bePlayerPass = bePlayer.get(1)
         val bePlayerData = bePlayer.get(2)
         val encrypted    = AesHelper.cryptoAESHandler(bePlayerData, bePlayerPass.toByteArray(), false)?.replace("\\", "") ?: throw ErrorLoadingException("failed to decrypt")
         Log.d("Kekik_${this.name}", "encrypted » ${encrypted}")
 
-        m3u_link = Regex("""video_location\":\"([^\"]+)""").find(encrypted)?.groupValues?.get(1)
+        m3uLink = Regex("""video_location\":\"([^\"]+)""").find(encrypted)?.groupValues?.get(1)
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
-                url     = m3u_link ?: throw ErrorLoadingException("m3u link not found"),
+                url     = m3uLink ?: throw ErrorLoadingException("m3u link not found"),
                 referer = url,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true

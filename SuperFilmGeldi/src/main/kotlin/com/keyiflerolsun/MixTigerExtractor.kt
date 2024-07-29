@@ -13,49 +13,49 @@ open class MixTiger : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val m3u_link:String?
-        val ext_ref  = referer ?: ""
-        val post_url = "${url}?do=getVideo"
-        Log.d("Kekik_${this.name}", "post_url » ${post_url}")
+        val m3uLink:String?
+        val extRef  = referer ?: ""
+        val postUrl = "${url}?do=getVideo"
+        Log.d("Kekik_${this.name}", "postUrl » ${postUrl}")
 
         val response = app.post(
-            post_url,
+            postUrl,
             data = mapOf(
                 "hash" to url.substringAfter("video/"),
-                "r"    to ext_ref,
+                "r"    to extRef,
                 "s"    to ""
             ),
-            referer = ext_ref,
+            referer = extRef,
             headers = mapOf(
                 "Content-Type"     to "application/x-www-form-urlencoded; charset=UTF-8",
                 "X-Requested-With" to "XMLHttpRequest"
             )
         )
 
-        val video_response = response.parsedSafe<FirePlayer>() ?: throw ErrorLoadingException("peace response is null")
-        Log.d("Kekik_${this.name}", "video_response » ${video_response}")
+        val videoResponse = response.parsedSafe<FirePlayer>() ?: throw ErrorLoadingException("peace response is null")
+        Log.d("Kekik_${this.name}", "videoResponse » ${videoResponse}")
 
-        if (video_response?.videoSrc != null) {
-            m3u_link = video_response.videoSrc
-            Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+        if (videoResponse?.videoSrc != null) {
+            m3uLink = videoResponse.videoSrc
+            Log.d("Kekik_${this.name}", "m3uLink » ${m3uLink}")
 
-            loadExtractor(m3u_link, ext_ref, subtitleCallback, callback)
+            loadExtractor(m3uLink, extRef, subtitleCallback, callback)
         } else {
-            val video_sources  = video_response.videoSources
-            if (video_sources.isNotEmpty()) {
-                m3u_link = video_sources.lastOrNull()?.file
+            val videoSources  = videoResponse.videoSources
+            if (videoSources.isNotEmpty()) {
+                m3uLink = videoSources.lastOrNull()?.file
             } else {
-                m3u_link = null
+                m3uLink = null
             }
 
-            Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+            Log.d("Kekik_${this.name}", "m3uLink » ${m3uLink}")
 
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
                     name    = this.name,
-                    url     = m3u_link ?: throw ErrorLoadingException("m3u link not found"),
-                    referer = if (m3u_link.contains("disk.yandex")) "" else ext_ref,
+                    url     = m3uLink ?: throw ErrorLoadingException("m3u link not found"),
+                    referer = if (m3uLink.contains("disk.yandex")) "" else extRef,
                     quality = Qualities.Unknown.value,
                     type    = INFER_TYPE
                 )

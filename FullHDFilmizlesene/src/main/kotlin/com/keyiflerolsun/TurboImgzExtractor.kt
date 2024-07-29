@@ -12,18 +12,18 @@ open class TurboImgz : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val ext_ref   = referer ?: ""
-        val video_req = app.get(url.substringAfter("||"), referer=ext_ref).text
+        val extRef   = referer ?: ""
+        val videoReq = app.get(url.substringAfter("||"), referer=extRef).text
 
-        val video_link = Regex("""file: "(.*)",""").find(video_req)?.groupValues?.get(1) ?: throw ErrorLoadingException("File not found")
-        Log.d("Kekik_${this.name}", "video_link » ${video_link}")
+        val videoLink = Regex("""file: "(.*)",""").find(videoReq)?.groupValues?.get(1) ?: throw ErrorLoadingException("File not found")
+        Log.d("Kekik_${this.name}", "videoLink » ${videoLink}")
 
         callback.invoke(
             ExtractorLink(
                 source  = "${this.name} - " + url.substringBefore("||").uppercase(),
                 name    = "${this.name} - " + url.substringBefore("||").uppercase(),
-                url     = video_link,
-                referer = ext_ref,
+                url     = videoLink,
+                referer = extRef,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true
             )

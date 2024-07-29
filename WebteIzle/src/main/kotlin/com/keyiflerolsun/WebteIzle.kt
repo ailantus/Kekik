@@ -108,45 +108,45 @@ class WebteIzle : MainAPI() {
         Log.d("WBTI", "data » ${data}")
         val document = app.get(data).document
 
-        val film_id  = document.selectFirst("button#wip")?.attr("data-id") ?: return false
-        Log.d("WBTI", "film_id » ${film_id}")
+        val filmId  = document.selectFirst("button#wip")?.attr("data-id") ?: return false
+        Log.d("WBTI", "filmId » ${filmId}")
 
-        val dil_list = mutableListOf<String>()
+        val dilList = mutableListOf<String>()
         if (document.selectFirst("div.golge a[href*=dublaj]")?.attr("src") != null) {
-            dil_list.add("0")
+            dilList.add("0")
         }
 
         if (document.selectFirst("div.golge a[href*=altyazi]")?.attr("src") != null) {
-            dil_list.add("1")
+            dilList.add("1")
         }
 
-        dil_list.forEach {
+        dilList.forEach {
             val dilAd = if (it == "0") "Dublaj" else "Altyazı"
 
-            val player_api = app.post(
+            val playerApi = app.post(
                 "${mainUrl}/ajax/dataAlternatif3.asp",
                 headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
                 data    = mapOf(
-                    "filmid" to film_id,
+                    "filmid" to filmId,
                     "dil"    to it,
                     "s"      to "",
                     "b"      to "",
                     "bot"    to "0"
                 )
             ).text
-            val player_data = AppUtils.tryParseJson<DataAlternatif>(player_api) ?: return@forEach
+            val playerData = AppUtils.tryParseJson<DataAlternatif>(playerApi) ?: return@forEach
 
-            for (this_embed in player_data.data) { 
-                val embed_api = app.post(
+            for (thisEmbed in playerData.data) { 
+                val embedApi = app.post(
                     "${mainUrl}/ajax/dataEmbed.asp",
                     headers = mapOf("X-Requested-With" to "XMLHttpRequest"),
-                    data    = mapOf("id" to this_embed.id.toString())
+                    data    = mapOf("id" to thisEmbed.id.toString())
                 ).document
 
-                var iframe = fixUrlNull(embed_api.selectFirst("iframe")?.attr("src"))
+                var iframe = fixUrlNull(embedApi.selectFirst("iframe")?.attr("src"))
 
                 if (iframe == null) {
-                    val scriptSource = embed_api.selectFirst("script")?.data() ?: ""
+                    val scriptSource = embedApi.selectFirst("script")?.data() ?: ""
                     val matchResult  = Regex("""(vidmoly|okru|filemoon)\('(.*)','""").find(scriptSource)
 
                     if (matchResult == null) {
@@ -164,16 +164,16 @@ class WebteIzle : MainAPI() {
                     }
                 } else if (iframe.contains(mainUrl)) {
                     Log.d("WBTI", "iframe » ${iframe}")
-                    val i_source = app.get(iframe, referer=data).text
+                    val iSource = app.get(iframe, referer=data).text
 
-                    val encoded  = Regex("""file\": \"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: continue
+                    val encoded  = Regex("""file\": \"([^\"]+)""").find(iSource)?.groupValues?.get(1) ?: continue
                     val bytes    = encoded.split("\\x").filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
-                    val m3u_link = String(bytes, Charsets.UTF_8)
-                    Log.d("WBTI", "m3u_link » ${m3u_link}")
+                    val m3uLink = String(bytes, Charsets.UTF_8)
+                    Log.d("WBTI", "m3uLink » ${m3uLink}")
 
-                    val track_str = Regex("""tracks = \[([^\]]+)""").find(i_source)?.groupValues?.get(1)
-                    if (track_str != null) {
-                        val tracks:List<Track> = jacksonObjectMapper().readValue("[${track_str}]")
+                    val trackStr = Regex("""tracks = \[([^\]]+)""").find(iSource)?.groupValues?.get(1)
+                    if (trackStr != null) {
+                        val tracks:List<Track> = jacksonObjectMapper().readValue("[${trackStr}]")
 
                         for (track in tracks) {
                             if (track.file == null || track.label == null) continue
@@ -192,7 +192,7 @@ class WebteIzle : MainAPI() {
                         ExtractorLink(
                             source  = "${dilAd} - ${this.name}",
                             name    = "${dilAd} - ${this.name}",
-                            url     = m3u_link,
+                            url     = m3uLink,
                             referer = "${mainUrl}/",
                             quality = getQualityFromName("1440p"),
                             isM3u8  = true

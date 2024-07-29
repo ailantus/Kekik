@@ -58,18 +58,18 @@ class IzleAI : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val main_req  = app.get(mainUrl)
-        val main_page = main_req.document
-        val c_key     = main_page.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
-        val c_value   = main_page.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
+        val mainReq  = app.get(mainUrl)
+        val mainPage = mainReq.document
+        val cKey     = mainPage.selectFirst("input[name='cKey']")?.attr("value") ?: return emptyList()
+        val cValue   = mainPage.selectFirst("input[name='cValue']")?.attr("value") ?: return emptyList()
 
         val veriler   = mutableListOf<SearchResponse>()
 
-        val search_req = app.post(
+        val searchReq = app.post(
             "${mainUrl}/bg/searchcontent",
             data = mapOf(
-                "cKey"       to c_key,
-                "cValue"     to c_value,
+                "cKey"       to cKey,
+                "cValue"     to cValue,
                 "searchterm" to query
             ),
             headers = mapOf(
@@ -79,24 +79,24 @@ class IzleAI : MainAPI() {
             referer = "${mainUrl}/",
             cookies = mapOf(
                 "showAllDaFull"   to "true",
-                "PHPSESSID"       to main_req.cookies["PHPSESSID"].toString(),
+                "PHPSESSID"       to mainReq.cookies["PHPSESSID"].toString(),
             )
         ).parsedSafe<SearchResult>()
 
-        if (search_req?.data?.state != true) {
+        if (searchReq?.data?.state != true) {
             throw ErrorLoadingException("Invalid Json response")
         }
 
-        search_req.data.result?.forEach { search_item ->
-            val title = search_item.title ?: return@forEach
+        searchReq.data.result?.forEach { searchItem ->
+            val title = searchItem.title ?: return@forEach
             if (title.endsWith("Serisi") || title.endsWith("Series")) {
                 return@forEach
             }
 
-            veriler.add(search_item.toSearchResponse() ?: return@forEach)
+            veriler.add(searchItem.toSearchResponse() ?: return@forEach)
         }
 
-        return veriler     
+        return veriler
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)

@@ -12,22 +12,22 @@ open class ExPlay : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val ext_ref   = referer ?: ""
-        val partKey   = url.substringAfter("?partKey=")?.substringAfter("turkce")?.uppercase()
-        val url       = url.substringBefore("?partKey=")
-        val i_source  = app.get(url, referer=ext_ref).text
+        val extRef   = referer ?: ""
+        val partKey  = url.substringAfter("?partKey=")?.substringAfter("turkce")?.uppercase()
+        val url      = url.substringBefore("?partKey=")
+        val iSource  = app.get(url, referer=extRef).text
 
-        val videoUrl    = Regex("""videoUrl\":\"([^\",\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("videoUrl not found")
-        val videoServer = Regex("""videoServer\":\"([^\",\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("videoServer not found")
-        val title       = if (partKey != "") partKey else Regex("""title\":\"([^\",\"]+)""").find(i_source)?.groupValues?.get(1)?.split(".")?.last()
-        val m3u_link    = "${mainUrl}${videoUrl.replace("\\", "")}?s=${videoServer}"
-        Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+        val videoUrl    = Regex("""videoUrl\":\"([^\",\"]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("videoUrl not found")
+        val videoServer = Regex("""videoServer\":\"([^\",\"]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("videoServer not found")
+        val title       = if (partKey != "") partKey else Regex("""title\":\"([^\",\"]+)""").find(iSource)?.groupValues?.get(1)?.split(".")?.last()
+        val m3uLink     = "${mainUrl}${videoUrl.replace("\\", "")}?s=${videoServer}"
+        Log.d("Kekik_${this.name}", "m3uLink » ${m3uLink}")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = "${this.name} - ${title}",
-                url     = m3u_link,
+                url     = m3uLink,
                 referer = url,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true

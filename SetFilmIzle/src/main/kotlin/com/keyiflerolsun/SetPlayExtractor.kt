@@ -12,24 +12,24 @@ open class SetPlay : ExtractorApi() {
     override val requiresReferer = true
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val ext_ref   = referer ?: ""
-        val partKey   = url.substringAfter("?partKey=")?.substringAfter("turkce")?.uppercase()
-        val url       = url.substringBefore("?partKey=")
-        val i_source  = app.post(url.replace("embed?i=", "embed/get?i="), referer=url).text
+        val extRef   = referer ?: ""
+        val partKey  = url.substringAfter("?partKey=")?.substringAfter("turkce")?.uppercase()
+        val url      = url.substringBefore("?partKey=")
+        val iSource  = app.post(url.replace("embed?i=", "embed/get?i="), referer=url).text
 
-        val links = Regex("""Links\":\[\"([^\"\]]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("Links not found")
+        val links = Regex("""Links\":\[\"([^\"\]]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("Links not found")
         if (!links.startsWith("/")) {
             throw ErrorLoadingException("Links not valid")
         }
 
-        val m3u_link = "${mainUrl}${links}"
-        Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+        val m3uLink = "${mainUrl}${links}"
+        Log.d("Kekik_${this.name}", "m3uLink » ${m3uLink}")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = if (partKey != "") "${this.name} - ${partKey}" else this.name,
-                url     = m3u_link,
+                url     = m3uLink,
                 referer = url,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true

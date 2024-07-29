@@ -50,25 +50,25 @@ class OxAxPlayer : ExtractorApi() {
     }
 
     override suspend fun getUrl(url: String, referer: String?, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit) {
-        val m3u_link:String?
-        val ext_ref  = referer ?: ""
-        val i_source = app.get(url, referer=ext_ref).text
+        val m3uLink:String?
+        val extRef  = referer ?: ""
+        val iSource = app.get(url, referer=extRef).text
 
-        val kodk     = Regex("""var kodk=\"(.*?)\"""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("kodk not found")
-        val kos      = Regex("""var kos=\"(.*?)\"""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("kos not found")
-        val playerjs = Regex("""new Playerjs\(\"(.*?)\"""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("playerjs not found")
+        val kodk     = Regex("""var kodk=\"(.*?)\"""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("kodk not found")
+        val kos      = Regex("""var kos=\"(.*?)\"""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("kos not found")
+        val playerjs = Regex("""new Playerjs\(\"(.*?)\"""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("playerjs not found")
 
         val decodedData = decodeAtob(playerjs)
         val (v1, v2)    = Regex("""\{v1\}(.*?)\{v2\}([a-zA-Z0-9]*)""").find(decodedData)?.destructured ?: throw ErrorLoadingException("v1 and v2 not found in decoded data")
 
-        m3u_link = "${kodk}${v1}${kos}${v2}"
-        Log.d("Kekik_${this.name}", "m3u_link » ${m3u_link}")
+        m3uLink = "${kodk}${v1}${kos}${v2}"
+        Log.d("Kekik_${this.name}", "m3uLink » ${m3uLink}")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
-                url     = m3u_link,
+                url     = m3uLink,
                 referer = url,
                 quality = Qualities.Unknown.value,
                 isM3u8  = true

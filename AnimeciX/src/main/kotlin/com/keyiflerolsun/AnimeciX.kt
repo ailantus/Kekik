@@ -66,8 +66,8 @@ class AnimeciX : MainAPI() {
 
         if (response.title.title_type == "anime") {
             for (sezon in 1..response.title.season_count) {
-                val sezon_response = app.get("${url}&seasonNumber=${sezon}").parsedSafe<Title>() ?: return null
-                for (video in sezon_response.title.videos) {
+                val sezonResponse = app.get("${url}&seasonNumber=${sezon}").parsedSafe<Title>() ?: return null
+                for (video in sezonResponse.title.videos) {
                     episodes.add(Episode(
                         data    = video.url,
                         name    = "${video.season_num}. Sezon ${video.episode_num}. Bölüm",

@@ -98,16 +98,16 @@ class PornHub : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("PHub", "url » ${data}")
         val source          = app.get(data).text
-        val extracted_value = Regex("""([^\"]*master.m3u8?.[^\"]*)""").find(source)?.groups?.last()?.value ?: return false
-        val m3u_link        = extracted_value.replace("\\", "")
-        Log.d("PHub", "extracted_value » ${extracted_value}")
-        Log.d("PHub", "m3u_link » ${m3u_link}")
+        val extractedValue = Regex("""([^\"]*master.m3u8?.[^\"]*)""").find(source)?.groups?.last()?.value ?: return false
+        val m3uLink        = extractedValue.replace("\\", "")
+        Log.d("PHub", "extractedValue » ${extractedValue}")
+        Log.d("PHub", "m3uLink » ${m3uLink}")
 
         callback.invoke(
             ExtractorLink(
                 source  = this.name,
                 name    = this.name,
-                url     = m3u_link,
+                url     = m3uLink,
                 referer = "${mainUrl}/",
                 quality = Qualities.Unknown.value,
                 isM3u8  = true

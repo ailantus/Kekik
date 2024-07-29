@@ -94,18 +94,18 @@ class KultFilmler : MainAPI() {
             tags  = document.select("div.category a").map { it.text() }
 
             val episodes = document.select("div.episode-box").mapNotNull {
-                val ep_href    = fixUrlNull(it.selectFirst("div.name a")?.attr("href")) ?: return@mapNotNull null
-                val ssn_detail = it.selectFirst("span.episodetitle")?.ownText()?.trim() ?: return@mapNotNull null
-                val ep_detail  = it.selectFirst("span.episodetitle b")?.ownText()?.trim() ?: return@mapNotNull null
-                val ep_name    = "${ssn_detail} - ${ep_detail}"
-                val ep_season  = ssn_detail.substringBefore(". ")?.toIntOrNull()
-                val ep_episode = ep_detail.substringBefore(". ")?.toIntOrNull()
+                val epHref    = fixUrlNull(it.selectFirst("div.name a")?.attr("href")) ?: return@mapNotNull null
+                val ssnDetail = it.selectFirst("span.episodetitle")?.ownText()?.trim() ?: return@mapNotNull null
+                val epDetail  = it.selectFirst("span.episodetitle b")?.ownText()?.trim() ?: return@mapNotNull null
+                val epName    = "${ssnDetail} - ${epDetail}"
+                val epSeason  = ssnDetail.substringBefore(". ")?.toIntOrNull()
+                val epEpisode = epDetail.substringBefore(". ")?.toIntOrNull()
 
                 Episode(
-                    data    = ep_href,
-                    name    = ep_name,
-                    season  = ep_season,
-                    episode = ep_episode
+                    data    = epHref,
+                    name    = epName,
+                    season  = epSeason,
+                    episode = epEpisode
                 )
             }
 
@@ -133,12 +133,12 @@ class KultFilmler : MainAPI() {
         }
     }
 
-    private fun getIframe(source_code: String): String {
-        // val atob_key = Regex("""atob\("(.*)"\)""").find(source_code)?.groupValues?.get(1) ?: return ""
+    private fun getIframe(sourceCode: String): String {
+        // val atobKey = Regex("""atob\("(.*)"\)""").find(sourceCode)?.groupValues?.get(1) ?: return ""
 
-        // return Jsoup.parse(String(Base64.decode(atob_key, Base64.DEFAULT))).selectFirst("iframe")?.attr("src") ?: ""
+        // return Jsoup.parse(String(Base64.decode(atobKey, Base64.DEFAULT))).selectFirst("iframe")?.attr("src") ?: ""
 
-        val atob = Regex("""PHA\+[0-9a-zA-Z+\/=]*""").find(source_code)?.value ?: return ""
+        val atob = Regex("""PHA\+[0-9a-zA-Z+\/=]*""").find(sourceCode)?.value ?: return ""
 
         val padding    = 4 - atob.length % 4
         val atobPadded = if (padding < 4) atob.padEnd(atob.length + padding, '=') else atob
@@ -153,18 +153,18 @@ class KultFilmler : MainAPI() {
         val document = app.get(data).document
         val iframes  = mutableSetOf<String>()
 
-        val main_frame = getIframe(document.html())
-        if (main_frame != null) {
-            iframes.add(main_frame)
+        val mainFrame = getIframe(document.html())
+        if (mainFrame != null) {
+            iframes.add(mainFrame)
         }
 
         document.select("div.parts-middle").forEach {
             val alternatif = it.selectFirst("a")?.attr("href")
             if (alternatif != null) {
-                val alternatif_document = app.get(alternatif).document
-                val alternatif_frame    = getIframe(alternatif_document.html())
-                if (alternatif_frame != null) {
-                    iframes.add(alternatif_frame)
+                val alternatifDocument = app.get(alternatif).document
+                val alternatifFrame    = getIframe(alternatifDocument.html())
+                if (alternatifFrame != null) {
+                    iframes.add(alternatifFrame)
                 }
             }
         }
@@ -176,16 +176,16 @@ class KultFilmler : MainAPI() {
                     "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
                     "Sec-Fetch-Dest" to "iframe"
                 )
-                val i_source = app.get(iframe, headers=headers, referer="${mainUrl}/").text
-                var m3u_link = Regex("""file:\"([^\"]+)""").find(i_source)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
+                val iSource = app.get(iframe, headers=headers, referer="${mainUrl}/").text
+                var m3uLink = Regex("""file:\"([^\"]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
 
-                Log.d("Kekik_VidMoly", "m3u_link » ${m3u_link}")
+                Log.d("Kekik_VidMoly", "m3uLink » ${m3uLink}")
 
                 callback.invoke(
                     ExtractorLink(
                         source  = "VidMoly",
                         name    = "VidMoly",
-                        url     = m3u_link,
+                        url     = m3uLink,
                         referer = "https://vidmoly.to/",
                         quality = Qualities.Unknown.value,
                         type    = INFER_TYPE

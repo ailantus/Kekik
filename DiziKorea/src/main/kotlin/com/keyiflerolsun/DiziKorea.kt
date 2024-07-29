@@ -95,17 +95,17 @@ class DiziKorea : MainAPI() {
         if (url.contains("/dizi/")) {
             val episodes    = mutableListOf<Episode>()
             document.select("div.series-profile-episode-list").forEach {
-                val ep_season = it.parent()!!.id().split("-").last().toIntOrNull()
+                val epSeason = it.parent()!!.id().split("-").last().toIntOrNull()
 
                 it.select("li").forEach ep@ { episodeElement ->
-                    val ep_href    = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
-                    val ep_episode = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
+                    val epHref    = fixUrlNull(episodeElement.selectFirst("h6 a")?.attr("href")) ?: return@ep
+                    val epEpisode = episodeElement.selectFirst("a.truncate data")?.text()?.trim()?.toIntOrNull()
 
                     episodes.add(Episode(
-                        data    = ep_href,
-                        name    = "${ep_season}. Sezon ${ep_episode}. Bölüm",
-                        season  = ep_season,
-                        episode = ep_episode
+                        data    = epHref,
+                        name    = "${epSeason}. Sezon ${epEpisode}. Bölüm",
+                        season  = epSeason,
+                        episode = epEpisode
                     ))
                 }
             }

@@ -101,9 +101,9 @@ class JetFilmizle : MainAPI() {
         val document = app.get(data).document
 
         val iframes     = mutableListOf<String>()
-        val main_iframe = fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data"))
-        if (main_iframe != null) {
-            iframes.add(main_iframe)
+        val mainIframe = fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data"))
+        if (mainIframe != null) {
+            iframes.add(mainIframe)
         }
 
         document.select("div.film_part a").forEach {

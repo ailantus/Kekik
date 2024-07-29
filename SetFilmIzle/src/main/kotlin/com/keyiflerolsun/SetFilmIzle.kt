@@ -104,17 +104,17 @@ class SetFilmIzle : MainAPI() {
             duration = document.selectFirst("div#info span:containsOwn(Dakika)")?.text()?.split(" ")?.first()?.trim()?.toIntOrNull()
 
             val episodes = document.select("div#episodes ul.episodios li").mapNotNull {
-                val ep_href    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
-                val ep_name    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
-                val ep_detail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
-                val ep_season  = ep_detail.first()?.toIntOrNull()
-                val ep_episode = ep_detail.last()?.toIntOrNull()
+                val epHref    = fixUrlNull(it.selectFirst("div.episodiotitle a")?.attr("href")) ?: return@mapNotNull null
+                val epName    = it.selectFirst("div.episodiotitle a")?.ownText()?.trim() ?: return@mapNotNull null
+                val epDetail  = it.selectFirst("div.numerando")?.text()?.split(" - ") ?: return@mapNotNull null
+                val epSeason  = epDetail.first()?.toIntOrNull()
+                val epEpisode = epDetail.last()?.toIntOrNull()
 
                 Episode(
-                    data    = ep_href,
-                    name    = ep_name,
-                    season  = ep_season,
-                    episode = ep_episode
+                    data    = epHref,
+                    name    = epName,
+                    season  = epSeason,
+                    episode = epEpisode
                 )
             }
 
