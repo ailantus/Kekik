@@ -40,7 +40,7 @@ class DiziBox : MainAPI() {
             val response = chain.proceed(request)
             val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
 
-            if (doc.text() == "Güvenlik taramasından geçiriliyorsunuz. Lütfen bekleyiniz..") {
+            if (doc.text().contains("Güvenlik taramasından geçiriliyorsunuz. Lütfen bekleyiniz..")) {
                 return cloudflareKiller.intercept(chain)
             }
 
