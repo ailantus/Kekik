@@ -178,8 +178,6 @@ class DiziBox : MainAPI() {
         var iframe = iframe
 
         if (iframe.contains("/player/king/king.php")) {
-            return false
-
             iframe = iframe.replace("king.php?v=", "king.php?wmode=opaque&v=")
             val subDoc = app.get(
                 iframe,
@@ -192,13 +190,25 @@ class DiziBox : MainAPI() {
                 interceptor = interceptor
             ).document
             val subFrame = subDoc.selectFirst("div#Player iframe")?.attr("src") ?: return false
-            Log.d("DZBX", "subFrame » ${subFrame}")
 
-            val iDoc     = app.get(subFrame, referer="${mainUrl}/").text
-            val cryptData  = Regex("""CryptoJS\.AES\.decrypt\(\"(.*)\",\"""").find(iDoc)?.groupValues?.get(1) ?: return false
-            val cryptPass  = Regex("""\",\"(.*)\"\);""").find(iDoc)?.groupValues?.get(1) ?: return false
-            Log.d("DZBX", "cryptData » ${cryptData}")
-            Log.d("DZBX", "cryptPass » ${cryptPass}")
+            val iDoc          = app.get(subFrame, referer="${mainUrl}/").text
+            val cryptData     = Regex("""CryptoJS\.AES\.decrypt\(\"(.*)\",\"""").find(iDoc)?.groupValues?.get(1) ?: return false
+            val cryptPass     = Regex("""\",\"(.*)\"\);""").find(iDoc)?.groupValues?.get(1) ?: return false
+            val decryptedData = CryptoJS.decrypt(cryptPass, cryptData)
+            val decryptedDoc  = Jsoup.parse(decryptedData)
+            val vidUrl        = Regex("""file: \'(.*)',""").find(decryptedDoc.html())?.groupValues?.get(1) ?: return false
+
+            callback.invoke(
+                ExtractorLink(
+                    source  = "${this.name}",
+                    name    = "${this.name}",
+                    url     = vidUrl,
+                    referer = vidUrl,
+                    quality = getQualityFromName("4k"),
+                    isM3u8  = true
+                )
+            )
+
         } else if (iframe.contains("/player/moly/moly.php")) {
             iframe = iframe.replace("moly.php?h=", "moly.php?wmode=opaque&h=")
             var subDoc = app.get(
@@ -220,9 +230,32 @@ class DiziBox : MainAPI() {
             }
 
             val subFrame = subDoc.selectFirst("div#Player iframe")?.attr("src") ?: return false
-            Log.d("DZBX", "subFrame » ${subFrame}")
+
             loadExtractor(subFrame, "${mainUrl}/", subtitleCallback, callback)
-            return true
+
+        } else if (iframe.contains("/player/haydi.php")) {
+            iframe = iframe.replace("haydi.php?v=", "haydi.php?wmode=opaque&v=")
+            var subDoc = app.get(
+                iframe,
+                referer     = data,
+                cookies     = mapOf(
+                    "LockUser"      to "true",
+                    "isTrustedUser" to "true",
+                    "dbxu"          to "1722403730363"
+                ),
+                interceptor = interceptor
+            ).document
+
+            val atobData = Regex("""unescape\(\"(.*)\"\)""").find(subDoc.html())?.groupValues?.get(1)
+            if (atobData != null) {
+                val decodedAtob = URLDecoder.decode(atobData, "utf-8")
+                val strAtob     = Base64.decode(decodedAtob, Base64.DEFAULT).toString(Charsets.UTF_8)
+                subDoc          = Jsoup.parse(strAtob)
+            }
+
+            val subFrame = subDoc.selectFirst("div#Player iframe")?.attr("src") ?: return false
+
+            loadExtractor(subFrame, "${mainUrl}/", subtitleCallback, callback)
         }
 
         return true
