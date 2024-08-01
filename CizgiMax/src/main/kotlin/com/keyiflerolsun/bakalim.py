@@ -4,7 +4,7 @@ from Kekik.cli       import konsol
 from cloudscraper    import CloudScraper
 from parsel          import Selector
 from re              import search
-from Kekik.Sifreleme import decrypt_aes_with_custom_kdf
+from Kekik.Sifreleme import AESManager
 from json            import loads
 
 oturum = CloudScraper()
@@ -24,5 +24,5 @@ for link in linkler:
     be_player_pass = be_player[0]
     be_player_data = be_player[1]
 
-    encrypted = decrypt_aes_with_custom_kdf(be_player_data, be_player_pass.encode()).replace("\\", "")
+    encrypted = AESManager.decrypt(be_player_data, be_player_pass).replace("\\", "")
     konsol.print(loads(encrypted))
