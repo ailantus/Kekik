@@ -3,7 +3,7 @@
 from Kekik.cli       import konsol
 from httpx           import Client as Session
 from parsel          import Selector
-from Kekik.Sifreleme import atob, rtt, unpack_packer
+from Kekik.Sifreleme import atob, rtt, Packer
 import re, json
 
 def rapid2m3u8(url:str) -> str:
@@ -15,7 +15,7 @@ def rapid2m3u8(url:str) -> str:
         escaped_hex = re.findall(r'file": "(.*)",', istek.text)[0]
     except Exception:
         eval_jwsetup = re.compile(r'\};\s*(eval\(function[\s\S]*?)var played = \d+;').findall(istek.text)[0]
-        jwsetup      = unpack_packer(unpack_packer(eval_jwsetup))
+        jwsetup      = Packer.unpack(Packer.unpack(eval_jwsetup))
         escaped_hex  = re.findall(r'file":"(.*)","label', jwsetup)[0]
 
     return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
