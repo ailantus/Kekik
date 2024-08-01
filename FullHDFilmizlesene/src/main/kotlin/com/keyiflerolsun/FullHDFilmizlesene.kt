@@ -3,7 +3,7 @@
 package com.keyiflerolsun
 
 import android.util.Log
-import android.util.Base64
+import java.util.Base64
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Document
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -116,7 +116,7 @@ class FullHDFilmizlesene : MainAPI() {
     }
 
     private fun atob(s: String): String {
-        return String(Base64.decode(s, Base64.DEFAULT))
+        return String(Base64.getDecoder().decode(s))
     }
 
     private fun rtt(s: String): String {
