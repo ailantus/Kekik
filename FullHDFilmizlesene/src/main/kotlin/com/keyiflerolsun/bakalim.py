@@ -3,7 +3,7 @@
 from Kekik.cli       import konsol
 from httpx           import Client as Session
 from parsel          import Selector
-from Kekik.Sifreleme import atob, rtt, Packer, HexCodec
+from Kekik.Sifreleme import StringCodec, Packer, HexCodec
 import re, json
 
 def rapid2m3u8(url:str) -> str:
@@ -79,9 +79,9 @@ def fullhdfilmizlesene(url:str) -> list:
     for key in scx_keys:
         t = scx_data[key]["sx"]["t"]
         if isinstance(t, list):
-            link_list.append({key: atob(rtt(elem)) for elem in t})
+            link_list.append({key: StringCodec.decode(elem) for elem in t})
         if isinstance(t, dict):
-            link_list.append({k: atob(rtt(v)) for k, v in t.items()})
+            link_list.append({k: StringCodec.decode(v) for k, v in t.items()})
 
     vid_links = []
     for elem in link_list:
