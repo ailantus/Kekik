@@ -3,7 +3,7 @@
 from Kekik.cli       import konsol
 from httpx           import Client as Session
 from parsel          import Selector
-from Kekik.Sifreleme import atob, rtt, Packer
+from Kekik.Sifreleme import atob, rtt, Packer, HexCodec
 import re, json
 
 def rapid2m3u8(url:str) -> str:
@@ -18,7 +18,7 @@ def rapid2m3u8(url:str) -> str:
         jwsetup      = Packer.unpack(Packer.unpack(eval_jwsetup))
         escaped_hex  = re.findall(r'file":"(.*)","label', jwsetup)[0]
 
-    return bytes.fromhex(escaped_hex.replace("\\x", "")).decode("utf-8")
+    return HexCodec.decode(escaped_hex)
 
 def trstx2m3u8(url:str) -> list[dict]:
     oturum = Session()
@@ -115,10 +115,10 @@ def fullhdfilmizlesene(url:str) -> list:
 
     return vid_links
 
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/makine-2/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/makine-2/"))
 konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/iskence-okulu/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/yedi-yasam/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/cilgin-cocuklar-oyun-bitti-izle-1/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/suclu-den-skyldige/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/vahsiler-hostiles/"))
-konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/satranc-oyuncusu/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/yedi-yasam/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/cilgin-cocuklar-oyun-bitti-izle-1/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/suclu-den-skyldige/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/vahsiler-hostiles/"))
+# konsol.print(fullhdfilmizlesene("https://www.fullhdfilmizlesene.de/film/satranc-oyuncusu/"))
