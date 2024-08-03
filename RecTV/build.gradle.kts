@@ -14,5 +14,5 @@ cloudstream {
     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Movie", "Live")
-    iconUrl = "https://www.google.com/s2/favicons?domain=rectvapk.cc&sz=%size%"
+    iconUrl = "https://rectvapk.cc/wp-content/uploads/2023/02/Rec-TV.webp"
 }
