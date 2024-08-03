@@ -43,7 +43,17 @@ class RecTV : MainAPI() {
         val movies = AppUtils.tryParseJson<List<RecItem>>(home.text)!!.mapNotNull { item ->
             val toDict = jacksonObjectMapper().writeValueAsString(item)
 
-            newMovieSearchResponse(item.title, "${toDict}", TvType.Movie) { this.posterUrl = item.image }
+            if (item.label != "CANLI") {
+                newMovieSearchResponse(item.title, "${toDict}", TvType.Movie) { this.posterUrl = item.image }
+            } else {
+                LiveSearchResponse(
+                    name      = item.title,
+                    url       = "${toDict}",
+                    apiName   = this@RecTV.name,
+                    type      = TvType.Live,
+                    posterUrl = item.image
+                )
+            }
         }
 
         return newHomePageResponse(request.name, movies)
@@ -75,12 +85,24 @@ class RecTV : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val veri = AppUtils.tryParseJson<RecItem>(url) ?: return null
 
-        return newMovieLoadResponse(veri.title, url, TvType.Movie, url) {
-            this.posterUrl = veri.image
-            this.plot      = veri.description
-            this.year      = veri.year
-            this.tags      = veri.genres?.map { it.title }
-            this.rating    = "${veri.rating}".toRatingInt()
+        if (veri.label != "CANLI") {
+            return newMovieLoadResponse(veri.title, url, TvType.Movie, url) {
+                this.posterUrl = veri.image
+                this.plot      = veri.description
+                this.year      = veri.year
+                this.tags      = veri.genres?.map { it.title }
+                this.rating    = "${veri.rating}".toRatingInt()
+            }
+        } else {
+            return LiveStreamLoadResponse(
+                name      = veri.title,
+                url       = url,
+                apiName   = this.name,
+                dataUrl   = url,
+                posterUrl = veri.image,
+                plot      = veri.description,
+                tags      = veri.genres?.map { it.title },
+            )
         }
     }
 
