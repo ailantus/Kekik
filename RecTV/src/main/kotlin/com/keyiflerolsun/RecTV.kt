@@ -35,6 +35,8 @@ class RecTV : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        val page = page - 1
+
         val url  = request.data.replace("SAYFA", "${page}")
         val home = app.get(url)
 
