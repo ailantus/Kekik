@@ -19,23 +19,24 @@ class RecTV : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie, TvType.Live)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/api/channel/by/filtres/0/0/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"      to "Canlı",
-        "${mainUrl}/api/movie/by/filtres/0/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Son Yüklenen",
-        "${mainUrl}/api/movie/by/filtres/14/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Aile",
-        "${mainUrl}/api/movie/by/filtres/1/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Aksiyon",
-        "${mainUrl}/api/movie/by/filtres/13/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Animasyon",
-        "${mainUrl}/api/movie/by/filtres/19/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Belgesel",
-        "${mainUrl}/api/movie/by/filtres/4/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Bilim Kurgu",
-        "${mainUrl}/api/movie/by/filtres/2/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Dram",
-        "${mainUrl}/api/movie/by/filtres/10/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Fantastik",
-        "${mainUrl}/api/movie/by/filtres/3/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Komedi",
-        "${mainUrl}/api/movie/by/filtres/8/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Korku",
-        "${mainUrl}/api/movie/by/filtres/17/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Macera",
-        "${mainUrl}/api/movie/by/filtres/5/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Romantik"
+        "${mainUrl}/api/channel/by/filtres/0/0/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"      to "Canlı",
+        "${mainUrl}/api/movie/by/filtres/0/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Son Yüklenen",
+        "${mainUrl}/api/movie/by/filtres/14/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Aile",
+        "${mainUrl}/api/movie/by/filtres/1/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Aksiyon",
+        "${mainUrl}/api/movie/by/filtres/13/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Animasyon",
+        "${mainUrl}/api/movie/by/filtres/19/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Belgesel",
+        "${mainUrl}/api/movie/by/filtres/4/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Bilim Kurgu",
+        "${mainUrl}/api/movie/by/filtres/2/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Dram",
+        "${mainUrl}/api/movie/by/filtres/10/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Fantastik",
+        "${mainUrl}/api/movie/by/filtres/3/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Komedi",
+        "${mainUrl}/api/movie/by/filtres/8/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Korku",
+        "${mainUrl}/api/movie/by/filtres/17/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Macera",
+        "${mainUrl}/api/movie/by/filtres/5/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Romantik"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val home   = app.get("${request.data}")
+        val url  = request.data.replace("SAYFA", "${page}")
+        val home = app.get(url)
 
         val movies = AppUtils.tryParseJson<List<RecItem>>(home.text)!!.mapNotNull { item ->
             val toDict = jacksonObjectMapper().writeValueAsString(item)
