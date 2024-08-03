@@ -43,7 +43,7 @@ class RecTV : MainAPI() {
         val movies = AppUtils.tryParseJson<List<RecItem>>(home.text)!!.mapNotNull { item ->
             val toDict = jacksonObjectMapper().writeValueAsString(item)
 
-            if (item.label != "CANLI") {
+            if (item.label != "CANLI" && item.label != "Canlı") {
                 newMovieSearchResponse(item.title, "${toDict}", TvType.Movie) { this.posterUrl = item.image }
             } else {
                 LiveSearchResponse(
@@ -85,7 +85,7 @@ class RecTV : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val veri = AppUtils.tryParseJson<RecItem>(url) ?: return null
 
-        if (veri.label != "CANLI") {
+        if (veri.label != "CANLI" && veri.label != "Canlı") {
             return newMovieLoadResponse(veri.title, url, TvType.Movie, url) {
                 this.posterUrl = veri.image
                 this.plot      = veri.description
