@@ -18,14 +18,13 @@ class RecTV : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/api/movie/by/filtres/26/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Türkçe Dublaj Filmler",
-        "${mainUrl}/api/movie/by/filtres/1/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Aksiyon Filmleri",
-        "${mainUrl}/api/movie/by/filtres/2/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Dram Filmleri",
-        "${mainUrl}/api/movie/by/filtres/3/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Komedi Filmler",
-        "${mainUrl}/api/movie/by/filtres/4/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Bilim Kurgu Filmler",
-        "${mainUrl}/api/movie/by/filtres/5/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Romantik Filmler",
-        "${mainUrl}/api/movie/by/filtres/8/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Korku Filmleri",
-        "${mainUrl}/api/movie/by/filtres/0/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Son Yüklenen Filmler",
+        "${mainUrl}/api/movie/by/filtres/0/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Son Yüklenen",
+        "${mainUrl}/api/movie/by/filtres/1/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Aksiyon",
+        "${mainUrl}/api/movie/by/filtres/2/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Dram",
+        "${mainUrl}/api/movie/by/filtres/3/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Komedi",
+        "${mainUrl}/api/movie/by/filtres/4/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Bilim Kurgu",
+        "${mainUrl}/api/movie/by/filtres/5/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Romantik",
+        "${mainUrl}/api/movie/by/filtres/8/created/0/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Korku"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
