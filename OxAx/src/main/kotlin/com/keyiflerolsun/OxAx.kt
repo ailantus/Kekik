@@ -3,7 +3,6 @@
 package com.keyiflerolsun
 
 import android.util.Log
-import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.annotation.JsonProperty
