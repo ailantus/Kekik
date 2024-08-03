@@ -3,7 +3,7 @@ version = 1
 cloudstream {
     authors     = listOf("keyiflerolsun", "yusiqo")
     language    = "tr"
-    description = "Android için Rec Tv Apk Box Son Sürüm v16.2&#039;yi buradan indirin. İOS ve PC / Dizüstü bilgisayar için RecTv Uygulamasını edinin."
+    description = "RecTv APK, Türkiye’deki en popüler Çevrimiçi Medya Akış platformlarından biridir. Filmlerin, Canlı Sporların, Web Dizilerinin ve çok daha fazlasının keyfini ücretsiz çıkarın."
 
     /**
      * Status int as the following:
