@@ -37,3 +37,8 @@ data class Source(
     @JsonProperty("type")  val type:String,
     @JsonProperty("url")   val url:String
 )
+
+data class RecSearch(
+    @JsonProperty("channels") val channels:List<RecItem>? = emptyList(),
+    @JsonProperty("posters")  val posters:List<RecItem>?  = emptyList(),
+)

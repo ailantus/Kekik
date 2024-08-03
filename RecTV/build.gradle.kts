@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 cloudstream {
     authors     = listOf("keyiflerolsun", "yusiqo")
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("Movie")
+    tvTypes = listOf("Movie", "Live")
     iconUrl = "https://www.google.com/s2/favicons?domain=rectvapk.cc&sz=%size%"
 }
