@@ -49,7 +49,7 @@ class SineWix : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         val request  = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
-        val seaData  = request.parsedSafe<Search>()?.search
+        val reqData  = request.parsedSafe<Search>()?.search
         val sonuclar = mutableListOf<SearchResponse>()
 
         reqData?.mapNotNull { item ->

@@ -26,17 +26,17 @@ data class MediaDetail(
     @JsonProperty("casterslist")   val casterslist: List<Cast>,
     @JsonProperty("relateds")      val relateds: List<JustMovie>,
     @JsonProperty("genres")        val genres: List<Genre>,
-    @JsonProperty("videos")       val videos: List<Video>,
+    @JsonProperty("videos")       val videos: List<Video>
 )
 
 data class Cast(
     @JsonProperty("name")         val name: String,
-    @JsonProperty("profile_path") val profile_path: String?,
+    @JsonProperty("profile_path") val profile_path: String?
 )
 
 data class Genre(
     @JsonProperty("id")   val id: Int,
-    @JsonProperty("name") val name: String,
+    @JsonProperty("name") val name: String
 )
 
 data class Video(
@@ -46,7 +46,7 @@ data class Video(
 )
 
 data class Search(
-    @JsonProperty("search") val search: List<SearchItem>,
+    @JsonProperty("search") val search: List<SearchItem>
 )
 
 data class SearchItem(
