@@ -66,7 +66,7 @@ data class Genre(
 data class Video(
     @JsonProperty("id")   val id: Int,
     @JsonProperty("link") val link: String,
-    @JsonProperty("lang") val lang: String
+    @JsonProperty("lang") val lang: String?
 )
 
 data class Search(
@@ -81,20 +81,14 @@ data class SearchItem(
 )
 
 data class SeasonDetail(
-    @JsonProperty("id")            val id: Int,
     @JsonProperty("season_number") val season_number: Int,
-    @JsonProperty("name")          val name: String,
-    @JsonProperty("overview")      val overview: String?,
-    @JsonProperty("poster_path")   val poster_path: String,
-    @JsonProperty("air_date")      val air_date: String,
     @JsonProperty("episodes")      val episodes: List<EpisodeDetail>
 )
 
 data class EpisodeDetail(
-    @JsonProperty("id")             val id: Int,
     @JsonProperty("episode_number") val episode_number: Int,
     @JsonProperty("name")           val name: String,
     @JsonProperty("overview")       val overview: String?,
-    @JsonProperty("still_path")     val still_path: String,
+    @JsonProperty("still_path")     val still_path: String?,
     @JsonProperty("videos")         val videos: List<Video>
 )
