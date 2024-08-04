@@ -17,6 +17,13 @@ class SineWix : MainAPI() {
     override val hasDownloadSupport   = true
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
 
+    val swHeaders = mapOf(
+        "accept"        to "application/json",
+        "packagename"   to "com.sinewix",
+        "authorization" to "Bearer EuXs1Y5oXTrDpGte3E2dNDIu82LLjaoCd6om",
+        "user-agent"    to "EasyPlex (Android 11; SM-N935F; samsung gracerlte; tr)"
+    )
+
     override val mainPage = mainPageOf(
         "${mainUrl}/public/api/genres/movies/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Filmler",
         "${mainUrl}/public/api/genres/series/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Diziler",
@@ -46,23 +53,23 @@ class SineWix : MainAPI() {
         val url  = "${request.data}?page=${page}"
         val home = when {
             request.data.contains("/genres/movies/") -> {
-                app.get(url).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
+                app.get(url, headers=swHeaders).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
                     newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
-                } ?: app.get(url.replace("movies/all", "news/all")).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
+                } ?: app.get(url.replace("movies/all", "news/all"), headers=swHeaders).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
                     newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
                 } ?: listOf<SearchResponse>()
             }
             request.data.contains("/genres/series/") -> {
-                app.get(url).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                app.get(url, headers=swHeaders).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newTvSeriesSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.TvSeries) { this.posterUrl = item.poster_path }
-                } ?: app.get(url.replace("series/all", "latestseries/all")).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                } ?: app.get(url.replace("series/all", "latestseries/all"), headers=swHeaders).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
                 } ?: listOf<SearchResponse>()
             }
             request.data.contains("/genres/animes/") -> {
-                app.get(url).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                app.get(url, headers=swHeaders).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newAnimeSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Anime) { this.posterUrl = item.poster_path }
-                } ?: app.get(url.replace("animes/all", "latestanimes/all")).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                } ?: app.get(url.replace("animes/all", "latestanimes/all"), headers=swHeaders).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
                 } ?: listOf<SearchResponse>()
             }
@@ -73,7 +80,7 @@ class SineWix : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+        val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
         val reqData = request.parsedSafe<Search>()?.search
 
         return reqData?.mapNotNull { item ->
@@ -93,7 +100,7 @@ class SineWix : MainAPI() {
         val itemId   = url.substringAfter("&id=")
 
         if (itemType == "movie") {
-            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
             val media   = request.parsedSafe<MovieDetail>() ?: return null
 
             val orgTitle        = media.title
@@ -118,7 +125,7 @@ class SineWix : MainAPI() {
                 addActors(actors)
             }
         } else {
-            val request = app.get("${mainUrl}/public/api/${itemType}s/show/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+            val request = app.get("${mainUrl}/public/api/${itemType}s/show/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
             val media   = request.parsedSafe<SerieDetail>() ?: return null
 
             val orgTitle        = media.name
@@ -165,7 +172,7 @@ class SineWix : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         if (!data.contains("&source=")) {
             val itemId  = data.substringAfter("&id=").substringBefore("&source=")
-            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
             val media   = request.parsedSafe<MovieDetail>() ?: return false
 
             media.videos.forEach { video ->
