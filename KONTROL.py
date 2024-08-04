@@ -15,7 +15,7 @@ class MainUrlUpdater:
             dosya for dosya in os.listdir(self.base_dir)
                 if os.path.isdir(os.path.join(self.base_dir, dosya))
                     and not dosya.startswith(".")
-                        and dosya not in {"gradle", "CanliTV", "OxAx", "__Temel"}
+                        and dosya not in {"gradle", "CanliTV", "OxAx", "__Temel", "RecTV"}
         ])
 
     def _kt_dosyasini_bul(self, dizin, dosya_adi):

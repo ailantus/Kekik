@@ -9,7 +9,7 @@ import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class RecTV : MainAPI() {
-    override var mainUrl              = "https://rectv.cloudflareaccess.com/cdn-cgi/access/login/m.rectv1244.xyz?kid=36db0254eed7e991a894d45bde609de1419f68759c7ea12c3c73647af4d59d53&redirect_url=%2Fadmin%2F&meta=eyJraWQiOiI4N2E0NTdlMDNkMmU0MGE2M2EwMjZiYTdjYWU1ZTViMGFlM2Q4YzUzY2I4OTIyZDRkZDAwNTdhYWNkMDNiM2U5IiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzZXJ2aWNlX3Rva2VuX3N0YXR1cyI6ZmFsc2UsImlhdCI6MTcyMjcxODkwNywic2VydmljZV90b2tlbl9pZCI6IiIsImF1ZCI6IjM2ZGIwMjU0ZWVkN2U5OTFhODk0ZDQ1YmRlNjA5ZGUxNDE5ZjY4NzU5YzdlYTEyYzNjNzM2NDdhZjRkNTlkNTMiLCJob3N0bmFtZSI6Im0ucmVjdHYxMjQ0Lnh5eiIsImFwcF9zZXNzaW9uX2hhc2giOiI4M2QyMjhhZTZjZjVjMDMyYmQyMDI2NTFmMzc1NzU2MTdiMmIyODljNTc3MjM1MDIyMGUzMTFiZjRiMmM3ODlhIiwibmJmIjoxNzIyNzE4OTA3LCJpc193YXJwIjpmYWxzZSwiaXNfZ2F0ZXdheSI6ZmFsc2UsInR5cGUiOiJtZXRhIiwicmVkaXJlY3RfdXJsIjoiXC9hZG1pblwvIiwibXRsc19hdXRoIjp7ImNlcnRfaXNzdWVyX3NraSI6IiIsImNlcnRfcHJlc2VudGVkIjpmYWxzZSwiY2VydF9zZXJpYWwiOiIiLCJjZXJ0X2lzc3Vlcl9kbiI6IiIsImF1dGhfc3RhdHVzIjoiTk9ORSJ9LCJhdXRoX3N0YXR1cyI6Ik5PTkUifQ.kZS6r0NGjS-2H-ydJIfHFAVzRjJ8Nu9ljbCEi5cSZc-mVBkyzO5KKKgJF-lMHwYz3NH_1CgPkbFiqaFjfFqvvG3e__rJlOxHmCqbfkVxv6gdKSg96-624rTs8BsW4qPzAOyC9GpX0Is86lc10bG4Af7FOzDLiio5xIXA-y5gkyZIcKapGDSgWPktTwpcbnbrZHxQR1B8dNwiJMN30yA48IIsf8E2tBBxyitVaxqo2eaIpnaH9AiU_vQ9SLzjXhagPcT17SBmagweiF--0FCXLipl-CnzeB3kZccsXKUBxOVNQyZ9FLL9yWqo0GJV8wvGNcRzfsKKZj4LZV6uHabhQg"
+    override var mainUrl              = "https://m.rectv1244.xyz"
     override var name                 = "RecTV"
     override val hasMainPage          = true
     override var lang                 = "tr"
