@@ -43,3 +43,7 @@ data class Video(
     @JsonProperty("link") val link: String,
     @JsonProperty("lang") val lang: String
 )
+
+data class Search(
+    @JsonProperty("search") val search: List<JustMovie>,
+)

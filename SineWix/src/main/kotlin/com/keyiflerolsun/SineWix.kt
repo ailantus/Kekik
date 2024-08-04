@@ -48,7 +48,11 @@ class SineWix : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        return mutableListOf<SearchResponse>()
+        val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+
+        return request.parsedSafe<Search>()?.search?.mapNotNull { item ->
+            newMovieSearchResponse(item.title, "?id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+        } ?: mutableListOf<SearchResponse>()
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
