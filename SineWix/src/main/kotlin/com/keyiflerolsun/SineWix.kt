@@ -18,8 +18,7 @@ class SineWix : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/public/api/genres/movies/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Filmler",
-        "${mainUrl}/public/api/genres/series/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Diziler",
+        "${mainUrl}/public/api/genres/latestseries/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"   to "Diziler",
         "${mainUrl}/public/api/genres/latestanimes/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"   to "Animeler",
         "${mainUrl}/public/api/genres/movies/show/10751/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Aile",
         "${mainUrl}/public/api/genres/movies/show/28/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Aksiyon",
@@ -49,7 +48,7 @@ class SineWix : MainAPI() {
                     newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
                 }
             }
-            request.data.contains("/genres/series/") -> {
+            request.data.contains("/genres/latestseries/") -> {
                 app.get("${request.data}?page=${page}").parsedSafe<GenresSerie>()!!.data.mapNotNull { item ->
                     newTvSeriesSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.TvSeries) { this.posterUrl = item.poster_path }
                 }
@@ -71,9 +70,9 @@ class SineWix : MainAPI() {
 
         return reqData?.mapNotNull { item ->
             when (item.type) {
-                "movie" -> newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+                "movie" -> newMovieSearchResponse(item.name,    "?type=${item.type}&id=${item.id}", TvType.Movie)    { this.posterUrl = item.poster_path }
                 "serie" -> newTvSeriesSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.TvSeries) { this.posterUrl = item.poster_path }
-                "anime" -> newAnimeSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Anime) { this.posterUrl = item.poster_path }
+                "anime" -> newAnimeSearchResponse(item.name,    "?type=${item.type}&id=${item.id}", TvType.Anime)    { this.posterUrl = item.poster_path }
                 else -> null
             }
         } ?: mutableListOf<SearchResponse>()
