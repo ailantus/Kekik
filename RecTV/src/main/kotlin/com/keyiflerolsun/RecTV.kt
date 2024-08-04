@@ -131,7 +131,7 @@ class RecTV : MainAPI() {
                         url     = source.url,
                         referer = "${mainUrl}/",
                         quality = Qualities.Unknown.value,
-                        m3u8    = true
+                        isM3u8  = true
                     )
                 )
             }
