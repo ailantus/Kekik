@@ -51,7 +51,7 @@ class SineWix : MainAPI() {
         val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
 
         return request.parsedSafe<Search>()?.search?.mapNotNull { item ->
-            newMovieSearchResponse(item.title, "?id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+            newMovieSearchResponse(item.name, "?id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
         } ?: mutableListOf<SearchResponse>()
     }
 

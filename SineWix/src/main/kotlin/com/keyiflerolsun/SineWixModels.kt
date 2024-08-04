@@ -45,5 +45,11 @@ data class Video(
 )
 
 data class Search(
-    @JsonProperty("search") val search: List<JustMovie>,
+    @JsonProperty("search") val search: List<SearchItem>,
+)
+
+data class SearchItem(
+    @JsonProperty("id")          val id: Int,
+    @JsonProperty("name")        val name: String,
+    @JsonProperty("poster_path") val poster_path: String
 )
