@@ -22,24 +22,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "'src' Depo Kontrolü"
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
         with:
           path: "src"
 
       - name: "'build' Depo Kontrolü"
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
         with:
-          ref: "builds"
+          repository: 'Teknoist/Kekik-cloudstream'
+          ref: 'main'  # Veya uygun branch/tag
           path: "builds"
 
       - name: Eski Derlemeleri Temizle
-        run: rm $GITHUB_WORKSPACE/builds/*.cs3 || true
+        run: rm -f $GITHUB_WORKSPACE/builds/*.cs3 || true
 
       - name: JDK 11 Ayarla
         uses: actions/setup-java@v4
         with:
-          distribution: adopt
-          java-version: 11
+          distribution: 'adopt'
+          java-version: '11'
 
       - name: Android SDK Ayarla
         uses: android-actions/setup-android@v2
@@ -58,5 +59,5 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add .
-          git commit --amend -m "$GITHUB_SHA 'nın Derlenmesi" || exit 0   # eğer commit edilecek bir şey yoksa hata verme
+          git commit -m "$GITHUB_SHA 'nın Derlenmesi" || echo "Commit yapılacak değişiklik bulunamadı."
           git push --force
