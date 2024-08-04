@@ -18,20 +18,22 @@ class RecTV : MainAPI() {
     override val hasDownloadSupport   = true
     override val supportedTypes       = setOf(TvType.Movie, TvType.Live)
 
+    val swKey = "4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452"
+
     override val mainPage = mainPageOf(
-        "${mainUrl}/api/channel/by/filtres/0/0/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"      to "Canlı",
-        "${mainUrl}/api/movie/by/filtres/0/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Son Yüklenen",
-        "${mainUrl}/api/movie/by/filtres/14/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Aile",
-        "${mainUrl}/api/movie/by/filtres/1/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Aksiyon",
-        "${mainUrl}/api/movie/by/filtres/13/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Animasyon",
-        "${mainUrl}/api/movie/by/filtres/19/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Belgesel",
-        "${mainUrl}/api/movie/by/filtres/4/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Bilim Kurgu",
-        "${mainUrl}/api/movie/by/filtres/2/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Dram",
-        "${mainUrl}/api/movie/by/filtres/10/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Fantastik",
-        "${mainUrl}/api/movie/by/filtres/3/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Komedi",
-        "${mainUrl}/api/movie/by/filtres/8/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Korku",
-        "${mainUrl}/api/movie/by/filtres/17/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/" to "Macera",
-        "${mainUrl}/api/movie/by/filtres/5/created/SAYFA/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/"  to "Romantik"
+        "${mainUrl}/api/channel/by/filtres/0/0/SAYFA/${swKey}/"      to "Canlı",
+        "${mainUrl}/api/movie/by/filtres/0/created/SAYFA/${swKey}/"  to "Son Yüklenen",
+        "${mainUrl}/api/movie/by/filtres/14/created/SAYFA/${swKey}/" to "Aile",
+        "${mainUrl}/api/movie/by/filtres/1/created/SAYFA/${swKey}/"  to "Aksiyon",
+        "${mainUrl}/api/movie/by/filtres/13/created/SAYFA/${swKey}/" to "Animasyon",
+        "${mainUrl}/api/movie/by/filtres/19/created/SAYFA/${swKey}/" to "Belgesel",
+        "${mainUrl}/api/movie/by/filtres/4/created/SAYFA/${swKey}/"  to "Bilim Kurgu",
+        "${mainUrl}/api/movie/by/filtres/2/created/SAYFA/${swKey}/"  to "Dram",
+        "${mainUrl}/api/movie/by/filtres/10/created/SAYFA/${swKey}/" to "Fantastik",
+        "${mainUrl}/api/movie/by/filtres/3/created/SAYFA/${swKey}/"  to "Komedi",
+        "${mainUrl}/api/movie/by/filtres/8/created/SAYFA/${swKey}/"  to "Korku",
+        "${mainUrl}/api/movie/by/filtres/17/created/SAYFA/${swKey}/" to "Macera",
+        "${mainUrl}/api/movie/by/filtres/5/created/SAYFA/${swKey}/"  to "Romantik"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -60,7 +62,7 @@ class RecTV : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val home    = app.get("${mainUrl}/api/search/${query}/4F5A9C3D9A86FA54EACEDDD635185/c3c5bd17-e37b-4b94-a944-8a3688a30452/")
+        val home    = app.get("${mainUrl}/api/search/${query}/${swKey}/")
         val veriler = AppUtils.tryParseJson<RecSearch>(home.text)
 
         val sonuclar = mutableListOf<SearchResponse>()

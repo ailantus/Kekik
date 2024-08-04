@@ -17,36 +17,66 @@ class SineWix : MainAPI() {
     override val hasDownloadSupport   = true
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
 
+    // override var sequentialMainPage            = true
+    // override var sequentialMainPageDelay       = 250L
+    // override var sequentialMainPageScrollDelay = 250L
+
+    private fun getRandomUserAgent(): String {
+        val androidVersions = listOf("12", "13", "14")
+        val modelPrefixes   = listOf("SM-S", "SM-G", "SM-A", "MI", "POCO", "M", "V", "H")
+        val modelSuffixes   = listOf("F", "U", "W", "K", "T")
+        val brands          = listOf("Samsung", "Xiaomi", "Huawei", "OnePlus", "Oppo", "Vivo", "Google")
+        val deviceNames     = mapOf(
+            "Samsung" to listOf("s22", "s21", "a52", "a32", "note20"),
+            "Xiaomi"  to listOf("mi11", "redmiNote10", "pocoX3"),
+            "Huawei"  to listOf("p40", "mate40", "nova8"),
+            "OnePlus" to listOf("9pro", "8t", "nord2"),
+            "Oppo"    to listOf("findX3", "reno5", "a54"),
+            "Vivo"    to listOf("x60", "v21", "y20"),
+            "Google"  to listOf("pixel6", "pixel5", "pixel4a")
+        )
+        val languages       = listOf("tr")
+
+        val randomAndroidVersion = androidVersions.random()
+        val randomBrand          = brands.random()
+        val randomModelNumber    = modelPrefixes.random() + (900..999).random().toString() + modelSuffixes.random()
+        val randomDeviceName     = deviceNames[randomBrand]?.random() ?: "unknown"
+        val randomLanguage       = languages.random()
+
+        return "EasyPlex (Android ${randomAndroidVersion}; ${randomModelNumber}; ${randomBrand} ${randomDeviceName}; ${randomLanguage})"
+    }
+
+    val swKey     = "9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"
     val swHeaders = mapOf(
-        "accept"        to "application/json",
-        "packagename"   to "com.sinewix",
-        "authorization" to "Bearer EuXs1Y5oXTrDpGte3E2dNDIu82LLjaoCd6om",
-        "user-agent"    to "EasyPlex (Android 11; SM-N935F; samsung gracerlte; tr)"
+        "accept"          to "application/json",
+        "packagename"     to "com.sinewix",
+        "authorization"   to "Bearer EuXs1Y5oXTrDpGte3E2dNDIu82LLjaoCd6om",
+        "user-agent"      to getRandomUserAgent()
     )
 
     override val mainPage = mainPageOf(
-        "${mainUrl}/public/api/genres/movies/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Filmler",
-        "${mainUrl}/public/api/genres/series/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Diziler",
-        "${mainUrl}/public/api/genres/animes/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Animeler",
-        "${mainUrl}/public/api/genres/movies/show/10751/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Aile",
-        "${mainUrl}/public/api/genres/movies/show/28/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Aksiyon",
-        "${mainUrl}/public/api/genres/movies/show/16/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Animasyon",
-        "${mainUrl}/public/api/genres/movies/show/99/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Belgesel",
-        "${mainUrl}/public/api/genres/movies/show/10765/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Bilim Kurgu & Fantazi",
-        "${mainUrl}/public/api/genres/movies/show/878/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"    to "Bilim-Kurgu",
-        "${mainUrl}/public/api/genres/movies/show/18/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Dram",
-        "${mainUrl}/public/api/genres/movies/show/14/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Fantastik",
-        "${mainUrl}/public/api/genres/movies/show/53/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Gerilim",
-        "${mainUrl}/public/api/genres/movies/show/9648/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"   to "Gizem",
-        "${mainUrl}/public/api/genres/movies/show/35/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Komedi",
-        "${mainUrl}/public/api/genres/movies/show/27/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Korku",
-        "${mainUrl}/public/api/genres/movies/show/12/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Macera",
-        "${mainUrl}/public/api/genres/movies/show/10402/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Müzik",
-        "${mainUrl}/public/api/genres/movies/show/10749/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Romantik",
-        "${mainUrl}/public/api/genres/movies/show/10752/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Savaş",
-        "${mainUrl}/public/api/genres/movies/show/80/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Suç",
-        "${mainUrl}/public/api/genres/movies/show/10770/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "TV film",
-        "${mainUrl}/public/api/genres/movies/show/36/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Tarih",
+        "${mainUrl}/public/api/genres/movies/all/${swKey}"         to "Filmler",
+        "${mainUrl}/public/api/genres/series/all/${swKey}"         to "Diziler",
+        "${mainUrl}/public/api/genres/animes/all/${swKey}"         to "Animeler",
+        "${mainUrl}/public/api/genres/movies/show/10751/${swKey}"  to "Aile",
+        "${mainUrl}/public/api/genres/movies/show/28/${swKey}"     to "Aksiyon",
+        "${mainUrl}/public/api/genres/movies/show/16/${swKey}"     to "Animasyon",
+        "${mainUrl}/public/api/genres/movies/show/99/${swKey}"     to "Belgesel",
+        "${mainUrl}/public/api/genres/movies/show/10765/${swKey}"  to "Bilim Kurgu & Fantazi",
+        "${mainUrl}/public/api/genres/movies/show/878/${swKey}"    to "Bilim-Kurgu",
+        "${mainUrl}/public/api/genres/movies/show/18/${swKey}"     to "Dram",
+        "${mainUrl}/public/api/genres/movies/show/14/${swKey}"     to "Fantastik",
+        "${mainUrl}/public/api/genres/movies/show/53/${swKey}"     to "Gerilim",
+        "${mainUrl}/public/api/genres/movies/show/9648/${swKey}"   to "Gizem",
+        "${mainUrl}/public/api/genres/movies/show/35/${swKey}"     to "Komedi",
+        "${mainUrl}/public/api/genres/movies/show/27/${swKey}"     to "Korku",
+        "${mainUrl}/public/api/genres/movies/show/12/${swKey}"     to "Macera",
+        "${mainUrl}/public/api/genres/movies/show/10402/${swKey}"  to "Müzik",
+        "${mainUrl}/public/api/genres/movies/show/10749/${swKey}"  to "Romantik",
+        "${mainUrl}/public/api/genres/movies/show/10752/${swKey}"  to "Savaş",
+        "${mainUrl}/public/api/genres/movies/show/80/${swKey}"     to "Suç",
+        "${mainUrl}/public/api/genres/movies/show/10770/${swKey}"  to "TV film",
+        "${mainUrl}/public/api/genres/movies/show/36/${swKey}"     to "Tarih",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -80,7 +110,7 @@ class SineWix : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
+        val request = app.get("${mainUrl}/public/api/search/${query}/${swKey}", headers=swHeaders)
         val reqData = request.parsedSafe<Search>()?.search
 
         return reqData?.mapNotNull { item ->
@@ -100,7 +130,7 @@ class SineWix : MainAPI() {
         val itemId   = url.substringAfter("&id=")
 
         if (itemType == "movie") {
-            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
+            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/${swKey}", headers=swHeaders)
             val media   = request.parsedSafe<MovieDetail>() ?: return null
 
             val orgTitle        = media.title
@@ -125,7 +155,7 @@ class SineWix : MainAPI() {
                 addActors(actors)
             }
         } else {
-            val request = app.get("${mainUrl}/public/api/${itemType}s/show/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
+            val request = app.get("${mainUrl}/public/api/${itemType}s/show/${itemId}/${swKey}", headers=swHeaders)
             val media   = request.parsedSafe<SerieDetail>() ?: return null
 
             val orgTitle        = media.name
@@ -172,7 +202,7 @@ class SineWix : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         if (!data.contains("&source=")) {
             val itemId  = data.substringAfter("&id=").substringBefore("&source=")
-            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA", headers=swHeaders)
+            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/${swKey}", headers=swHeaders)
             val media   = request.parsedSafe<MovieDetail>() ?: return false
 
             media.videos.forEach { video ->
