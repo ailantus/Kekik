@@ -18,9 +18,9 @@ class SineWix : MainAPI() {
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
 
     override val mainPage = mainPageOf(
-        // "${mainUrl}/public/api/genres/series/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Diziler",
-        // "${mainUrl}/public/api/genres/animes/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Animeler",
-        // "${mainUrl}/public/api/genres/movies/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Filmler",
+        "${mainUrl}/public/api/genres/movies/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Filmler",
+        "${mainUrl}/public/api/genres/series/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Diziler",
+        "${mainUrl}/public/api/genres/animes/all/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"         to "Animeler",
         "${mainUrl}/public/api/genres/movies/show/10751/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"  to "Aile",
         "${mainUrl}/public/api/genres/movies/show/28/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Aksiyon",
         "${mainUrl}/public/api/genres/movies/show/16/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA"     to "Animasyon",
@@ -43,21 +43,28 @@ class SineWix : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        val url  = "${request.data}?page=${page}"
         val home = when {
             request.data.contains("/genres/movies/") -> {
-                app.get("${request.data}?page=${page}").parsedSafe<GenresMovie>()!!.data.mapNotNull { item ->
+                app.get(url).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
                     newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
-                }
+                } ?: app.get(url.replace("movies/all", "news/all")).parsedSafe<GenresMovie>()?.data?.mapNotNull { item ->
+                    newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+                } ?: listOf<SearchResponse>()
             }
             request.data.contains("/genres/series/") -> {
-                app.get("${request.data}?page=${page}").parsedSafe<GenresSerie>()!!.data.mapNotNull { item ->
+                app.get(url).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newTvSeriesSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.TvSeries) { this.posterUrl = item.poster_path }
-                }
+                } ?: app.get(url.replace("series/all", "latestseries/all")).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                    newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+                } ?: listOf<SearchResponse>()
             }
             request.data.contains("/genres/animes/") -> {
-                app.get("${request.data}?page=${page}").parsedSafe<GenresSerie>()!!.data.mapNotNull { item ->
+                app.get(url).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
                     newAnimeSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Anime) { this.posterUrl = item.poster_path }
-                }
+                } ?: app.get(url.replace("animes/all", "latestanimes/all")).parsedSafe<GenresSerie>()?.data?.mapNotNull { item ->
+                    newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+                } ?: listOf<SearchResponse>()
             }
             else -> listOf<SearchResponse>()
         }
