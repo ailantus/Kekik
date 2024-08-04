@@ -176,10 +176,6 @@ class SineWix : MainAPI() {
                 )
             }
         } else {
-            Log.d("SNWX", "data » ${data}")
-            val source = data.substringAfter("&source=")
-            Log.d("SNWX", "source » ${source}")
-
             callback.invoke(
                 ExtractorLink(
                     source  = this.name,
