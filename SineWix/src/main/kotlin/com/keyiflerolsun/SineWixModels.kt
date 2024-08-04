@@ -15,7 +15,18 @@ data class JustMovie(
     @JsonProperty("type")        val type: String
 )
 
-data class MediaDetail(
+data class GenresSerie(
+    @JsonProperty("data") val data: List<JustSerie>
+)
+
+data class JustSerie(
+    @JsonProperty("id")          val id: Int,
+    @JsonProperty("name")        val name: String,
+    @JsonProperty("poster_path") val poster_path: String,
+    @JsonProperty("type")        val type: String
+)
+
+data class MovieDetail(
     @JsonProperty("id")            val id: Int,
     @JsonProperty("title")         val title: String,
     @JsonProperty("original_name") val original_name: String?,
@@ -23,10 +34,24 @@ data class MediaDetail(
     @JsonProperty("poster_path")   val poster_path: String,
     @JsonProperty("vote_average")  val vote_average: Int,
     @JsonProperty("release_date")  val release_date: String,
-    @JsonProperty("casterslist")   val casterslist: List<Cast>,
-    @JsonProperty("relateds")      val relateds: List<JustMovie>,
-    @JsonProperty("genres")        val genres: List<Genre>,
-    @JsonProperty("videos")       val videos: List<Video>
+    @JsonProperty("casterslist")   val casterslist: List<Cast>?,
+    @JsonProperty("relateds")      val relateds: List<JustMovie>?,
+    @JsonProperty("genres")        val genres: List<Genre>?,
+    @JsonProperty("videos")        val videos: List<Video>
+)
+
+data class SerieDetail(
+    @JsonProperty("id")             val id: Int,
+    @JsonProperty("name")           val name: String,
+    @JsonProperty("original_name")  val original_name: String?,
+    @JsonProperty("overview")       val overview: String?,
+    @JsonProperty("poster_path")    val poster_path: String,
+    @JsonProperty("vote_average")   val vote_average: Int,
+    @JsonProperty("first_air_date") val first_air_date: String,
+    @JsonProperty("casterslist")    val casterslist: List<Cast>?,
+    @JsonProperty("relateds")       val relateds: List<JustSerie>?,
+    @JsonProperty("genres")         val genres: List<Genre>?,
+    @JsonProperty("seasons")        val seasons: List<SeasonDetail>
 )
 
 data class Cast(
@@ -35,7 +60,6 @@ data class Cast(
 )
 
 data class Genre(
-    @JsonProperty("id")   val id: Int,
     @JsonProperty("name") val name: String
 )
 
@@ -54,4 +78,23 @@ data class SearchItem(
     @JsonProperty("name")        val name: String,
     @JsonProperty("poster_path") val poster_path: String,
     @JsonProperty("type")        val type: String
+)
+
+data class SeasonDetail(
+    @JsonProperty("id")            val id: Int,
+    @JsonProperty("season_number") val season_number: Int,
+    @JsonProperty("name")          val name: String,
+    @JsonProperty("overview")      val overview: String?,
+    @JsonProperty("poster_path")   val poster_path: String,
+    @JsonProperty("air_date")      val air_date: String,
+    @JsonProperty("episodes")      val episodes: List<EpisodeDetail>
+)
+
+data class EpisodeDetail(
+    @JsonProperty("id")             val id: Int,
+    @JsonProperty("episode_number") val episode_number: Int,
+    @JsonProperty("name")           val name: String,
+    @JsonProperty("overview")       val overview: String?,
+    @JsonProperty("still_path")     val still_path: String,
+    @JsonProperty("videos")         val videos: List<Video>
 )

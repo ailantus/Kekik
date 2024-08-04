@@ -1,4 +1,4 @@
-version = 3
+version = 4
 
 cloudstream {
     authors     = listOf("keyiflerolsun", "yusiqo")
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("Movie")
+    tvTypes = listOf("Movie", "TvSeries", "Anime")
     iconUrl = "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX"
 }
