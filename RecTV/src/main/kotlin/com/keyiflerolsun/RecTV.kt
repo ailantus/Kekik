@@ -109,17 +109,32 @@ class RecTV : MainAPI() {
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         val veri = AppUtils.tryParseJson<RecItem>(data) ?: return false
 
-        veri.sources.forEach { source ->
-            callback.invoke(
-                ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
-                    url     = source.url,
-                    referer = "${mainUrl}/",
-                    quality = Qualities.Unknown.value,
-                    isM3u8  = true
+        if (veri.label != "CANLI" && veri.label != "Canlı") {
+            veri.sources.forEach { source ->
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = source.url,
+                        referer = "${mainUrl}/",
+                        quality = Qualities.Unknown.value,
+                        type    = INFER_TYPE
+                    )
                 )
-            )
+            }
+        } else {
+            veri.sources.forEach { source ->
+                callback.invoke(
+                    ExtractorLink(
+                        source  = this.name,
+                        name    = this.name,
+                        url     = source.url,
+                        referer = "${mainUrl}/",
+                        quality = Qualities.Unknown.value,
+                        m3u8    = true
+                    )
+                )
+            }
         }
 
         return true
