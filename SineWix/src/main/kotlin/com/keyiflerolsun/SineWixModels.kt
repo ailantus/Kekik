@@ -12,6 +12,7 @@ data class JustMovie(
     @JsonProperty("id")          val id: Int,
     @JsonProperty("title")       val title: String,
     @JsonProperty("poster_path") val poster_path: String,
+    @JsonProperty("type")        val type: String
 )
 
 data class MediaDetail(
@@ -51,5 +52,6 @@ data class Search(
 data class SearchItem(
     @JsonProperty("id")          val id: Int,
     @JsonProperty("name")        val name: String,
-    @JsonProperty("poster_path") val poster_path: String
+    @JsonProperty("poster_path") val poster_path: String,
+    @JsonProperty("type")        val type: String
 )

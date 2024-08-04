@@ -41,52 +41,64 @@ class SineWix : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val home = app.get("${request.data}?page=${page}").parsedSafe<GenresMovie>()!!.data.mapNotNull { item ->
-            newMovieSearchResponse(item.title, "?id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
+            newMovieSearchResponse(item.title, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
         }
 
         return newHomePageResponse(request.name, home)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val request = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+        val request  = app.get("${mainUrl}/public/api/search/${query}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+        val seaData  = request.parsedSafe<Search>()?.search
+        val sonuclar = mutableListOf<SearchResponse>()
 
-        return request.parsedSafe<Search>()?.search?.mapNotNull { item ->
-            newMovieSearchResponse(item.name, "?id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path }
-        } ?: mutableListOf<SearchResponse>()
+        reqData?.mapNotNull { item ->
+            if (item.type == "movie") {
+                sonuclar.add(newMovieSearchResponse(item.name, "?type=${item.type}&id=${item.id}", TvType.Movie) { this.posterUrl = item.poster_path })
+            }
+        }
+
+        return sonuclar
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val itemId  = url.substringAfter("?id=")
-        val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
-        val media   = request.parsedSafe<MediaDetail>() ?: return null
+        val itemType = url.substringAfter("?type=").substringBefore("&id=")
+        val itemId   = url.substringAfter("&id=")
 
-        val orgTitle        = media.title
-        val altTitle        = media.original_name ?: ""
-        val title           = if (altTitle.isNotEmpty() && orgTitle != altTitle) "${orgTitle} - ${altTitle}" else orgTitle
+        if (itemType == "movie") {
+            val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
+            val media   = request.parsedSafe<MediaDetail>() ?: return null
 
-        val poster          = fixUrlNull(media.poster_path)
-        val description     = media.overview
-        val year            = media.release_date.split("-").first().toIntOrNull()
-        val tags            = media.genres.map { it.name }
-        val rating          = "${media.vote_average}".toRatingInt()
-        val recommendations = media.relateds.mapNotNull { newMovieSearchResponse(it.title, "?id=${it.id}", TvType.Movie) { this.posterUrl = it.poster_path } }
-        val actors          = media.casterslist.map { Actor(it.name, it?.profile_path) }
+            val orgTitle        = media.title
+            val altTitle        = media.original_name ?: ""
+            val title           = if (altTitle.isNotEmpty() && orgTitle != altTitle) "${orgTitle} - ${altTitle}" else orgTitle
 
-        return newMovieLoadResponse(title, url, TvType.Movie, url) {
-            this.posterUrl       = poster
-            this.plot            = description
-            this.year            = year
-            this.tags            = tags
-            this.rating          = rating
-            this.recommendations = recommendations
-            addActors(actors)
+            val poster          = fixUrlNull(media.poster_path)
+            val description     = media.overview
+            val year            = media.release_date.split("-").first().toIntOrNull()
+            val tags            = media.genres.map { it.name }
+            val rating          = "${media.vote_average}".toRatingInt()
+            val recommendations = media.relateds.mapNotNull { newMovieSearchResponse(it.title, "?type=${it.type}&id=${it.id}", TvType.Movie) { this.posterUrl = it.poster_path } }
+            val actors          = media.casterslist.map { Actor(it.name, it?.profile_path) }
+
+            return newMovieLoadResponse(title, url, TvType.Movie, url) {
+                this.posterUrl       = poster
+                this.plot            = description
+                this.year            = year
+                this.tags            = tags
+                this.rating          = rating
+                this.recommendations = recommendations
+                addActors(actors)
+            }
         }
+
+        return null
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        val itemId  = data.substringAfter("?id=")
+        val itemId  = data.substringAfter("&id=")
         val request = app.get("${mainUrl}/public/api/media/detail/${itemId}/9iQNC5HQwPlaFuJDkhncJ5XTJ8feGXOJatAA")
         val media   = request.parsedSafe<MediaDetail>() ?: return false
 
