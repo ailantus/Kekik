@@ -118,10 +118,14 @@ class RecTV : MainAPI() {
                     source  = this.name,
                     name    = this.name,
                     url     = source.url,
-                    headers = mapOf("User-Agent" to "googleusercontent"),
+                    headers = mapOf(
+                        "User-Agent"      to "googleusercontent",
+                        "origin"          to "https://twitter.com",
+                        "Accept-Encoding" to "gzip",
+                    ),
                     referer = "https://twitter.com/",
                     quality = Qualities.Unknown.value,
-                    isM3u8  = true
+                    type    = if (source.type == "mp4") ExtractorLinkType.VIDEO else ExtractorLinkType.M3U8
                 )
             )
         }

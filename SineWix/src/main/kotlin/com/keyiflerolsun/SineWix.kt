@@ -42,6 +42,8 @@ class SineWix : MainAPI() {
         "${mainUrl}/sinewix/movies/36"     to "Tarih",
     )
 
+    val twitter = "https://twitter.com/"
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val url  = "${request.data}/${page}"
         val home = when {
@@ -166,14 +168,14 @@ class SineWix : MainAPI() {
                 Log.d("SNWX", "video » ${video}")
 
                 if (video.link.contains("mediafire.com")) {
-                    loadExtractor(video.link, "https://twitter.com/", subtitleCallback, callback)
+                    loadExtractor(video.link, twitter, subtitleCallback, callback)
                 } else {
                     callback.invoke(
                         ExtractorLink(
                             source  = this.name,
                             name    = this.name,
                             url     = video.link,
-                            referer = "https://twitter.com/",
+                            referer = twitter,
                             quality = Qualities.Unknown.value,
                             type    = INFER_TYPE
                         )
@@ -184,14 +186,14 @@ class SineWix : MainAPI() {
         } else {
 
             if (data.substringAfter("&source=").contains("mediafire.com")) {
-                loadExtractor(data.substringAfter("&source="), "https://twitter.com/", subtitleCallback, callback)
+                loadExtractor(data.substringAfter("&source="), twitter, subtitleCallback, callback)
             } else {
                 callback.invoke(
                     ExtractorLink(
                         source  = this.name,
                         name    = this.name,
                         url     = data.substringAfter("&source="),
-                        referer = "${mainUrl}/",
+                        referer = twitter,
                         quality = Qualities.Unknown.value,
                         type    = INFER_TYPE
                     )
