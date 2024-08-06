@@ -115,8 +115,8 @@ class RecTV : MainAPI() {
             Log.d("RCTV", "source » ${source}")
             callback.invoke(
                 ExtractorLink(
-                    source  = this.name,
-                    name    = this.name,
+                    source  = "${this.name} - ${source.type}",
+                    name    = "${this.name} - ${source.type}",
                     url     = source.url,
                     headers = mapOf(
                         "User-Agent"      to "googleusercontent",
