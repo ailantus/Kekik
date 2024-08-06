@@ -200,6 +200,30 @@ class WebteIzle : MainAPI() {
                     )
 
                     continue
+                } else if (iframe.contains("playerjs-three.vercel.app")) {
+                    val iSource = app.get(iframe, referer="${mainUrl}/").text
+
+                    val extractedValue = Regex("""file":"(.*)",""").find(iSource)?.groupValues?.get(1)?.replace("\\\\x", "")
+                    val decoded        = extractedValue?.let {
+                        val hexString = it.replace("\\x", "")
+
+                        val bytes = hexString.chunked(2).map { chunk ->
+                            chunk.toInt(16).toByte()
+                        }.toByteArray()
+
+                        bytes.toString(Charsets.UTF_8)
+                    } ?: ""
+
+                    callback.invoke(
+                        ExtractorLink(
+                            source  = "${dilAd} - ${this.name}",
+                            name    = "${dilAd} - ${this.name}",
+                            url     = fixUrl(decoded),
+                            referer = "${mainUrl}/",
+                            quality = Qualities.Unknown.value,
+                            isM3u8  = true
+                        )
+                    )
                 }
 
                 if (iframe != null) {
