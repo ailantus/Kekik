@@ -16,7 +16,7 @@ import java.net.URLDecoder
 import java.util.Base64
 
 class DiziBox : MainAPI() {
-    override var mainUrl              = "https://www.dizibox.de"
+    override var mainUrl              = "https://www.dizibox.plus"
     override var name                 = "DiziBox"
     override val hasMainPage          = true
     override var lang                 = "tr"
