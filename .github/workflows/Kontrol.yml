@@ -69,7 +69,7 @@ jobs:
           {
             "title": "♻️ Domain Değişikliği",
             "head": "$BRANCH",
-            "base": "main",
+            "base": "master",
             "body": "💾 Bu PR, $GITHUB_SHA commit'iyle yapılan değişiklikleri içerir."
           }
           EOF
