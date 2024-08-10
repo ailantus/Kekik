@@ -58,7 +58,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit --author="keyiflerolsun <keyiflerolsun@users.noreply.github.com>" \
-            -m "♻️ Domain Değişikliği" -m "💾 Önceki » $GITHUB_SHA"
+            -m "♻️ Domain Değişikliği" \
+            -m "🔄 Otomatik domain güncellemeleri yapıldı."
           BRANCH="domain-degisiklik-$(date +%s)"
           git checkout -b $BRANCH
           git push origin $BRANCH
@@ -70,6 +71,6 @@ jobs:
             "title": "♻️ Domain Değişikliği",
             "head": "$BRANCH",
             "base": "master",
-            "body": "💾 Bu PR, $GITHUB_SHA commit'iyle yapılan değişiklikleri içerir."
+            "body": "🔄 Otomatik tespit edilen domain değişiklikleri uygulandı.\n\n📂 İlgili dosyalar güncellendi. Lütfen değişiklikleri gözden geçirin ve onaylayın."
           }
           EOF
