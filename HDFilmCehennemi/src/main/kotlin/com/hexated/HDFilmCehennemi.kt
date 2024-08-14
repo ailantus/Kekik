@@ -63,7 +63,7 @@ class HDFilmCehennemi : MainAPI() {
         "${mainUrl}/category/amazon-yapimlarini-izle/"     to "Amazon Yapımları",
         "${mainUrl}/category/1080p-hd-film-izle-2/"        to "1080p Film izle",
         "${mainUrl}yabancidiziizle-2/"                     to "Yabancı Diziler",
-        "${mainUrl}yil/2024-1/"                            to "2024 Filmleri"
+        "${mainUrl}yil/2024-1/"                            to "2024 Filmleri",
        
     )
 
