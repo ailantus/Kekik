@@ -9,7 +9,7 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class UgurFilm : MainAPI() {
-    override var mainUrl              = "https://ugurfilm7.com/?doing_wp_cron=1727384504.5070569515228271484375"
+    override var mainUrl              = "https://ugurfilm7.com"
     override var name                 = "UgurFilm"
     override val hasMainPage          = true
     override var lang                 = "tr"
