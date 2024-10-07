@@ -2,7 +2,7 @@ version = 3
 
 cloudstream {
     authors     = listOf("coxju")
-    language    = "hi"
+    language    = "tr"
     description = "(VPN) We Provide Huge Colocation of Hindi Porn (Uncut) Web Series"
 
     /**
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("NSFW")
+    tvTypes = listOf("Movie")
     iconUrl = "https://www.google.com/s2/favicons?domain=uncutmaza.cc&sz=%size%"
 }
