@@ -10,11 +10,11 @@ class UncutMaza : MainAPI() {
     override var mainUrl              = "https://yerfilmizle.top"
     override var name                 = "UncutMaza"
     override val hasMainPage          = true
-    override var lang                 = "hi"
+    override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val hasDownloadSupport   = true
     override val hasChromecastSupport = true
-    override val supportedTypes       = setOf(TvType.NSFW)
+    override val supportedTypes       = setOf(TvType.Movie)
     override val vpnStatus            = VPNStatus.MightBeNeeded
 
     override val mainPage = mainPageOf(
