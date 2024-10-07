@@ -8,7 +8,7 @@ import com.lagradost.cloudstream3.utils.*
 
 class UncutMaza : MainAPI() {
     override var mainUrl              = "https://yerfilmizle.top"
-    override var name                 = "UncutMaza"
+    override var name                 = "Yerfilmizle"
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
@@ -45,14 +45,14 @@ class UncutMaza : MainAPI() {
         val href      = fixUrlNull(this.select("a").attr("href")) ?: return null
         val posterUrl = fixUrlNull(this.select("a > div.post-thumbnail>div.post-thumbnail-container>img").attr("data-src"))
 
-        return newMovieSearchResponse(title, href, TvType.NSFW) { this.posterUrl = posterUrl }
+        return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
         val searchResponse = mutableListOf<SearchResponse>()
 
         for (i in 1..5) {
-            val document = app.get("${mainUrl}/page/$i?s=$query").document
+            val document = app.get("${mainUrl}/$i?s=$query").document
 
             val results = document.select("article.post").mapNotNull { it.toSearchResult() }
 
