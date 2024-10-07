@@ -20,6 +20,10 @@ class UncutMaza : MainAPI() {
     override val mainPage = mainPageOf(
             "${mainUrl}/"                           to "Home",
             "${mainUrl}/filmz/kod-adi-kirmizi-2024-izle/" to "Kod Adı: Kırmızı"
+            "${mainUrl}/tur/aile-filmleri/" to "Aile"
+            "${mainUrl}/tur/komedi-filmleri/" to "Komedi"
+            "${mainUrl}/tur/bilim-kurgu-filmleri/" to "Bilimkurgu"
+            "${mainUrl}/tur/animasyon-filmleri/" to "Animasyon"       
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
