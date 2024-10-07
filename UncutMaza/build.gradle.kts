@@ -1,7 +1,7 @@
 version = 3
 
 cloudstream {
-    authors     = listOf("coxju")
+    authors     = listOf("keyiflerolsun")
     language    = "tr"
     description = "(VPN) We Provide Huge Colocation of Hindi Porn (Uncut) Web Series"
 
