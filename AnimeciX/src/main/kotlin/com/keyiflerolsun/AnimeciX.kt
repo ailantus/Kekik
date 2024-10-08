@@ -1,113 +1,104 @@
-// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+ package com.lagradost
 
-package com.keyiflerolsun
+ import com.fasterxml.jackson.core.type.TypeReference
+ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+ import com.lagradost.cloudstream3.AcraApplication.Companion.getKey
+ import com.lagradost.cloudstream3.AcraApplication.Companion.setKey
+ import com.lagradost.cloudstream3.R
+ import com.lagradost.cloudstream3.app
+ import com.lagradost.cloudstream3.syncproviders.AccountManager
+ import com.lagradost.cloudstream3.syncproviders.AuthAPI
+ import com.lagradost.cloudstream3.syncproviders.InAppAuthAPI
+ import com.lagradost.cloudstream3.syncproviders.InAppAuthAPIManager
+ import com.lagradost.utils.FStreamUtils.listOfProviders
+ import com.lagradost.utils.FStreamUtils.writeToKey
 
-import android.util.Log
-import com.lagradost.cloudstream3.*
-import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+ class FStreamApi(index: Int) : InAppAuthAPIManager(index) {
+     override val name = "FStream"
+     override val idPrefix = "fstream"
+     override val icon = R.drawable.ic_baseline_extension_24
+     override val requiresUsername = true
+     override val requiresPassword = true
+     override val requiresServer = false
+     override val createAccountUrl = "https://alldebrid.com/register/"
 
-class AnimeciX : MainAPI() {
-    override var mainUrl              = "https://animecix.net"
-    override var name                 = "AnimeciX"
-    override val hasMainPage          = true
-    override var lang                 = "tr"
-    override val hasQuickSearch       = false
-    override val hasChromecastSupport = true
-    override val hasDownloadSupport   = true
-    override val supportedTypes       = setOf(TvType.Anime)
+     companion object {
+         const val ALLDEBRID_USER_KEY: String = "alldebrid_user"
+         const val USED_PROVIDERS_V3: String = "used_fstream_providers_v3"
+         const val FSTREAM_VERSION: String = "fstream_version"
+         const val PROVIDER_URL_TEMP_USER_KEY: String = "provider_url_user"
+         const val currentFstreamVersion: Int = 15
+     }
 
-    override val mainPage = mainPageOf(
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=action&onlyStreamable=true"          to "Aksiyon",
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=sci-fi-fantasy&onlyStreamable=true"  to "Bilim Kurgu",
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=drama&onlyStreamable=true"           to "Dram",
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=mystery&onlyStreamable=true"         to "Gizem",
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=comedy&onlyStreamable=true"          to "Komedi",
-        "${mainUrl}/secure/titles?type=series&order=user_score:desc&genre=horror&onlyStreamable=true"          to "Korku"
-    )
+     override fun getLatestLoginData(): InAppAuthAPI.LoginData? {
+         return getKey(accountId, ALLDEBRID_USER_KEY)
+     }
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val response = app.get("${request.data}&page=${page}&perPage=12").parsedSafe<Category>()
+     override fun loginInfo(): AuthAPI.LoginInfo? {
+         val data = getLatestLoginData() ?: return null
+         return AuthAPI.LoginInfo(name = data.username ?: data.server, accountIndex = accountIndex)
+     }
 
-        val home     = response?.pagination?.data?.mapNotNull { anime ->
-            newAnimeSearchResponse(
-                anime.title,
-                "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
-                TvType.Anime
-            ) {
-                this.posterUrl = fixUrlNull(anime.poster)
-            }
-        } ?: listOf<SearchResponse>()
+     override suspend fun login(data: InAppAuthAPI.LoginData): Boolean {
+         if (data.username.isNullOrBlank() || data.password.isNullOrBlank()) return false // we require a server
+         try {
+             val isValid = app.get("http://api.alldebrid.com/v4/user?agent=${data.username}&apikey=${data.password}").text.contains("\"status\": \"success\",")
+             if(!isValid) return false
+         } catch (e: Exception) {
+             return false
+         }
 
-        return newHomePageResponse(request.name, home)
-    }
+         switchToNewAccount()
+         setKey(accountId, ALLDEBRID_USER_KEY, data)
+         registerAccount()
+         initialize()
+         AccountManager.inAppAuths
 
-    override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("${mainUrl}/secure/search/${query}?limit=20").parsedSafe<Search>() ?: return listOf<SearchResponse>()
+         return true
+     }
 
-        return response.results.mapNotNull { anime ->
-            newAnimeSearchResponse(
-                anime.title,
-                "${mainUrl}/secure/titles/${anime.id}?titleId=${anime.id}",
-                TvType.Anime
-            ) {
-                this.posterUrl = fixUrlNull(anime.poster)
-            }
-        }
-    }
+     override fun logOut() {
+         removeAccountKeys()
+         //initializeData()
+     }
 
-    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
-
-    override suspend fun load(url: String): LoadResponse? {
-        val response = app.get(url).parsedSafe<Title>() ?: return null
-
-        val episodes = mutableListOf<Episode>()
-
-        if (response.title.title_type == "anime") {
-            for (sezon in 1..response.title.season_count) {
-                val sezonResponse = app.get("${url}&seasonNumber=${sezon}").parsedSafe<Title>() ?: return null
-                for (video in sezonResponse.title.videos) {
-                    episodes.add(Episode(
-                        data    = video.url,
-                        name    = "${video.season_num}. Sezon ${video.episode_num}. Bölüm",
-                        season  = video.season_num,
-                        episode = video.episode_num
-                    ))
-                }
-            }
-        } else {
-            if (response.title.videos.isNotEmpty() == true) {
-                episodes.add(Episode(
-                    data    = response.title.videos.first().url,
-                    name    = "Filmi İzle",
-                    season  = 1,
-                    episode = 1
-                ))
-            }
-        }
+     fun jsonToMap(json: String): MutableMap<String, Pair<Int, String?>> {
+         val objectMapper = jacksonObjectMapper()
+         return objectMapper.readValue(json, object : TypeReference<MutableMap<String, Pair<Int, String?>>>() {})
+     }
 
 
-        return newTvSeriesLoadResponse(
-            response.title.title,
-            "${mainUrl}/secure/titles/${response.title.id}?titleId=${response.title.id}",
-            TvType.Anime,
-            episodes
-        ) {
-            this.posterUrl = fixUrlNull(response.title.poster)
-            this.year      = response.title.year
-            this.plot      = response.title.description
-            this.tags      = response.title.tags.filterNotNull().map { it.name }
-            this.rating    = response.title.rating.toRatingInt()
-            addActors(response.title.actors.filterNotNull().map { Actor(it.name, fixUrlNull(it.poster)) })
-            addTrailer(response.title.trailer)
-        }
-    }
+     fun parseKey(key: String): MutableMap<String, Pair<Int, String?>>? {
+         val dataFromKey: String = getKey(key) ?: return null
+         return jsonToMap(dataFromKey)
+     }
+     private fun initializeUsedProviders() {
+         val defaultData: MutableMap<String, Pair<Int, String?>> = listOfProviders
+         val storedData: MutableMap<String, Pair<Int, String?>> = parseKey(USED_PROVIDERS_V3) ?: defaultData
+         //println(storedData)
+         listOfProviders = storedData.takeIf { storedData.keys == defaultData.keys && storedData.values.first().first is Int} ?: defaultData
+     }
 
-    override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
-        Log.d("ACX", "data » ${data}")
-        loadExtractor(data, "${mainUrl}/", subtitleCallback, callback)
+     /*private fun initializeData() {
+         val data = getLatestLoginData() ?: run {
+             FStreamProvider.blackInkApiAppName = null
+             FStreamProvider.blackInkApiKey = null
+             return
+         }
+         FStreamProvider.blackInkApiAppName = data.username
+         FStreamProvider.blackInkApiKey = data.password
+     }*/
 
-        return true
-    }
-}
+     override suspend fun initialize() {
+         //RepoLinkGenerator.cache.clear()
+         val version: Int? = getKey(FSTREAM_VERSION)
+         if (version == currentFstreamVersion) {
+             initializeUsedProviders() // only use the stored data if its the current version
+         } else {
+             writeToKey(USED_PROVIDERS_V3, listOfProviders)
+             setKey(FSTREAM_VERSION, currentFstreamVersion) // keep up to date the key
+             // dont initialize the providers (we dont want new urls from the dev to be overwritten)
+         }
+         //initializeData()
+     }
+ }
